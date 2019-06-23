@@ -8,11 +8,12 @@ interface MainContentProps {
 }
 
 class MainContent extends React.Component<MainContentProps, object> {
+  state = {
+    height: 0
+  };
+
   constructor(props: MainContentProps) {
     super(props);
-    this.state = {
-      height: 0
-    };
   }
 
   componentDidMount() {
