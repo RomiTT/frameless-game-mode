@@ -1,0 +1,57 @@
+import React from 'react';
+
+interface MainContentProps {
+  headerRef: React.RefObject<HTMLElement>;
+  footerRef: React.RefObject<HTMLElement>;
+  style?: Object;
+  className?: string;
+}
+
+class MainContent extends React.Component<MainContentProps, object> {
+  constructor(props: MainContentProps) {
+    super(props);
+  }
+
+  state = {
+    height: 0
+  };
+
+  componentDidMount() {
+    window.addEventListener('DOMContentLoaded', this.calcHeight);
+    window.addEventListener('resize', this.calcHeight);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('DOMContentLoaded', this.calcHeight);
+    window.removeEventListener('resize', this.calcHeight);
+  }
+
+  calcHeight = () => {
+    if (this.props.headerRef.current && this.props.footerRef.current) {
+      let newHeight =
+        window.innerHeight -
+        (this.props.headerRef.current.offsetHeight +
+          this.props.footerRef.current.offsetHeight);
+
+      this.setState({ height: newHeight });
+    }
+  };
+
+  render() {
+    return (
+      <div
+        className={this.props.className}
+        style={{
+          ...this.props.style,
+          height: this.state.height,
+          overflow: 'auto',
+          width: '100%'
+        }}
+      >
+        {this.props.children}
+      </div>
+    );
+  }
+}
+
+export default MainContent;
