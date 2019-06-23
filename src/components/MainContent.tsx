@@ -10,11 +10,10 @@ interface MainContentProps {
 class MainContent extends React.Component<MainContentProps, object> {
   constructor(props: MainContentProps) {
     super(props);
+    this.state = {
+      height: 0
+    };
   }
-
-  state = {
-    height: 0
-  };
 
   componentDidMount() {
     window.addEventListener('DOMContentLoaded', this.calcHeight);
