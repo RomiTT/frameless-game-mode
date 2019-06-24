@@ -3,7 +3,7 @@ import logo from './logo.svg';
 import './App.css';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import MainContent from './components/MainContent';
-
+import process from 'process';
 import {
   Navbar,
   Colors,
@@ -15,15 +15,34 @@ import {
   NavbarGroup,
   NavbarHeading
 } from '@blueprintjs/core';
+const { remote } = require('electron');
+const { FGM } = remote.app;
 
 class App extends React.Component<any, object> {
   headerRef: any;
   footerRef: any;
+  FGM: any;
+
+  state = {
+    isRunningFGM: false,
+    isStoppedFGM: true
+  };
 
   constructor(props: any) {
     super(props);
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
+    this.FGM = FGM;
+
+    let arg = [
+      { processName: 'sekiro.exe', wpos: 4, wsize: 0, width: 0, height: 0 }
+    ];
+
+    this.FGM.initFramelessGameMode(arg);
+  }
+
+  componentWillUnmount() {
+    this.FGM.stopFramelessGameMode();
   }
 
   render() {
@@ -47,8 +66,42 @@ class App extends React.Component<any, object> {
                 text='Files'
               />
               <NavbarDivider />
-              <Button className={Classes.MINIMAL} icon='user' />
-              <Button className={Classes.MINIMAL} icon='notifications' />
+              <Button
+                disabled={this.state.isRunningFGM}
+                className={Classes.MINIMAL}
+                icon='play'
+                onClick={() => {
+                  this.FGM.startFramelessGameMode();
+                  this.setState({
+                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                  });
+                }}
+              />
+              <Button
+                disabled={!this.state.isRunningFGM}
+                className={Classes.MINIMAL}
+                icon='pause'
+                onClick={() => {
+                  this.FGM.pauseFramelessGameMode();
+                  this.setState({
+                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                  });
+                }}
+              />
+              <Button
+                className={Classes.MINIMAL}
+                disabled={this.state.isStoppedFGM}
+                icon='stop'
+                onClick={() => {
+                  this.FGM.stopFramelessGameMode();
+                  this.setState({
+                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                  });
+                }}
+              />
               <Button className={Classes.MINIMAL} icon='cog' />
             </NavbarGroup>
           </Navbar>

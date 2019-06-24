@@ -7,6 +7,9 @@ const isDev = require('electron-is-dev');
 
 let mainWindow = null;
 
+electron.app.FGM = require('./fgm.node');
+console.log('electron.app.FGM', electron.app.FGM);
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
