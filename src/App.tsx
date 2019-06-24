@@ -32,17 +32,16 @@ class App extends React.Component<any, object> {
     super(props);
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
-    this.FGM = FGM;
 
     let arg = [
       { processName: 'sekiro.exe', wpos: 4, wsize: 0, width: 0, height: 0 }
     ];
 
-    this.FGM.initFramelessGameMode(arg);
+    FGM.initFramelessGameMode(arg);
   }
 
   componentWillUnmount() {
-    this.FGM.stopFramelessGameMode();
+    FGM.stopFramelessGameMode();
   }
 
   render() {
@@ -71,10 +70,10 @@ class App extends React.Component<any, object> {
                 className={Classes.MINIMAL}
                 icon='play'
                 onClick={() => {
-                  this.FGM.startFramelessGameMode();
+                  FGM.startFramelessGameMode();
                   this.setState({
-                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                    isRunningFGM: FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
                   });
                 }}
               />
@@ -83,10 +82,10 @@ class App extends React.Component<any, object> {
                 className={Classes.MINIMAL}
                 icon='pause'
                 onClick={() => {
-                  this.FGM.pauseFramelessGameMode();
+                  FGM.pauseFramelessGameMode();
                   this.setState({
-                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                    isRunningFGM: FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
                   });
                 }}
               />
@@ -95,10 +94,10 @@ class App extends React.Component<any, object> {
                 disabled={this.state.isStoppedFGM}
                 icon='stop'
                 onClick={() => {
-                  this.FGM.stopFramelessGameMode();
+                  FGM.stopFramelessGameMode();
                   this.setState({
-                    isRunningFGM: this.FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: this.FGM.isStoppedFramelessGameMode()
+                    isRunningFGM: FGM.isRunningFramelessGameMode(),
+                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
                   });
                 }}
               />
