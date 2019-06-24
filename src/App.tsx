@@ -29,17 +29,13 @@ class App extends React.Component<any, object> {
   render() {
     return (
       <div className='hero is-fullheight bp3-dark'>
-        <div
-          className='hero-head'
-          style={{ backgroundColor: Colors.DARK_GRAY5 }}
-          ref={this.headerRef}
-        >
+        <div className='hero-head' ref={this.headerRef}>
           <TitleBar
             app='Game Save Points Manager'
             icon={`./appIcon.ico`}
             theme={TitleBarTheme}
           />
-          <Navbar style={{ height: 'auto' }}>
+          <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
             <NavbarGroup align={Alignment.LEFT}>
               <NavbarHeading>Frameless Game Mode</NavbarHeading>
             </NavbarGroup>
