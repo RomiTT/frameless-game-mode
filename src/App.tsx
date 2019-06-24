@@ -39,7 +39,7 @@ class App extends React.Component<any, object> {
             icon={`./appIcon.ico`}
             theme={TitleBarTheme}
           />
-          <Navbar>
+          <Navbar style={{ height: 'auto' }}>
             <NavbarGroup align={Alignment.LEFT}>
               <NavbarHeading>Frameless Game Mode</NavbarHeading>
             </NavbarGroup>
