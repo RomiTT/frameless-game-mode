@@ -2,6 +2,12 @@
 #include <mutex>
 #include <locale>
 #include <codecvt>
+#include <chrono>
+#include <thread>
+#include <windows.h>
+#include <string>
+#include <vector>
+
 
 enum WINDOW_POSITION {
 	LEFT_TOP,
@@ -44,8 +50,6 @@ std::mutex g_mtx;
 FGM_MODE g_mode = FGM_MODE_ALL_WINDOWS;
 DWORD g_wndStyleToCheck = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 DWORD g_interval = 500;
-
-
 
 const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
 	DWORD buffSize = 1024;

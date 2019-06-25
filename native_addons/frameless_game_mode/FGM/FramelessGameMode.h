@@ -1,8 +1,4 @@
 #pragma once
-#include <windows.h>
-#include <thread>
-#include <string>
-#include <vector>
 #include <napi.h>
 
 namespace FGM
