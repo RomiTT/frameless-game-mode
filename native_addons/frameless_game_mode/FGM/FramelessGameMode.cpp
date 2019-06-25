@@ -3,32 +3,37 @@
 #include <locale>
 #include <codecvt>
 
-  enum WINDOW_POSITION {
-    LEFT_TOP,
-    LEFT_CENTER,
-    LEFT_BOTTOM,
-    MIDDLE_TOP,
-    MIDDLE_CENTER,
-    MIDDLE_BOTTOM,
-    RIGHT_TOP,
-    RIGHT_CENTER,
-    RIGHT_BOTTOM,
-    CUSTOM_MODE,
-  };
+enum WINDOW_POSITION {
+	LEFT_TOP,
+	LEFT_CENTER,
+	LEFT_BOTTOM,
+	MIDDLE_TOP,
+	MIDDLE_CENTER,
+	MIDDLE_BOTTOM,
+	RIGHT_TOP,
+	RIGHT_CENTER,
+	RIGHT_BOTTOM,
+	CUSTOM_MODE,
+};
 
-  enum WINDOW_SIZE {
-    BASED_ON_CLIENT_AREA,
-    BASED_ON_WINDOW_AREA,
-    CUSTOM_SIZE
-  };
+enum WINDOW_SIZE {
+	BASED_ON_CLIENT_AREA,
+	BASED_ON_WINDOW_AREA,
+	CUSTOM_SIZE
+};
 
-  struct GameModeInfo {
-    std::wstring processName;
-    WINDOW_POSITION wpos;
-    WINDOW_SIZE wsize;
-    int width;
-    int height;
-  };
+struct GameModeInfo {
+	std::wstring processName;
+	WINDOW_POSITION wpos;
+	WINDOW_SIZE wsize;
+	int width;
+	int height;
+};
+
+enum FGM_MODE {
+	FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW,
+	FGM_MODE_ALL_WINDOWS
+};
 
 
 std::vector<GameModeInfo> g_listGameModeInfo;
@@ -36,10 +41,13 @@ BOOL g_isRunning = FALSE;
 BOOL g_exit = TRUE;
 BOOL g_exitCompleted = TRUE;
 std::mutex g_mtx;
+FGM_MODE g_mode = FGM_MODE_ALL_WINDOWS;
+DWORD g_wndStyleToCheck = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
+DWORD g_interval = 500;
 
 
 
-const WCHAR* GetForegroundProcessName(HWND hwnd) {
+const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
 	DWORD buffSize = 1024;
 	static WCHAR buffer[1024];
 
@@ -61,88 +69,129 @@ const WCHAR* GetForegroundProcessName(HWND hwnd) {
 
 
 void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
-	DWORD style = WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED;
-	if ((GetWindowLong(hwnd, GWL_STYLE) & style) == style) {
-		RECT rc;
-		GetClientRect(hwnd, &rc);
+	RECT rc;
+	GetClientRect(hwnd, &rc);
 
-		RECT rcWindow;
-		GetWindowRect(hwnd, &rcWindow);
+	RECT rcWindow;
+	GetWindowRect(hwnd, &rcWindow);
 
-		int titlebarHeight = (rcWindow.bottom - rcWindow.top) - (rc.bottom - rc.top);
-		int border2xWidth = (rcWindow.right - rcWindow.left) - (rc.right - rc.left);
-		int width = rc.right - rc.left;
-		int height = rc.bottom - rc.top;
+	int titlebarHeight = (rcWindow.bottom - rcWindow.top) - (rc.bottom - rc.top);
+	int border2xWidth = (rcWindow.right - rcWindow.left) - (rc.right - rc.left);
+	int width = rc.right - rc.left;
+	int height = rc.bottom - rc.top;
 
-		SetWindowLong(hwnd, GWL_STYLE, (WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED));
-		SetWindowLong(hwnd, GWL_EXSTYLE, (WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR));
+	SetWindowLong(hwnd, GWL_STYLE, (WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED));
+	SetWindowLong(hwnd, GWL_EXSTYLE, (WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR));
 
-		RECT rcWorkArea = { 0 };
-		SystemParametersInfo(SPI_GETWORKAREA, 0, &rcWorkArea, FALSE);
-		int screenWidth = rcWorkArea.right - rcWorkArea.left;
-		int screenHeight = rcWorkArea.bottom - rcWorkArea.top;
-		int x = 0;
-		int y = 0;
+	RECT rcWorkArea = { 0 };
+	SystemParametersInfo(SPI_GETWORKAREA, 0, &rcWorkArea, FALSE);
+	int screenWidth = rcWorkArea.right - rcWorkArea.left;
+	int screenHeight = rcWorkArea.bottom - rcWorkArea.top;
+	int x = 0;
+	int y = 0;
 
-		switch (item.wsize) {
-			case BASED_ON_CLIENT_AREA: {
-				break;
-			}
-			case BASED_ON_WINDOW_AREA: {
-				width = rcWindow.right - rcWindow.left;
-				height = rcWindow.bottom - rcWindow.top;
-				break;
-			}
-			case CUSTOM_SIZE: {
-				width = item.width;
-				height = item.height;
-				break;
+	switch (item.wsize) {
+		case BASED_ON_CLIENT_AREA: {
+			break;
+		}
+		case BASED_ON_WINDOW_AREA: {
+			width = rcWindow.right - rcWindow.left;
+			height = rcWindow.bottom - rcWindow.top;
+			break;
+		}
+		case CUSTOM_SIZE: {
+			width = item.width;
+			height = item.height;
+			break;
+		}
+	}
+
+	switch (item.wpos) {
+		case LEFT_TOP: {
+			break;
+		}
+		case LEFT_CENTER: {
+			y = (screenHeight - height) / 2;
+			break;
+		}
+		case LEFT_BOTTOM: {
+			y = screenHeight - height;
+			break;
+		}
+		case MIDDLE_TOP: {
+			x = (screenWidth - width) / 2;
+			break;
+		}
+		case MIDDLE_CENTER: {
+			x = (screenWidth - width) / 2;
+			y = (screenHeight - height) / 2;
+			break;
+		}
+		case MIDDLE_BOTTOM: {
+			x = (screenWidth - width) / 2;
+			y = screenHeight - height;
+			break;
+		}
+		case RIGHT_TOP: {
+			x = screenWidth - width;
+			break;
+		}
+		case RIGHT_CENTER: {
+			x = screenWidth - width;
+			y = (screenHeight - height) / 2;
+			break;
+		}
+		case RIGHT_BOTTOM: {
+			x = screenWidth - width;
+			y = screenHeight - height;
+			break;
+		}
+	}
+
+	MoveWindow(hwnd, x, y, width, height, TRUE);
+}
+
+
+BOOL IsMainWindow(HWND hWnd){
+	return GetWindow(hWnd, GW_OWNER) == (HWND)0 && IsWindowVisible(hWnd);
+}
+
+
+
+BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {	
+	if (!IsMainWindow(hWnd)) {
+		return TRUE;
+	}
+
+	if ((GetWindowLong(hWnd, GWL_STYLE) & g_wndStyleToCheck) == g_wndStyleToCheck) {
+		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+
+		if (processName != nullptr) {
+			for (auto item : g_listGameModeInfo) {
+				if (wcsstr(processName, item.processName.c_str()) != NULL) {
+					MadeWindowFrameless(hWnd, item);
+					break;
+				}
 			}
 		}
+	}
 
-		switch (item.wpos) {
-			case LEFT_TOP: {
-				break;
-			}
-			case LEFT_CENTER: {
-				y = (screenHeight - height) / 2;
-				break;
-			}
-			case LEFT_BOTTOM: {
-				y = screenHeight - height;
-				break;
-			}
-			case MIDDLE_TOP: {
-				x = (screenWidth - width) / 2;
-				break;
-			}
-			case MIDDLE_CENTER: {
-				x = (screenWidth - width) / 2;
-				y = (screenHeight - height) / 2;
-				break;
-			}
-			case MIDDLE_BOTTOM: {
-				x = (screenWidth - width) / 2;
-				y = screenHeight - height;
-				break;
-			}
-			case RIGHT_TOP: {
-				x = screenWidth - width;
-				break;
-			}
-			case RIGHT_CENTER: {
-				x = screenWidth - width;
-				y = (screenHeight - height) / 2;
-				break;
-			}
-			case RIGHT_BOTTOM: {
-				x = screenWidth - width;
-				y = screenHeight - height;
-				break;
-			}
-		}
+	return TRUE;
+}
 
-		MoveWindow(hwnd, x, y, width, height, TRUE);
+void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
+	HWND hWnd = GetForegroundWindow();					
+	if ((GetWindowLong(hWnd, GWL_STYLE) & g_wndStyleToCheck) == g_wndStyleToCheck) {
+		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+
+		if (processName != nullptr) {
+			for (auto item : list) {
+				if (wcsstr(processName, item.processName.c_str()) != NULL) {
+					MadeWindowFrameless(hWnd, item);
+					break;
+				}
+			}
+		}						
 	}
 }
 
@@ -154,26 +203,22 @@ void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
 	if (g_exit && g_exitCompleted) {
 		g_exit = FALSE;
 		g_exitCompleted = FALSE;
-
 		g_listGameModeInfo = std::move(list);
 
 		std::thread t([]() {
 			while (!g_exit) {
 				if (g_isRunning) {
-					HWND hwnd = GetForegroundWindow();
-					const WCHAR* processName = GetForegroundProcessName(hwnd);
-
-					if (processName != nullptr) {
-						for (auto item : g_listGameModeInfo) {
-							if (wcsstr(processName, item.processName.c_str()) != NULL) {
-								MadeWindowFrameless(hwnd, item);
-								break;
-							}
-						}
+					switch (g_mode) {
+						case FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW:
+							ProcessOnlyForForegroundWindow(g_listGameModeInfo);
+							break;
+						case FGM_MODE_ALL_WINDOWS:
+							EnumWindows(EnumWindowProcForFGM, 0);
+							break;
 					}
 				}
 
-				Sleep(100);
+				Sleep(g_interval);
 			}
 
 			g_exitCompleted = TRUE;
