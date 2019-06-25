@@ -1,5 +1,7 @@
-  #include "FramelessGameMode.h"
-	#include <mutex>
+#include "FramelessGameMode.h"
+#include <mutex>
+#include <locale>
+#include <codecvt>
 
   enum WINDOW_POSITION {
     LEFT_TOP,
@@ -21,7 +23,7 @@
   };
 
   struct GameModeInfo {
-    std::string processName;
+    std::wstring processName;
     WINDOW_POSITION wpos;
     WINDOW_SIZE wsize;
     int width;
@@ -37,12 +39,9 @@ std::mutex g_mtx;
 
 
 
-const CHAR* GetForegroundProcessName(HWND hwnd) {
+const WCHAR* GetForegroundProcessName(HWND hwnd) {
 	DWORD buffSize = 1024;
-	static CHAR buffer[1024];
-	static CHAR wndTitle[256];
-
-	GetWindowText(hwnd, wndTitle, 256);
+	static WCHAR buffer[1024];
 
 	DWORD dwPID;
 	GetWindowThreadProcessId(hwnd, &dwPID);
@@ -50,6 +49,7 @@ const CHAR* GetForegroundProcessName(HWND hwnd) {
 
 	if (handle) {	
 		if (QueryFullProcessImageName(handle, 0, buffer, &buffSize)) {
+			CloseHandle(handle);
 			return buffer;
 		}
 
@@ -61,7 +61,8 @@ const CHAR* GetForegroundProcessName(HWND hwnd) {
 
 
 void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
-	if (GetWindowLong(hwnd, GWL_STYLE) != (WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED)) {
+	DWORD style = WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED;
+	if ((GetWindowLong(hwnd, GWL_STYLE) & style) == style) {
 		RECT rc;
 		GetClientRect(hwnd, &rc);
 
@@ -160,11 +161,11 @@ void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
 			while (!g_exit) {
 				if (g_isRunning) {
 					HWND hwnd = GetForegroundWindow();
-					const CHAR* processName = GetForegroundProcessName(hwnd);
+					const WCHAR* processName = GetForegroundProcessName(hwnd);
 
 					if (processName != nullptr) {
 						for (auto item : g_listGameModeInfo) {
-							if (strstr(processName, item.processName.c_str()) != NULL) {
+							if (wcsstr(processName, item.processName.c_str()) != NULL) {
 								MadeWindowFrameless(hwnd, item);
 								break;
 							}
@@ -229,13 +230,16 @@ Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
 		Napi::Value arrItem = arr[i];
 		Napi::Object item = arrItem.As<Napi::Object>();
 
-		auto processName = item.Get("processName").As<Napi::String>();
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
+		std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
+		//auto processName = item.Get("processName").As<Napi::String>();
 		auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 		auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 		auto width = (int)item.Get("width").As<Napi::Number>();
 		auto height = (int)item.Get("height").As<Napi::Number>();
 
-		GameModeInfo info{processName, (WINDOW_POSITION)wpos, (WINDOW_SIZE)wsize, width, height };
+		GameModeInfo info{std::wstring(processName.c_str()), (WINDOW_POSITION)wpos, (WINDOW_SIZE)wsize, width, height };
 		listGameModeInfo.push_back(info);
 	}
  	
