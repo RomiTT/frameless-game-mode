@@ -75,6 +75,7 @@ function createWindow() {
   }
 
   mainWindow.on('closed', () => {
+    app.FGM.stopFramelessGameMode();
     mainWindow = null;
   });
 }

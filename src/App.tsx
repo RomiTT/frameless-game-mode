@@ -33,15 +33,51 @@ class App extends React.Component<any, object> {
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
 
+    this.handleStarted = this.handleStarted.bind(this);
+    this.handlePaused = this.handlePaused.bind(this);
+    this.handleStopped = this.handleStopped.bind(this);
+
     let arg = [
       { processName: 'sekiro.exe', wpos: 4, wsize: 0, width: 0, height: 0 }
     ];
 
-    FGM.initFramelessGameMode(arg);
+    FGM.initFramelessGameMode(
+      arg,
+      this.handleStarted,
+      this.handlePaused,
+      this.handleStopped
+    );
+  }
+
+  handleStarted() {
+    console.log(`%cStarted`, 'font-size:2em; color:red;');
+
+    this.setState({
+      isRunningFGM: FGM.isRunningFramelessGameMode(),
+      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+    });
+  }
+
+  handlePaused() {
+    console.log(`%cPaused`, 'font-size:2em; color:red;');
+
+    this.setState({
+      isRunningFGM: FGM.isRunningFramelessGameMode(),
+      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+    });
+  }
+
+  handleStopped() {
+    console.log(`%cStopped`, 'font-size:2em; color:red;');
+
+    this.setState({
+      isRunningFGM: FGM.isRunningFramelessGameMode(),
+      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+    });
   }
 
   componentWillUnmount() {
-    FGM.stopFramelessGameMode();
+    //FGM.stopFramelessGameMode();
   }
 
   render() {
@@ -71,10 +107,6 @@ class App extends React.Component<any, object> {
                 icon='play'
                 onClick={() => {
                   FGM.startFramelessGameMode();
-                  this.setState({
-                    isRunningFGM: FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
-                  });
                 }}
               />
               <Button
@@ -83,10 +115,6 @@ class App extends React.Component<any, object> {
                 icon='pause'
                 onClick={() => {
                   FGM.pauseFramelessGameMode();
-                  this.setState({
-                    isRunningFGM: FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
-                  });
                 }}
               />
               <Button
@@ -95,10 +123,6 @@ class App extends React.Component<any, object> {
                 icon='stop'
                 onClick={() => {
                   FGM.stopFramelessGameMode();
-                  this.setState({
-                    isRunningFGM: FGM.isRunningFramelessGameMode(),
-                    isStoppedFGM: FGM.isStoppedFramelessGameMode()
-                  });
                 }}
               />
               <Button className={Classes.MINIMAL} icon='cog' />

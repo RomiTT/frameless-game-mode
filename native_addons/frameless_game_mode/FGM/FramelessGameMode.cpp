@@ -42,6 +42,23 @@ enum FGM_MODE {
 };
 
 
+class ThreadCallbackWorker : public Napi::AsyncWorker {
+	public:
+		ThreadCallbackWorker(Napi::Function& callback)
+		: AsyncWorker(callback) {}
+
+		~ThreadCallbackWorker() {}
+	// This code will be executed on the worker thread
+	void Execute() {}
+
+	void OnOK() {
+		Napi::HandleScope scope(Env());
+		Callback().Call({Env().Null()});
+	}
+};
+
+
+
 std::vector<GameModeInfo> g_listGameModeInfo;
 BOOL g_isRunning = FALSE;
 BOOL g_exit = TRUE;
@@ -50,6 +67,9 @@ std::mutex g_mtx;
 FGM_MODE g_mode = FGM_MODE_ALL_WINDOWS;
 DWORD g_wndStyleToCheck = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 DWORD g_interval = 500;
+Napi::FunctionReference g_callbackStarted;
+Napi::FunctionReference g_callbackPaused;
+Napi::FunctionReference g_callbackStopped;
 
 const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
 	DWORD buffSize = 1024;
@@ -200,18 +220,24 @@ void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 }
 
 
+class FGMWorker : public Napi::AsyncWorker {
+	public:
+		FGMWorker(Napi::Function& callback)
+		: AsyncWorker(callback) {}
 
-void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
-	g_mtx.lock();
+		~FGMWorker() {}
+	// This code will be executed on the worker thread
+	void Execute() {
+		DWORD oldTick = 0;
+		DWORD currentTick = 0;
 
-	if (g_exit && g_exitCompleted) {
-		g_exit = FALSE;
-		g_exitCompleted = FALSE;
-		g_listGameModeInfo = std::move(list);
+		while (!g_exit) {
+			if (g_isRunning) {
+				currentTick = GetTickCount();
 
-		std::thread t([]() {
-			while (!g_exit) {
-				if (g_isRunning) {
+				if ((currentTick-oldTick) >= g_interval) {
+					oldTick = currentTick;
+
 					switch (g_mode) {
 						case FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW:
 							ProcessOnlyForForegroundWindow(g_listGameModeInfo);
@@ -221,28 +247,48 @@ void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
 							break;
 					}
 				}
-
-				Sleep(g_interval);
 			}
 
-			g_exitCompleted = TRUE;
-		});
+			Sleep(5);
+		}
 
-		t.detach();
+		g_exitCompleted = TRUE;
 	}
 
-	g_mtx.unlock();
+	void OnOK() {
+		Napi::HandleScope scope(Env());
+		Callback().Call({Env().Null()});		
+	}
+};
+
+
+
+void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
+	if (g_exit && g_exitCompleted) {
+		g_listGameModeInfo = std::move(list);
+	}
 }
+
 
 void StartFramelessGameMode() {
 	g_mtx.lock();
-	g_isRunning = TRUE;
+
+	if (g_exitCompleted) {
+		g_exit = FALSE;
+		g_exitCompleted = FALSE;
+		auto wk = new FGMWorker(g_callbackStopped.Value());
+		wk->Queue();
+		g_isRunning = TRUE;
+	}
+	else {
+		g_isRunning = TRUE;
+	}	
 	g_mtx.unlock();
 }
 
 void PauseFramelessGameMode() {
 	g_mtx.lock();
-	g_isRunning = FALSE;
+	g_isRunning = FALSE;	
 	g_mtx.unlock();
 }
 
@@ -264,16 +310,20 @@ bool IsStoppedFramelessGameMode() {
 
 
 
+
 Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 
-	if (info.Length() < 1) {
+	if (info.Length() < 4) {
     Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
     return Napi::Boolean::New(env, false);
   }		
 
 	std::vector<GameModeInfo> listGameModeInfo;
 	auto arr = info[0].As<Napi::Array>();
+	g_callbackStarted = Napi::Persistent(info[1].As<Napi::Function>());
+	g_callbackPaused = Napi::Persistent(info[2].As<Napi::Function>());
+	g_callbackStopped = Napi::Persistent(info[3].As<Napi::Function>());
 
 	for (unsigned int i = 0; i < arr.Length(); i++) {
 		Napi::Value arrItem = arr[i];
@@ -293,8 +343,9 @@ Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
 		listGameModeInfo.push_back(info);
 	}
  	
-
+	g_mtx.lock();
 	InitFramelessGameMode(listGameModeInfo);
+	g_mtx.unlock();
 	return Napi::Boolean::New(env, true);
 }
 
@@ -302,12 +353,14 @@ Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
 Napi::Value FGM::startFramelessGameMode(const Napi::CallbackInfo &info) {	
 	Napi::Env env = info.Env();
 	StartFramelessGameMode();
+	g_callbackStarted.Call({env.Null()});
 	return env.Undefined();
 }
 
 Napi::Value FGM::pauseFramelessGameMode(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 	PauseFramelessGameMode();
+	g_callbackPaused.Call({env.Null()});
 	return env.Undefined();
 }
 
