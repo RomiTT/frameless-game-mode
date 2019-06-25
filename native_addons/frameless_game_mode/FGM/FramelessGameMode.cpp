@@ -233,7 +233,8 @@ Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 		auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
 		std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
-		//auto processName = item.Get("processName").As<Napi::String>();
+		// std::string utf8Str = converter.to_bytes(processName.c_str());
+		// auto processName = item.Get("processName").As<Napi::String>();
 		auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 		auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 		auto width = (int)item.Get("width").As<Napi::Number>();
