@@ -1,15 +1,14 @@
-#include <chrono>
-#include <thread>
-#include <windows.h>
+#include "AsyncCallback.h"
 #include "FGMWorker.h"
+
 
 using namespace FGM;
 
+AsyncCallback g_asyncCallback;
 const DWORD WINDOW_STYLE_TO_CHECK  = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 
 BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam);
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list);
-
 
 
 FGMWorker::FGMWorker(std::shared_ptr< FGMContext> spContext)
@@ -26,15 +25,17 @@ void FGMWorker::Execute() {
   while (_spContext->state != FGM_STATE_STOPPED) {
     switch (_spContext->state) {
       case FGM_STATE_REQUESTED_STARTING:
-        ChangeState(FGM_STATE_STARTED);     
+        ChangeState(FGM_STATE_STARTED);
+				//g_asyncCallback.Invoke(_spContext->callbackStarted.Value(), Napi::String::New(Env(), "started"));
         break;
 
       case FGM_STATE_REQUESTED_PAUSING:
         ChangeState(FGM_STATE_PAUSED);
+				//g_asyncCallback.Invoke(_spContext->callbackPaused.Value(), Napi::String::New(Env(), "paused"));
         break;
 
       case FGM_STATE_REQUESTED_STOPPING:
-        ChangeState(FGM_STATE_STOPPED);
+        ChangeState(FGM_STATE_STOPPED);				
         break;
     }
 
@@ -58,7 +59,9 @@ void FGMWorker::Execute() {
     }
 
     Sleep(5);
-  }		
+  }
+
+	//g_asyncCallback.Invoke(_spContext->callbackStopped.Value(), Napi::String::New(Env(), "stopped"));		
 }
 
 void FGMWorker::OnOK() {
