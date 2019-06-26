@@ -8,17 +8,17 @@
 
 using namespace FGM;
 
-class StateWorker : public Napi::AsyncWorker {
+class StateObserver : public Napi::AsyncWorker {
 	std::shared_ptr< FGMContext> _spContext;
   FGM_STATE _targetState;
 
 public:
-  StateWorker(std::shared_ptr< FGMContext> spContext, Napi::Function& callback, FGM_STATE targetState)
+  StateObserver(std::shared_ptr< FGMContext> spContext, Napi::Function& callback, FGM_STATE targetState)
   : AsyncWorker(callback)
   , _spContext(spContext)
   , _targetState(targetState) {}
 
-  ~StateWorker() {}
+  ~StateObserver() {}
 
 	// This code will be executed on the worker thread
   void Execute() {
@@ -56,16 +56,16 @@ public:
 		_spContext->mtx.lock();
 		if (_spContext->state == FGM_STATE_STOPPED) {
 			_spContext->state = FGM_STATE_REQUESTED_STARTING;
-			auto stateWorker = new StateWorker(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
-			stateWorker->Queue();
+			auto stateObserver = new StateObserver(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
+			stateObserver->Queue();
 
 			auto worker = new FGMWorker(_spContext);
 			worker->Queue();
 		}
 		else if (_spContext->state == FGM_STATE_PAUSED) {
 			_spContext->state = FGM_STATE_REQUESTED_STARTING;
-			auto stateWorker = new StateWorker(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
-			stateWorker->Queue();						
+			auto stateObserver = new StateObserver(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
+			stateObserver->Queue();						
 		}
 		_spContext->mtx.unlock();
 	}
@@ -74,8 +74,8 @@ public:
 		_spContext->mtx.lock();
 		if (_spContext->state == FGM_STATE_STARTED) {
 			_spContext->state = FGM_STATE_REQUESTED_PAUSING;
-			auto stateWorker = new StateWorker(_spContext, _spContext->callbackPaused.Value(), FGM_STATE_PAUSED);
-			stateWorker->Queue();
+			auto stateObserver = new StateObserver(_spContext, _spContext->callbackPaused.Value(), FGM_STATE_PAUSED);
+			stateObserver->Queue();
 		}
 		_spContext->mtx.unlock();
 	}
