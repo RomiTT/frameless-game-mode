@@ -42,23 +42,6 @@ enum FGM_MODE {
 };
 
 
-class ThreadCallbackWorker : public Napi::AsyncWorker {
-	public:
-		ThreadCallbackWorker(Napi::Function& callback)
-		: AsyncWorker(callback) {}
-
-		~ThreadCallbackWorker() {}
-	// This code will be executed on the worker thread
-	void Execute() {}
-
-	void OnOK() {
-		Napi::HandleScope scope(Env());
-		Callback().Call({Env().Null()});
-	}
-};
-
-
-
 std::vector<GameModeInfo> g_listGameModeInfo;
 BOOL g_isRunning = FALSE;
 BOOL g_exit = TRUE;
@@ -250,12 +233,13 @@ class FGMWorker : public Napi::AsyncWorker {
 			}
 
 			Sleep(5);
-		}
-
-		g_exitCompleted = TRUE;
+		}		
 	}
 
 	void OnOK() {
+		g_isRunning = FALSE;
+		g_exitCompleted = TRUE;
+
 		Napi::HandleScope scope(Env());
 		Callback().Call({Env().Null()});		
 	}
@@ -280,7 +264,7 @@ void StartFramelessGameMode() {
 		wk->Queue();
 		g_isRunning = TRUE;
 	}
-	else {
+	else if (!g_exit) {
 		g_isRunning = TRUE;
 	}	
 	g_mtx.unlock();
