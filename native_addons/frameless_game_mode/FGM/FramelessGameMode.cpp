@@ -1,313 +1,158 @@
-#include "FramelessGameMode.h"
-#include <mutex>
 #include <locale>
 #include <codecvt>
 #include <chrono>
 #include <thread>
-#include <windows.h>
-#include <string>
-#include <vector>
+#include "FGMContext.h"
+#include "FramelessGameMode.h"
+#include "FGMWorker.h"
 
+using namespace FGM;
 
-enum WINDOW_POSITION {
-	LEFT_TOP,
-	LEFT_CENTER,
-	LEFT_BOTTOM,
-	MIDDLE_TOP,
-	MIDDLE_CENTER,
-	MIDDLE_BOTTOM,
-	RIGHT_TOP,
-	RIGHT_CENTER,
-	RIGHT_BOTTOM,
-	CUSTOM_MODE,
-};
+class StateWorker : public Napi::AsyncWorker {
+	std::shared_ptr< FGMContext> _spContext;
+  FGM_STATE _targetState;
 
-enum WINDOW_SIZE {
-	BASED_ON_CLIENT_AREA,
-	BASED_ON_WINDOW_AREA,
-	CUSTOM_SIZE
-};
+public:
+  StateWorker(std::shared_ptr< FGMContext> spContext, Napi::Function& callback, FGM_STATE targetState)
+  : AsyncWorker(callback)
+  , _spContext(spContext)
+  , _targetState(targetState) {}
 
-struct GameModeInfo {
-	std::wstring processName;
-	WINDOW_POSITION wpos;
-	WINDOW_SIZE wsize;
-	int width;
-	int height;
-};
+  ~StateWorker() {}
 
-enum FGM_MODE {
-	FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW,
-	FGM_MODE_ALL_WINDOWS
-};
-
-
-std::vector<GameModeInfo> g_listGameModeInfo;
-BOOL g_isRunning = FALSE;
-BOOL g_exit = TRUE;
-BOOL g_exitCompleted = TRUE;
-std::mutex g_mtx;
-FGM_MODE g_mode = FGM_MODE_ALL_WINDOWS;
-DWORD g_wndStyleToCheck = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
-DWORD g_interval = 500;
-Napi::FunctionReference g_callbackStarted;
-Napi::FunctionReference g_callbackPaused;
-Napi::FunctionReference g_callbackStopped;
-
-const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
-	DWORD buffSize = 1024;
-	static WCHAR buffer[1024];
-
-	DWORD dwPID;
-	GetWindowThreadProcessId(hwnd, &dwPID);
-	HANDLE handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,	dwPID);
-
-	if (handle) {	
-		if (QueryFullProcessImageName(handle, 0, buffer, &buffSize)) {
-			CloseHandle(handle);
-			return buffer;
-		}
-
-		CloseHandle(handle);
-	}
-
-	return nullptr;
-}
-
-
-void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
-	RECT rc;
-	GetClientRect(hwnd, &rc);
-
-	RECT rcWindow;
-	GetWindowRect(hwnd, &rcWindow);
-
-	int titlebarHeight = (rcWindow.bottom - rcWindow.top) - (rc.bottom - rc.top);
-	int border2xWidth = (rcWindow.right - rcWindow.left) - (rc.right - rc.left);
-	int width = rc.right - rc.left;
-	int height = rc.bottom - rc.top;
-
-	SetWindowLong(hwnd, GWL_STYLE, (WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_OVERLAPPED));
-	SetWindowLong(hwnd, GWL_EXSTYLE, (WS_EX_LEFT | WS_EX_LTRREADING | WS_EX_RIGHTSCROLLBAR));
-
-	RECT rcWorkArea = { 0 };
-	SystemParametersInfo(SPI_GETWORKAREA, 0, &rcWorkArea, FALSE);
-	int screenWidth = rcWorkArea.right - rcWorkArea.left;
-	int screenHeight = rcWorkArea.bottom - rcWorkArea.top;
-	int x = 0;
-	int y = 0;
-
-	switch (item.wsize) {
-		case BASED_ON_CLIENT_AREA: {
-			break;
-		}
-		case BASED_ON_WINDOW_AREA: {
-			width = rcWindow.right - rcWindow.left;
-			height = rcWindow.bottom - rcWindow.top;
-			break;
-		}
-		case CUSTOM_SIZE: {
-			width = item.width;
-			height = item.height;
-			break;
-		}
-	}
-
-	switch (item.wpos) {
-		case LEFT_TOP: {
-			break;
-		}
-		case LEFT_CENTER: {
-			y = (screenHeight - height) / 2;
-			break;
-		}
-		case LEFT_BOTTOM: {
-			y = screenHeight - height;
-			break;
-		}
-		case MIDDLE_TOP: {
-			x = (screenWidth - width) / 2;
-			break;
-		}
-		case MIDDLE_CENTER: {
-			x = (screenWidth - width) / 2;
-			y = (screenHeight - height) / 2;
-			break;
-		}
-		case MIDDLE_BOTTOM: {
-			x = (screenWidth - width) / 2;
-			y = screenHeight - height;
-			break;
-		}
-		case RIGHT_TOP: {
-			x = screenWidth - width;
-			break;
-		}
-		case RIGHT_CENTER: {
-			x = screenWidth - width;
-			y = (screenHeight - height) / 2;
-			break;
-		}
-		case RIGHT_BOTTOM: {
-			x = screenWidth - width;
-			y = screenHeight - height;
-			break;
-		}
-	}
-
-	MoveWindow(hwnd, x, y, width, height, TRUE);
-}
-
-
-BOOL IsMainWindow(HWND hWnd){
-	return GetWindow(hWnd, GW_OWNER) == (HWND)0 && IsWindowVisible(hWnd);
-}
-
-
-
-BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {	
-	if (!IsMainWindow(hWnd)) {
-		return TRUE;
-	}
-
-	if ((GetWindowLong(hWnd, GWL_STYLE) & g_wndStyleToCheck) == g_wndStyleToCheck) {
-		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
-
-		if (processName != nullptr) {
-			for (auto item : g_listGameModeInfo) {
-				if (wcsstr(processName, item.processName.c_str()) != NULL) {
-					MadeWindowFrameless(hWnd, item);
-					break;
-				}
-			}
-		}
-	}
-
-	return TRUE;
-}
-
-void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
-	HWND hWnd = GetForegroundWindow();					
-	if ((GetWindowLong(hWnd, GWL_STYLE) & g_wndStyleToCheck) == g_wndStyleToCheck) {
-		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
-
-		if (processName != nullptr) {
-			for (auto item : list) {
-				if (wcsstr(processName, item.processName.c_str()) != NULL) {
-					MadeWindowFrameless(hWnd, item);
-					break;
-				}
-			}
-		}						
-	}
-}
-
-
-class FGMWorker : public Napi::AsyncWorker {
-	public:
-		FGMWorker(Napi::Function& callback)
-		: AsyncWorker(callback) {}
-
-		~FGMWorker() {}
 	// This code will be executed on the worker thread
-	void Execute() {
-		DWORD oldTick = 0;
-		DWORD currentTick = 0;
+  void Execute() {
+    while (_spContext->state != _targetState) {
+      Sleep(5);
+    }
+  }
 
-		while (!g_exit) {
-			if (g_isRunning) {
-				currentTick = GetTickCount();
-
-				if ((currentTick-oldTick) >= g_interval) {
-					oldTick = currentTick;
-
-					switch (g_mode) {
-						case FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW:
-							ProcessOnlyForForegroundWindow(g_listGameModeInfo);
-							break;
-						case FGM_MODE_ALL_WINDOWS:
-							EnumWindows(EnumWindowProcForFGM, 0);
-							break;
-					}
-				}
-			}
-
-			Sleep(5);
-		}		
-	}
-
-	void OnOK() {
-		g_isRunning = FALSE;
-		g_exitCompleted = TRUE;
-
+  void OnOK() {
 		Napi::HandleScope scope(Env());
-		Callback().Call({Env().Null()});		
+		Callback().Call({Env().Null()});
 	}
 };
 
 
+class FramelessGameMode {
+	std::shared_ptr< FGMContext> _spContext = std::make_shared<FGMContext>();
 
-void InitFramelessGameMode(std::vector<GameModeInfo>& list) {
-	if (g_exit && g_exitCompleted) {
-		g_listGameModeInfo = std::move(list);
+public:
+	FramelessGameMode() {
 	}
-}
 
+	~FramelessGameMode() {
 
-void StartFramelessGameMode() {
-	g_mtx.lock();
-
-	if (g_exitCompleted) {
-		g_exit = FALSE;
-		g_exitCompleted = FALSE;
-		auto wk = new FGMWorker(g_callbackStopped.Value());
-		wk->Queue();
-		g_isRunning = TRUE;
 	}
-	else if (!g_exit) {
-		g_isRunning = TRUE;
-	}	
-	g_mtx.unlock();
+
+public:
+	void SetDataList(std::vector<GameModeInfo>& list) {
+		_spContext->mtx.lock();
+			_spContext->listGameModeInfo = std::move(list);
+			_spContext->mtx.unlock();
+	}
+
+	void Start() {
+		_spContext->mtx.lock();
+		if (_spContext->state == FGM_STATE_STOPPED) {
+			_spContext->state = FGM_STATE_REQUESTED_STARTING;
+			auto stateWorker = new StateWorker(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
+			stateWorker->Queue();
+
+			auto worker = new FGMWorker(_spContext);
+			worker->Queue();
+		}
+		else if (_spContext->state == FGM_STATE_PAUSED) {
+			_spContext->state = FGM_STATE_REQUESTED_STARTING;
+			auto stateWorker = new StateWorker(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
+			stateWorker->Queue();						
+		}
+		_spContext->mtx.unlock();
+	}
+
+	void Pause() {
+		_spContext->mtx.lock();
+		if (_spContext->state == FGM_STATE_STARTED) {
+			_spContext->state = FGM_STATE_REQUESTED_PAUSING;
+			auto stateWorker = new StateWorker(_spContext, _spContext->callbackPaused.Value(), FGM_STATE_PAUSED);
+			stateWorker->Queue();
+		}
+		_spContext->mtx.unlock();
+	}
+
+	void Stop() {
+		_spContext->mtx.lock();
+		if (_spContext->state == FGM_STATE_STARTED || _spContext->state == FGM_STATE_PAUSED) {
+			_spContext->state = FGM_STATE_REQUESTED_STOPPING;
+		}
+		_spContext->mtx.unlock();
+	}
+
+	void AddGameModeInfo(GameModeInfo& info) {
+		_spContext->mtx.lock();
+		_spContext->listGameModeInfo.push_back(info);
+		_spContext->mtx.unlock();
+	}
+
+	void SetEventListener(std::string& eventName, Napi::Function handler) {
+		if (eventName.compare("started") == 0) {
+			_spContext->callbackStarted = Napi::Persistent(handler);
+		}
+		else if (eventName.compare("paused") == 0) {
+			_spContext->callbackPaused = Napi::Persistent(handler);
+		}
+		else if (eventName.compare("stopped") == 0) {
+			_spContext->callbackStopped = Napi::Persistent(handler);
+		}
+	}
+
+	FGM_STATE State() { return _spContext->state; }
+};
+
+
+
+
+
+
+FramelessGameMode* g_FGM = NULL;
+
+Napi::Value FGM::initialize(const Napi::CallbackInfo &info) {
+	if (g_FGM == NULL) {
+		g_FGM = new FramelessGameMode();
+	}
+
+	return info.Env().Undefined();
 }
 
-void PauseFramelessGameMode() {
-	g_mtx.lock();
-	g_isRunning = FALSE;	
-	g_mtx.unlock();
-}
 
-void StopFramelessGameMode() {
-	g_mtx.lock();
-	g_isRunning = FALSE;
-	g_exit = TRUE;
-	g_mtx.unlock();
-}
+Napi::Value FGM::unInitialize(const Napi::CallbackInfo &info) {
+	if (g_FGM != NULL) {
+		if (g_FGM->State() != FGM_STATE_STOPPED) {
+			g_FGM->Stop();
+		}
 
-bool IsRunningFramelessGameMode() {
-	return g_isRunning;
-}
+		delete g_FGM;
+		g_FGM = NULL;
+	}
 
-bool IsStoppedFramelessGameMode() {
-	return g_exitCompleted;
+	return info.Env().Undefined();
 }
 
 
-
-
-
-Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
+Napi::Value FGM::setDataList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
 
-	if (info.Length() < 4) {
-    Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-    return Napi::Boolean::New(env, false);
-  }		
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
 
 	std::vector<GameModeInfo> listGameModeInfo;
 	auto arr = info[0].As<Napi::Array>();
-	g_callbackStarted = Napi::Persistent(info[1].As<Napi::Function>());
-	g_callbackPaused = Napi::Persistent(info[2].As<Napi::Function>());
-	g_callbackStopped = Napi::Persistent(info[3].As<Napi::Function>());
 
 	for (unsigned int i = 0; i < arr.Length(); i++) {
 		Napi::Value arrItem = arr[i];
@@ -323,54 +168,126 @@ Napi::Boolean FGM::initFramelessGameMode(const Napi::CallbackInfo &info) {
 		auto width = (int)item.Get("width").As<Napi::Number>();
 		auto height = (int)item.Get("height").As<Napi::Number>();
 
-		GameModeInfo info{std::wstring(processName.c_str()), (WINDOW_POSITION)wpos, (WINDOW_SIZE)wsize, width, height };
+		GameModeInfo info{std::wstring(std::move(processName)), (FGM_WINDOW_POSITION)wpos, (FGM_WINDOW_SIZE)wsize, width, height };
 		listGameModeInfo.push_back(info);
 	}
- 	
-	g_mtx.lock();
-	InitFramelessGameMode(listGameModeInfo);
-	g_mtx.unlock();
-	return Napi::Boolean::New(env, true);
-}
 
-
-Napi::Value FGM::startFramelessGameMode(const Napi::CallbackInfo &info) {	
-	Napi::Env env = info.Env();
-	StartFramelessGameMode();
-	g_callbackStarted.Call({env.Null()});
+	g_FGM->SetDataList(listGameModeInfo);
 	return env.Undefined();
 }
 
-Napi::Value FGM::pauseFramelessGameMode(const Napi::CallbackInfo &info) {
+
+Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	PauseFramelessGameMode();
-	g_callbackPaused.Call({env.Null()});
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+	auto item = info[0].As<Napi::Object>();
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
+	std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
+	// std::string utf8Str = converter.to_bytes(processName.c_str());
+	// auto processName = item.Get("processName").As<Napi::String>();
+	auto wpos = (int)item.Get("wpos").As<Napi::Number>();
+	auto wsize = (int)item.Get("wsize").As<Napi::Number>();
+	auto width = (int)item.Get("width").As<Napi::Number>();
+	auto height = (int)item.Get("height").As<Napi::Number>();
+
+	g_FGM->AddGameModeInfo(GameModeInfo{ std::wstring(processName.c_str()), (FGM_WINDOW_POSITION)wpos, (FGM_WINDOW_SIZE)wsize, width, height });
+
 	return env.Undefined();
 }
 
-Napi::Value FGM::stopFramelessGameMode(const Napi::CallbackInfo &info) {
+
+Napi::Value FGM::setEventListener(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	StopFramelessGameMode();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (info.Length() < 2) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	auto eventName = info[0].As<Napi::String>();
+	auto eventHandler = info[1].As<Napi::Function>();
+	g_FGM->SetEventListener(eventName.Utf8Value(), eventHandler);
+
 	return env.Undefined();
 }
 
-Napi::Boolean FGM::isRunningFramelessGameMode(const Napi::CallbackInfo &info) {
+
+Napi::Value FGM::start(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	return Napi::Boolean::New(env, IsRunningFramelessGameMode());
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	g_FGM->Start();
+  
+	return env.Undefined();
 }
 
-Napi::Boolean FGM::isStoppedFramelessGameMode(const Napi::CallbackInfo &info) {
+
+Napi::Value FGM::pause(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	return Napi::Boolean::New(env, IsStoppedFramelessGameMode());
-}
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+  
+	g_FGM->Pause();
+
+	return env.Undefined();
+}  
+
+
+Napi::Value FGM::stop(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	g_FGM->Stop();
+  
+	return env.Undefined();
+}  
+
+
+Napi::Number FGM::state(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return  Napi::Number::New(env, -1);
+	}
+
+	return Napi::Number::New(env, g_FGM->State());
+} 
+
+
 
 Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
-  exports.Set("initFramelessGameMode", Napi::Function::New(env, FGM::initFramelessGameMode));
-	exports.Set("startFramelessGameMode", Napi::Function::New(env, FGM::startFramelessGameMode));
-	exports.Set("pauseFramelessGameMode", Napi::Function::New(env, FGM::pauseFramelessGameMode));
-	exports.Set("stopFramelessGameMode", Napi::Function::New(env, FGM::stopFramelessGameMode));
-	exports.Set("isRunningFramelessGameMode", Napi::Function::New(env, FGM::isRunningFramelessGameMode));
-	exports.Set("isStoppedFramelessGameMode", Napi::Function::New(env, FGM::isStoppedFramelessGameMode));
+  exports.Set("initialize", Napi::Function::New(env, FGM::initialize));
+	exports.Set("unInitialize", Napi::Function::New(env, FGM::unInitialize));
+	exports.Set("setDataList", Napi::Function::New(env, FGM::setDataList));
+	exports.Set("addGameModeInfo", Napi::Function::New(env, FGM::addGameModeInfo));
+	exports.Set("setEventListener", Napi::Function::New(env, FGM::setEventListener));
+	exports.Set("start", Napi::Function::New(env, FGM::start));
+	exports.Set("pause", Napi::Function::New(env, FGM::pause));
+	exports.Set("stop", Napi::Function::New(env, FGM::stop));
+	exports.Set("state", Napi::Function::New(env, FGM::state));
 
   return exports;
 }

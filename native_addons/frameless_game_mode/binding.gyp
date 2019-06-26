@@ -5,7 +5,8 @@
         "cflags_cc!": [ "-fno-exceptions" ],
         "sources": [
             "main.cpp",
-            "FGM/FramelessGameMode.cpp"
+            "FGM/FramelessGameMode.cpp",
+            "FGM/FGMWorker.cpp"
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")"

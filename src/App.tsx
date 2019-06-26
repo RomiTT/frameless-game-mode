@@ -18,14 +18,21 @@ import {
 const { remote } = require('electron');
 const { FGM } = remote.app;
 
+enum FGM_STATE {
+  FGM_STATE_REQUESTED_STARTING,
+  FGM_STATE_STARTED,
+  FGM_STATE_REQUESTED_PAUSING,
+  FGM_STATE_PAUSED,
+  FGM_STATE_REQUESTED_STOPPING,
+  FGM_STATE_STOPPED
+}
+
 class App extends React.Component<any, object> {
   headerRef: any;
   footerRef: any;
-  FGM: any;
 
   state = {
-    isRunningFGM: false,
-    isStoppedFGM: true
+    FGMState: FGM_STATE.FGM_STATE_STOPPED
   };
 
   constructor(props: any) {
@@ -41,38 +48,36 @@ class App extends React.Component<any, object> {
       { processName: 'sekiro.exe', wpos: 4, wsize: 0, width: 0, height: 0 }
     ];
 
-    FGM.initFramelessGameMode(
-      arg,
-      this.handleStarted,
-      this.handlePaused,
-      this.handleStopped
-    );
+    FGM.setDataList(arg);
+    FGM.setEventListener('started', this.handleStarted);
+    FGM.setEventListener('paused', this.handlePaused);
+    FGM.setEventListener('stopped', this.handleStopped);
   }
 
   handleStarted() {
     console.log(`%cStarted`, 'font-size:2em; color:red;');
 
+    let newState: FGM_STATE = FGM.state();
     this.setState({
-      isRunningFGM: FGM.isRunningFramelessGameMode(),
-      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+      FGMState: newState
     });
   }
 
   handlePaused() {
     console.log(`%cPaused`, 'font-size:2em; color:red;');
 
+    let newState: FGM_STATE = FGM.state();
     this.setState({
-      isRunningFGM: FGM.isRunningFramelessGameMode(),
-      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+      FGMState: newState
     });
   }
 
   handleStopped() {
     console.log(`%cStopped`, 'font-size:2em; color:red;');
 
+    let newState: FGM_STATE = FGM.state();
     this.setState({
-      isRunningFGM: FGM.isRunningFramelessGameMode(),
-      isStoppedFGM: FGM.isStoppedFramelessGameMode()
+      FGMState: newState
     });
   }
 
@@ -102,27 +107,30 @@ class App extends React.Component<any, object> {
               />
               <NavbarDivider />
               <Button
-                disabled={this.state.isRunningFGM}
+                disabled={this.state.FGMState == FGM_STATE.FGM_STATE_STARTED}
                 className={Classes.MINIMAL}
                 icon='play'
                 onClick={() => {
-                  FGM.startFramelessGameMode();
+                  FGM.start();
                 }}
               />
               <Button
-                disabled={!this.state.isRunningFGM}
+                disabled={
+                  this.state.FGMState == FGM_STATE.FGM_STATE_PAUSED ||
+                  this.state.FGMState == FGM_STATE.FGM_STATE_STOPPED
+                }
                 className={Classes.MINIMAL}
                 icon='pause'
                 onClick={() => {
-                  FGM.pauseFramelessGameMode();
+                  FGM.pause();
                 }}
               />
               <Button
+                disabled={this.state.FGMState == FGM_STATE.FGM_STATE_STOPPED}
                 className={Classes.MINIMAL}
-                disabled={this.state.isStoppedFGM}
                 icon='stop'
                 onClick={() => {
-                  FGM.stopFramelessGameMode();
+                  FGM.stop();
                 }}
               />
               <Button className={Classes.MINIMAL} icon='cog' />

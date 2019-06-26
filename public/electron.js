@@ -10,6 +10,8 @@ let mainWindow = null;
 electron.app.FGM = require('./fgm.node');
 console.log('electron.app.FGM', electron.app.FGM);
 
+electron.app.FGM.initialize();
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1000,
@@ -75,7 +77,7 @@ function createWindow() {
   }
 
   mainWindow.on('closed', () => {
-    app.FGM.stopFramelessGameMode();
+    app.FGM.unInitialize();
     mainWindow = null;
   });
 }
