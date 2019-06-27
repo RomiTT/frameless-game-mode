@@ -7,7 +7,8 @@
             "main.cpp",
             "FGM/FramelessGameMode.cpp",
             "FGM/FGMWorker.cpp",
-            "FGM/AsyncCallback.cpp"
+            "FGM/AsyncCallback.cpp",
+            "FGM/ThreadSafeFunction.cpp"
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")"

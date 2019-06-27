@@ -56,16 +56,11 @@ public:
 		_spContext->mtx.lock();
 		if (_spContext->state == FGM_STATE_STOPPED) {
 			_spContext->state = FGM_STATE_REQUESTED_STARTING;
-			auto stateObserver = new StateObserver(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
-			stateObserver->Queue();
-
 			auto worker = new FGMWorker(_spContext);
 			worker->Queue();
 		}
 		else if (_spContext->state == FGM_STATE_PAUSED) {
-			_spContext->state = FGM_STATE_REQUESTED_STARTING;
-			auto stateObserver = new StateObserver(_spContext, _spContext->callbackStarted.Value(), FGM_STATE_STARTED);
-			stateObserver->Queue();						
+			_spContext->state = FGM_STATE_REQUESTED_STARTING;				
 		}
 		_spContext->mtx.unlock();
 	}
@@ -74,8 +69,6 @@ public:
 		_spContext->mtx.lock();
 		if (_spContext->state == FGM_STATE_STARTED) {
 			_spContext->state = FGM_STATE_REQUESTED_PAUSING;
-			auto stateObserver = new StateObserver(_spContext, _spContext->callbackPaused.Value(), FGM_STATE_PAUSED);
-			stateObserver->Queue();
 		}
 		_spContext->mtx.unlock();
 	}
@@ -277,6 +270,13 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 } 
 
 
+Napi::Array FGM::getWindowAppList(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+
+	return Napi::Array::New(env, 0);
+}
+
+
 
 Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
   exports.Set("initialize", Napi::Function::New(env, FGM::initialize));
@@ -288,6 +288,7 @@ Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("pause", Napi::Function::New(env, FGM::pause));
 	exports.Set("stop", Napi::Function::New(env, FGM::stop));
 	exports.Set("state", Napi::Function::New(env, FGM::state));
+	exports.Set("getWindowAppList", Napi::Function::New(env, FGM::getWindowAppList));
 
   return exports;
 }

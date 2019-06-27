@@ -3,13 +3,18 @@
 #define __FGM_WORKER_H__
 
 #include "FGMContext.h"
+#include "ThreadSafeFunction.h"
 
 namespace FGM {
   class FGMWorker : public Napi::AsyncWorker {
-		std::shared_ptr< FGMContext> _spContext;
+		std::shared_ptr<FGMContext> _spContext;
+
+		std::shared_ptr <ThreadSafeFunction> _callbackStarted;
+		std::shared_ptr <ThreadSafeFunction> _callbackPaused;
+		std::shared_ptr <ThreadSafeFunction> _callbackStopped;
     
   public:
-    FGMWorker(std::shared_ptr< FGMContext> spContext);
+    FGMWorker(std::shared_ptr<FGMContext> spContext);
 
     ~FGMWorker();
     // This code will be executed on the worker thread

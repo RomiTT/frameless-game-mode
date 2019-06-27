@@ -54,8 +54,8 @@ class App extends React.Component<any, object> {
     FGM.setEventListener('stopped', this.handleStopped);
   }
 
-  handleStarted() {
-    console.log(`%cStarted`, 'font-size:2em; color:red;');
+  handleStarted(msg: String) {
+    console.log(`%c${msg}`, 'font-size:2em; color:red;');
 
     let newState: FGM_STATE = FGM.state();
     this.setState({
@@ -63,8 +63,8 @@ class App extends React.Component<any, object> {
     });
   }
 
-  handlePaused() {
-    console.log(`%cPaused`, 'font-size:2em; color:red;');
+  handlePaused(msg: String) {
+    console.log(`%c${msg}`, 'font-size:2em; color:red;');
 
     let newState: FGM_STATE = FGM.state();
     this.setState({
@@ -72,8 +72,8 @@ class App extends React.Component<any, object> {
     });
   }
 
-  handleStopped() {
-    console.log(`%cStopped`, 'font-size:2em; color:red;');
+  handleStopped(msg: String) {
+    console.log(`%c${msg}`, 'font-size:2em; color:red;');
 
     let newState: FGM_STATE = FGM.state();
     this.setState({
