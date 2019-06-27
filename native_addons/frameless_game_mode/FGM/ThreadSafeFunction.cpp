@@ -8,23 +8,21 @@ ThreadSafeFunction::ThreadSafeFunction(const Napi::Function& callback) {
 	_callbackRef = Napi::Persistent(callback);
 
 	napi_value work_name;
-
-	assert(napi_create_string_utf8(_env,
-																	"N-API Thread-safe Call from ThreadSafeFunction class",
+	assert(napi_create_string_utf8(_env, "N-API Thread-safe Call from ThreadSafeFunction class",
 																	NAPI_AUTO_LENGTH,
 																	&work_name) == napi_ok);
 
 	assert(napi_create_threadsafe_function(_env,
-																					_callback,
-																					NULL,
-																					work_name,
-																					0,
-																					1,
-																					NULL,
-																					NULL,
-																					NULL,
-																					CallJs,
-																					&_func) == napi_ok);
+																				 _callback,
+																				 NULL,
+																				 work_name,
+																				 0,
+																				 1,
+																				 NULL,
+																				 NULL,
+																				 NULL,
+																				 CallJs,
+																				 &_func) == napi_ok);
 }
 
 ThreadSafeFunction::~ThreadSafeFunction() {
@@ -38,16 +36,13 @@ void ThreadSafeFunction::Acquire() {
 
 
 void ThreadSafeFunction::Release() {
-	assert(napi_release_threadsafe_function(_func,
-	 																				napi_tsfn_release) == napi_ok);
+	assert(napi_release_threadsafe_function(_func, napi_tsfn_release) == napi_ok);
 
 }
 
 
 void ThreadSafeFunction::Invoke(JsArgument* arg) {
-	assert(napi_call_threadsafe_function(_func,
-																				arg,
-																				napi_tsfn_blocking) == napi_ok);
+	assert(napi_call_threadsafe_function(_func,	arg, napi_tsfn_blocking) == napi_ok);
 }
 
 
