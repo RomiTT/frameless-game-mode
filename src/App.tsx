@@ -61,6 +61,8 @@ class App extends React.Component<any, object> {
     this.setState({
       FGMState: newState
     });
+
+    console.log('FGM.getWindowAppList: ', FGM.getWindowAppList());
   }
 
   handlePaused(msg: String) {
