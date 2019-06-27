@@ -1,8 +1,5 @@
-#include "AsyncCallback.h"
 #include "FGMWorker.h"
 #include <assert.h>
-
-
 
 
 using namespace FGM;
@@ -10,8 +7,6 @@ const DWORD WINDOW_STYLE_TO_CHECK  = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 
 BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam);
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list);
-
-std::shared_ptr<AsyncCallback> _asyncCallback = AsyncCallback::Create();
 
 
 class JsArgumentString : public ThreadSafeFunction::JsArgument {
@@ -50,17 +45,19 @@ void FGMWorker::Execute() {
   DWORD oldTick = 0;
   DWORD currentTick = 0;
 
+	_callbackStarted->Acquire();
+	_callbackPaused->Acquire();
+	_callbackStopped->Acquire();
+
   while (_spContext->state != FGM_STATE_STOPPED) {
     switch (_spContext->state) {
       case FGM_STATE_REQUESTED_STARTING:
         ChangeState(FGM_STATE_STARTED);
-				//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackStarted.Value(), Napi::String::New(Env(), "started"));
 				_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
         break;
 
       case FGM_STATE_REQUESTED_PAUSING:
         ChangeState(FGM_STATE_PAUSED);
-				//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackPaused.Value(), Napi::String::New(Env(), "paused"));
 				_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
         break;
 
@@ -91,8 +88,11 @@ void FGMWorker::Execute() {
     Sleep(5);
   }
 
-	//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackStopped.Value(), Napi::String::New(Env(), "stopped"));
 	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
+
+	_callbackStarted->Release();
+	_callbackPaused->Release();
+	_callbackStopped->Release();
 }
 
 void FGMWorker::OnOK() {

@@ -32,6 +32,9 @@ private:
 public:
   ~ThreadSafeFunction();
 
+	void Acquire();
+	void Release();
+
 	void Invoke(JsArgument* arg);
 	static std::shared_ptr<ThreadSafeFunction> Create(const Napi::Function& callback);
 

@@ -28,8 +28,19 @@ ThreadSafeFunction::ThreadSafeFunction(const Napi::Function& callback) {
 }
 
 ThreadSafeFunction::~ThreadSafeFunction() {
+	Release();
+}
+
+
+void ThreadSafeFunction::Acquire() {
+	assert(napi_acquire_threadsafe_function(_func) == napi_ok);
+}
+
+
+void ThreadSafeFunction::Release() {
 	assert(napi_release_threadsafe_function(_func,
 	 																				napi_tsfn_release) == napi_ok);
+
 }
 
 
