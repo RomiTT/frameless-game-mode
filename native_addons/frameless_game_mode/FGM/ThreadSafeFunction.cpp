@@ -63,7 +63,7 @@ void ThreadSafeFunction::CallJs(napi_env env, napi_value js_cb, void* context, v
 
 	if (env != NULL) {		
 		Napi::Value argVal;
-		napi_value arg = jsArg->GetArgument(env);		
+		napi_value arg = (napi_value)jsArg->GetArgument(Napi::Env(env));		
     napi_value undefined;
 
 		// Retrieve the JavaScript `undefined` value so we can use it as the `this`

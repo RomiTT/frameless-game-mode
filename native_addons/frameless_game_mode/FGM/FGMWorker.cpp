@@ -17,14 +17,8 @@ public:
 	: JsArgument(owner)
 	, msg(str) {}
 
-	virtual napi_value GetArgument(napi_env env) {
-		napi_value ret;
-		assert(napi_create_string_utf8(env,
-																	 msg.c_str(),
-																	 NAPI_AUTO_LENGTH,
-																	 &ret) == napi_ok);
-
-		return ret;		
+	virtual Napi::Value GetArgument(const Napi::Env& env) {
+		return Napi::String::New(env, msg.c_str());
 	}
 };
 

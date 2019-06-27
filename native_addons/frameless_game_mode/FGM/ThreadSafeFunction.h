@@ -16,7 +16,7 @@ public:
 	public:		
 		JsArgument(std::shared_ptr<ThreadSafeFunction> owner) : _owner(owner) {}
 
-		virtual napi_value GetArgument(napi_env env) = 0;
+		virtual Napi::Value GetArgument(const Napi::Env& env) = 0;
 		virtual void Destory() { delete this; };		
 	};
 
