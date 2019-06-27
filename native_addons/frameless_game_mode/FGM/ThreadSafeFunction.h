@@ -26,11 +26,14 @@ private:
 	napi_value _callback;
 	Napi::FunctionReference _callbackRef;
 
+private:
+	ThreadSafeFunction(const Napi::Function& callback);
+
 public:
-  ThreadSafeFunction(const Napi::Function& callback);
   ~ThreadSafeFunction();
 
 	void Invoke(JsArgument* arg);
+	static std::shared_ptr<ThreadSafeFunction> Create(const Napi::Function& callback);
 
 private:
 	static void CallJs(napi_env env, napi_value js_cb, void* context, void* data);

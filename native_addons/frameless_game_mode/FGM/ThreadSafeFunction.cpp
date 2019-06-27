@@ -40,6 +40,11 @@ void ThreadSafeFunction::Invoke(JsArgument* arg) {
 }
 
 
+std::shared_ptr<ThreadSafeFunction> ThreadSafeFunction::Create(const Napi::Function& callback) {
+	return std::shared_ptr<ThreadSafeFunction>(new ThreadSafeFunction(callback));
+}
+
+
 
 void ThreadSafeFunction::CallJs(napi_env env, napi_value js_cb, void* context, void* data) {
 	(void)context;
