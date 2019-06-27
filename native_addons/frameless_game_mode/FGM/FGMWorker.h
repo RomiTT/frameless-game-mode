@@ -27,4 +27,14 @@ namespace FGM {
   };
 };
 
+
+
+
+struct WindowApp {
+  std::wstring processName;
+  std::wstring title;
+};
+
+void GetWindowAppList(std::vector<WindowApp>& out);
+
 #endif

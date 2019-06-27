@@ -255,3 +255,21 @@ void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 		}						
 	}
 }
+
+
+void GetWindowAppList(std::vector<WindowApp>& out) {
+	HWND hWnd = GetForegroundWindow();
+	hWnd = GetWindow(hWnd, GW_HWNDFIRST);
+	while (hWnd != NULL) {
+		if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK && IsMainWindow(hWnd)) {
+			const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+			static WCHAR title[_MAX_PATH];
+
+			title[0] = 0;
+			GetWindowText(hWnd, title, _MAX_PATH);
+			out.push_back(WindowApp{ processName, title });
+		}
+
+		hWnd = GetWindow(hWnd, GW_HWNDNEXT);
+	}
+}

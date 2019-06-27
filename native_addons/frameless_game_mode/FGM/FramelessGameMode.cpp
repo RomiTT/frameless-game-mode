@@ -273,7 +273,23 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 Napi::Array FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 
-	return Napi::Array::New(env, 0);
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	std::vector<WindowApp> list;
+	GetWindowAppList(list);
+
+	auto array = Napi::Array::New(env, list.size());
+	for (size_t i = 0; i < list.size(); i++) {
+		auto item = Napi::Object::New(env);
+		auto processName = Napi::String::New(env, converter.to_bytes(list[i].processName));
+		auto title = Napi::String::New(env, converter.to_bytes(list[i].title));
+
+		item.Set("processName", processName);
+		item.Set("title", title);
+		array[i] = item;
+	}
+
+	return array;
 }
 
 
