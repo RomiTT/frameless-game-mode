@@ -6,13 +6,12 @@
 
 
 using namespace FGM;
-
-AsyncCallback g_asyncCallback;
 const DWORD WINDOW_STYLE_TO_CHECK  = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 
 BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam);
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list);
 
+std::shared_ptr<AsyncCallback> _asyncCallback = AsyncCallback::Create();
 
 
 class JsArgumentString : public ThreadSafeFunction::JsArgument {
@@ -39,9 +38,9 @@ public:
 FGMWorker::FGMWorker(std::shared_ptr< FGMContext> spContext)
 : AsyncWorker(spContext->callbackStopped.Value())
 , _spContext(spContext) {
-	_callbackStarted = std::make_shared<ThreadSafeFunction>(spContext->callbackStarted.Value());
-	_callbackPaused = std::make_shared<ThreadSafeFunction>(spContext->callbackPaused.Value());
-	_callbackStopped = std::make_shared<ThreadSafeFunction>(spContext->callbackStopped.Value());
+	_callbackStarted = ThreadSafeFunction::Create(spContext->callbackStarted.Value());
+	_callbackPaused = ThreadSafeFunction::Create(spContext->callbackPaused.Value());
+	_callbackStopped = ThreadSafeFunction::Create(spContext->callbackStopped.Value());
 }
 
 FGMWorker::~FGMWorker() {}
@@ -55,13 +54,13 @@ void FGMWorker::Execute() {
     switch (_spContext->state) {
       case FGM_STATE_REQUESTED_STARTING:
         ChangeState(FGM_STATE_STARTED);
-				//g_asyncCallback.Invoke(_spContext->callbackStarted.Value(), Napi::String::New(Env(), "started"));
+				//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackStarted.Value(), Napi::String::New(Env(), "started"));
 				_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
         break;
 
       case FGM_STATE_REQUESTED_PAUSING:
         ChangeState(FGM_STATE_PAUSED);
-				//g_asyncCallback.Invoke(_spContext->callbackPaused.Value(), Napi::String::New(Env(), "paused"));
+				//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackPaused.Value(), Napi::String::New(Env(), "paused"));
 				_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
         break;
 
@@ -92,7 +91,7 @@ void FGMWorker::Execute() {
     Sleep(5);
   }
 
-	//g_asyncCallback.Invoke(_spContext->callbackStopped.Value(), Napi::String::New(Env(), "stopped"));		
+	//_asyncCallback->Invoke(_asyncCallback, _spContext->callbackStopped.Value(), Napi::String::New(Env(), "stopped"));
 	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
 }
 
