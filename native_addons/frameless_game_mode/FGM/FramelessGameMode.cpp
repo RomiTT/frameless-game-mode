@@ -54,29 +54,29 @@ public:
 
 	void Start() {
 		_spContext->mtx.lock();
-		if (_spContext->state == FGM_STATE_STOPPED) {
-			_spContext->state = FGM_STATE_REQUESTED_STARTING;
+		if (_spContext->state == FGM_STATE::STOPPED) {
+			_spContext->state = FGM_STATE::REQUESTED_STARTING;
 			auto worker = new FGMWorker(_spContext);
 			worker->Queue();
 		}
-		else if (_spContext->state == FGM_STATE_PAUSED) {
-			_spContext->state = FGM_STATE_REQUESTED_STARTING;				
+		else if (_spContext->state == FGM_STATE::PAUSED) {
+			_spContext->state = FGM_STATE::REQUESTED_STARTING;				
 		}
 		_spContext->mtx.unlock();
 	}
 
 	void Pause() {
 		_spContext->mtx.lock();
-		if (_spContext->state == FGM_STATE_STARTED) {
-			_spContext->state = FGM_STATE_REQUESTED_PAUSING;
+		if (_spContext->state == FGM_STATE::STARTED) {
+			_spContext->state = FGM_STATE::REQUESTED_PAUSING;
 		}
 		_spContext->mtx.unlock();
 	}
 
 	void Stop() {
 		_spContext->mtx.lock();
-		if (_spContext->state == FGM_STATE_STARTED || _spContext->state == FGM_STATE_PAUSED) {
-			_spContext->state = FGM_STATE_REQUESTED_STOPPING;
+		if (_spContext->state == FGM_STATE::STARTED || _spContext->state == FGM_STATE::PAUSED) {
+			_spContext->state = FGM_STATE::REQUESTED_STOPPING;
 		}
 		_spContext->mtx.unlock();
 	}
@@ -120,7 +120,7 @@ Napi::Value FGM::initialize(const Napi::CallbackInfo &info) {
 
 Napi::Value FGM::unInitialize(const Napi::CallbackInfo &info) {
 	if (g_FGM != NULL) {
-		if (g_FGM->State() != FGM_STATE_STOPPED) {
+		if (g_FGM->State() != FGM_STATE::STOPPED) {
 			g_FGM->Stop();
 		}
 

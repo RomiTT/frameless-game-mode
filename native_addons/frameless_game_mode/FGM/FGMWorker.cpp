@@ -43,24 +43,24 @@ void FGMWorker::Execute() {
 	_callbackPaused->Acquire();
 	_callbackStopped->Acquire();
 
-  while (_spContext->state != FGM_STATE_STOPPED) {
+  while (_spContext->state != FGM_STATE::STOPPED) {
     switch (_spContext->state) {
-      case FGM_STATE_REQUESTED_STARTING:
-        ChangeState(FGM_STATE_STARTED);
+      case FGM_STATE::REQUESTED_STARTING:
+        ChangeState(FGM_STATE::STARTED);
 				_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
         break;
 
-      case FGM_STATE_REQUESTED_PAUSING:
-        ChangeState(FGM_STATE_PAUSED);
+      case FGM_STATE::REQUESTED_PAUSING:
+        ChangeState(FGM_STATE::PAUSED);
 				_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
         break;
 
-      case FGM_STATE_REQUESTED_STOPPING:
-        ChangeState(FGM_STATE_STOPPED);				
+      case FGM_STATE::REQUESTED_STOPPING:
+        ChangeState(FGM_STATE::STOPPED);				
         break;
     }
 
-    if (_spContext->state != FGM_STATE_PAUSED) {
+    if (_spContext->state != FGM_STATE::PAUSED) {
       currentTick = GetTickCount64();
 
       if ((currentTick-oldTick) >= _spContext->interval) {
@@ -68,10 +68,10 @@ void FGMWorker::Execute() {
 
         _spContext->mtx.lock();
         switch (_spContext->mode) {
-          case FGM_MODE_ONLY_FOR_FOREGROUND_WINDOW:
+          case FGM_MODE::ONLY_FOR_FOREGROUND_WINDOW:
             ProcessOnlyForForegroundWindow(_spContext->listGameModeInfo);
             break;
-          case FGM_MODE_ALL_WINDOWS:
+          case FGM_MODE::ALL_WINDOWS:
             EnumWindows(EnumWindowProcForFGM, reinterpret_cast<LPARAM>(&_spContext->listGameModeInfo));
             break;
         }
@@ -159,20 +159,20 @@ void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
 	int y = 0;
 
 	switch (item.wsize) {
-		case FGM_BASED_ON_CLIENT_AREA: {
+		case FGM_WINDOW_SIZE::BASED_ON_CLIENT_AREA: {
 			break;
 		}
-		case FGM_BASED_ON_WINDOW_AREA: {
+		case FGM_WINDOW_SIZE::BASED_ON_WINDOW_AREA: {
 			width = rcWindow.right - rcWindow.left;
 			height = rcWindow.bottom - rcWindow.top;
 			break;
 		}
-		case FGM_FULL_SCREEN_SIZE: {
+		case FGM_WINDOW_SIZE::FULL_SCREEN_SIZE: {
 			width = screenWidth;
 			height = screenHeight;
 			break;
 		}
-		case FGM_CUSTOM_SIZE: {
+		case FGM_WINDOW_SIZE::CUSTOM_SIZE: {
 			width = item.width;
 			height = item.height;
 			break;
@@ -180,41 +180,41 @@ void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
 	}
 
 	switch (item.wpos) {
-		case FGM_LEFT_TOP: {
+		case FGM_WINDOW_POSITION::LEFT_TOP: {
 			break;
 		}
-		case FGM_LEFT_CENTER: {
+		case FGM_WINDOW_POSITION::LEFT_CENTER: {
 			y = (screenHeight - height) / 2;
 			break;
 		}
-		case FGM_LEFT_BOTTOM: {
+		case FGM_WINDOW_POSITION::LEFT_BOTTOM: {
 			y = screenHeight - height;
 			break;
 		}
-		case FGM_MIDDLE_TOP: {
+		case FGM_WINDOW_POSITION::MIDDLE_TOP: {
 			x = (screenWidth - width) / 2;
 			break;
 		}
-		case FGM_MIDDLE_CENTER: {
+		case FGM_WINDOW_POSITION::MIDDLE_CENTER: {
 			x = (screenWidth - width) / 2;
 			y = (screenHeight - height) / 2;
 			break;
 		}
-		case FGM_MIDDLE_BOTTOM: {
+		case FGM_WINDOW_POSITION::MIDDLE_BOTTOM: {
 			x = (screenWidth - width) / 2;
 			y = screenHeight - height;
 			break;
 		}
-		case FGM_RIGHT_TOP: {
+		case FGM_WINDOW_POSITION::RIGHT_TOP: {
 			x = screenWidth - width;
 			break;
 		}
-		case FGM_RIGHT_CENTER: {
+		case FGM_WINDOW_POSITION::RIGHT_CENTER: {
 			x = screenWidth - width;
 			y = (screenHeight - height) / 2;
 			break;
 		}
-		case FGM_RIGHT_BOTTOM: {
+		case FGM_WINDOW_POSITION::RIGHT_BOTTOM: {
 			x = screenWidth - width;
 			y = screenHeight - height;
 			break;
