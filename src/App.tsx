@@ -19,12 +19,37 @@ const { remote } = require('electron');
 const { FGM } = remote.app;
 
 enum FGM_STATE {
-  FGM_STATE_REQUESTED_STARTING,
-  FGM_STATE_STARTED,
-  FGM_STATE_REQUESTED_PAUSING,
-  FGM_STATE_PAUSED,
-  FGM_STATE_REQUESTED_STOPPING,
-  FGM_STATE_STOPPED
+  STATE_REQUESTED_STARTING,
+  STATE_STARTED,
+  STATE_REQUESTED_PAUSING,
+  STATE_PAUSED,
+  STATE_REQUESTED_STOPPING,
+  STATE_STOPPED
+}
+
+enum FGM_WINDOW_POSITION {
+  LEFT_BOTTOM,
+  LEFT_CENTER,
+  MIDDLE_TOP,
+  LEFT_TOP,
+  MIDDLE_CENTER,
+  MIDDLE_BOTTOM,
+  RIGHT_TOP,
+  RIGHT_CENTER,
+  RIGHT_BOTTOM,
+  CUSTOM_MODE
+}
+
+enum FGM_WINDOW_SIZE {
+  BASED_ON_CLIENT_AREA,
+  BASED_ON_WINDOW_AREA,
+  FULL_SCREEN_SIZE,
+  CUSTOM_SIZE
+}
+
+enum FGM_MODE {
+  ONLY_FOR_FOREGROUND_WINDOW,
+  ALL_WINDOWS
 }
 
 class App extends React.Component<any, object> {
@@ -32,7 +57,7 @@ class App extends React.Component<any, object> {
   footerRef: any;
 
   state = {
-    FGMState: FGM_STATE.FGM_STATE_STOPPED
+    FGMState: FGM_STATE.STATE_STOPPED
   };
 
   constructor(props: any) {
@@ -48,8 +73,8 @@ class App extends React.Component<any, object> {
       {
         processName: 'D:\\Games\\Sekiro\\sekiro.exe',
         title: '',
-        wpos: 4,
-        wsize: 0,
+        wpos: FGM_WINDOW_POSITION.MIDDLE_CENTER,
+        wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
         width: 0,
         height: 0
       }
@@ -63,6 +88,7 @@ class App extends React.Component<any, object> {
 
   handleStarted(msg: String) {
     console.log(`%c${msg}`, 'font-size:2em; color:red;');
+    console.log(`FGM_STATE: ${FGM_WINDOW_POSITION.MIDDLE_CENTER}`);
 
     let newState: FGM_STATE = FGM.state();
     this.setState({
@@ -116,7 +142,7 @@ class App extends React.Component<any, object> {
               />
               <NavbarDivider />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.FGM_STATE_STARTED}
+                disabled={this.state.FGMState == FGM_STATE.STATE_STARTED}
                 className={Classes.MINIMAL}
                 icon='play'
                 onClick={() => {
@@ -125,8 +151,8 @@ class App extends React.Component<any, object> {
               />
               <Button
                 disabled={
-                  this.state.FGMState == FGM_STATE.FGM_STATE_PAUSED ||
-                  this.state.FGMState == FGM_STATE.FGM_STATE_STOPPED
+                  this.state.FGMState == FGM_STATE.STATE_PAUSED ||
+                  this.state.FGMState == FGM_STATE.STATE_STOPPED
                 }
                 className={Classes.MINIMAL}
                 icon='pause'
@@ -135,7 +161,7 @@ class App extends React.Component<any, object> {
                 }}
               />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.FGM_STATE_STOPPED}
+                disabled={this.state.FGMState == FGM_STATE.STATE_STOPPED}
                 className={Classes.MINIMAL}
                 icon='stop'
                 onClick={() => {
