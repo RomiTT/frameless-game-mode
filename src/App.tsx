@@ -15,42 +15,14 @@ import {
   NavbarGroup,
   NavbarHeading
 } from '@blueprintjs/core';
-const { remote } = require('electron');
-const { FGM } = remote.app;
 
-enum FGM_STATE {
-  REQUESTED_STARTING,
-  STARTED,
-  REQUESTED_PAUSING,
-  PAUSED,
-  REQUESTED_STOPPING,
-  STOPPED
-}
-
-enum FGM_WINDOW_POSITION {
-  LEFT_BOTTOM,
-  LEFT_CENTER,
-  MIDDLE_TOP,
-  LEFT_TOP,
-  MIDDLE_CENTER,
-  MIDDLE_BOTTOM,
-  RIGHT_TOP,
-  RIGHT_CENTER,
-  RIGHT_BOTTOM,
-  CUSTOM_MODE
-}
-
-enum FGM_WINDOW_SIZE {
-  BASED_ON_CLIENT_AREA,
-  BASED_ON_WINDOW_AREA,
-  FULL_SCREEN_SIZE,
-  CUSTOM_SIZE
-}
-
-enum FGM_MODE {
-  ONLY_FOR_FOREGROUND_WINDOW,
-  ALL_WINDOWS
-}
+import {
+  FGM,
+  FGM_STATE,
+  FGM_WINDOW_POSITION,
+  FGM_WINDOW_SIZE,
+  FGM_MODE
+} from './components/FGM';
 
 class App extends React.Component<any, object> {
   headerRef: any;
@@ -84,7 +56,7 @@ class App extends React.Component<any, object> {
     FGM.setEventListener('started', this.handleStarted);
     FGM.setEventListener('paused', this.handlePaused);
     FGM.setEventListener('stopped', this.handleStopped);
-    FGM.setMode(FGM_MODE.ONLY_FOR_FOREGROUND_WINDOW);
+    FGM.setMode(FGM_MODE.ALL_WINDOWS);
   }
 
   handleStarted(msg: String) {
