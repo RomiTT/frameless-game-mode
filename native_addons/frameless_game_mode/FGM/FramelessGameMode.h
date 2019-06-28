@@ -16,6 +16,8 @@ namespace FGM
   Napi::Value stop(const Napi::CallbackInfo &info);  
   Napi::Number state(const Napi::CallbackInfo &info); 
   Napi::Array getWindowAppList(const Napi::CallbackInfo &info); 
+  Napi::Value setMode(const Napi::CallbackInfo &info);
+  Napi::Number getMode(const Napi::CallbackInfo& info);
   Napi::Object Init(Napi::Env env, Napi::Object exports);
 } 
 

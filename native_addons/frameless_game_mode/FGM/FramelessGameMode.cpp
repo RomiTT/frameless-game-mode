@@ -100,6 +100,9 @@ public:
 	}
 
 	FGM_STATE State() { return _spContext->state; }
+
+	void SetMode(FGM_MODE mode) { _spContext->mode = mode; }
+	FGM_MODE GetMode() { return _spContext->mode; }
 };
 
 
@@ -224,7 +227,6 @@ Napi::Value FGM::setEventListener(const Napi::CallbackInfo &info) {
 	auto eventName = info[0].As<Napi::String>();
 	auto eventHandler = info[1].As<Napi::Function>();
 	g_FGM->SetEventListener(eventName.Utf8Value(), eventHandler);
-
 	return env.Undefined();
 }
 
@@ -236,8 +238,7 @@ Napi::Value FGM::start(const Napi::CallbackInfo &info) {
 		return env.Undefined();
 	}
 
-	g_FGM->Start();
-  
+	g_FGM->Start();  
 	return env.Undefined();
 }
 
@@ -250,7 +251,6 @@ Napi::Value FGM::pause(const Napi::CallbackInfo &info) {
 	}
   
 	g_FGM->Pause();
-
 	return env.Undefined();
 }  
 
@@ -262,8 +262,7 @@ Napi::Value FGM::stop(const Napi::CallbackInfo &info) {
 		return env.Undefined();
 	}
 
-	g_FGM->Stop();
-  
+	g_FGM->Stop();  
 	return env.Undefined();
 }  
 
@@ -299,6 +298,36 @@ Napi::Array FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	}
 
 	return array;
+}
+
+
+Napi::Value FGM::setMode(const Napi::CallbackInfo &info)
+{
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return  Napi::Number::New(env, -1);
+	}
+
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+	auto mode = (int)info[0].As<Napi::Number>();
+	g_FGM->SetMode((FGM_MODE)mode);  
+	return env.Undefined();	
+}
+
+
+Napi::Number FGM::getMode(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return  Napi::Number::New(env, -1);
+	}
+
+	return Napi::Number::New(env, (int)g_FGM->GetMode());
 }
 
 
