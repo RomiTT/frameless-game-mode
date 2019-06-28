@@ -167,6 +167,11 @@ void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
 			height = rcWindow.bottom - rcWindow.top;
 			break;
 		}
+		case FGM_FULL_SCREEN_SIZE: {
+			width = screenWidth;
+			height = screenHeight;
+			break;
+		}
 		case FGM_CUSTOM_SIZE: {
 			width = item.width;
 			height = item.height;
