@@ -114,6 +114,7 @@ const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
 	HANDLE handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,	dwPID);
 
 	if (handle) {	
+		buffer[0] = 0;
 		if (QueryFullProcessImageName(handle, 0, buffer, &buffSize)) {
 			CloseHandle(handle);
 			return buffer;
@@ -123,6 +124,15 @@ const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
 	}
 
 	return nullptr;
+}
+
+
+const WCHAR* GetWindowTitle(HWND hWnd) {
+	static WCHAR title[_MAX_PATH];
+	title[0] = 0;
+	GetWindowText(hWnd, title, _MAX_PATH);
+
+	return title;
 }
 
 
@@ -225,14 +235,23 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {
 
 	if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK) {
 		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+		const WCHAR* title = GetWindowTitle(hWnd);
 
 		if (processName != nullptr) {
 			for (auto item : (*list)) {
-				if (wcsstr(processName, item.processName.c_str()) != NULL) {
+				if (lstrcmpi(processName, item.processName.c_str()) == 0) {
 					MadeWindowFrameless(hWnd, item);
 					break;
 				}
 			}
+		}
+		else if (title != nullptr) {
+			for (auto item : (*list)) {
+				if (lstrcmp(title, item.title.c_str()) == 0) {
+					MadeWindowFrameless(hWnd, item);
+					break;
+				}
+			}			
 		}
 	}
 
@@ -263,11 +282,16 @@ void GetWindowAppList(std::vector<WindowApp>& out) {
 	while (hWnd != NULL) {
 		if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK && IsMainWindow(hWnd)) {
 			const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
-			static WCHAR title[_MAX_PATH];
+			const WCHAR* title = GetWindowTitle(hWnd);
 
-			title[0] = 0;
-			GetWindowText(hWnd, title, _MAX_PATH);
-			out.push_back(WindowApp{ processName, title });
+			if (lstrlen(processName) > 0 || lstrlen(title) > 0) {
+				auto app = WindowApp{ (processName == NULL) ? L"" : processName,
+														  (title == NULL) ? L"" : title };
+
+				if (!(wcsstr(app.processName.c_str(), L"explorer.exe") != NULL && app.title.size() == 0)) {
+					out.push_back(app);
+				}
+			}
 		}
 
 		hWnd = GetWindow(hWnd, GW_HWNDNEXT);

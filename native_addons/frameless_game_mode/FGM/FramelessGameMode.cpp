@@ -153,16 +153,20 @@ Napi::Value FGM::setDataList(const Napi::CallbackInfo &info) {
 
     std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 		auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
-		std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
-		// std::string utf8Str = converter.to_bytes(processName.c_str());
-		// auto processName = item.Get("processName").As<Napi::String>();
+		std::wstring processName = converter.from_bytes(utf8ProcessName);
+		auto utf8Title = item.Get("title").As<Napi::String>().Utf8Value();
+		std::wstring title = converter.from_bytes(utf8Title);
 		auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 		auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 		auto width = (int)item.Get("width").As<Napi::Number>();
 		auto height = (int)item.Get("height").As<Napi::Number>();
 
-		GameModeInfo info{std::wstring(std::move(processName)), (FGM_WINDOW_POSITION)wpos, (FGM_WINDOW_SIZE)wsize, width, height };
-		listGameModeInfo.push_back(info);
+		listGameModeInfo.push_back(GameModeInfo{ std::move(processName), 
+			                                       std::move(title), 
+			                                       (FGM_WINDOW_POSITION)wpos, 
+			                                       (FGM_WINDOW_SIZE)wsize, 
+			                                       width, 
+			                                       height });
 	}
 
 	g_FGM->SetDataList(listGameModeInfo);
@@ -186,14 +190,19 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
 	std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
-	// std::string utf8Str = converter.to_bytes(processName.c_str());
-	// auto processName = item.Get("processName").As<Napi::String>();
+	auto utf8Title = item.Get("title").As<Napi::String>().Utf8Value();
+	std::wstring title = converter.from_bytes(utf8Title);
 	auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 	auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 	auto width = (int)item.Get("width").As<Napi::Number>();
 	auto height = (int)item.Get("height").As<Napi::Number>();
 
-	g_FGM->AddGameModeInfo(GameModeInfo{ std::wstring(processName.c_str()), (FGM_WINDOW_POSITION)wpos, (FGM_WINDOW_SIZE)wsize, width, height });
+	g_FGM->AddGameModeInfo(GameModeInfo{ std::move(processName), 
+		                                   std::move(title), 
+		                                   (FGM_WINDOW_POSITION)wpos, 
+		                                   (FGM_WINDOW_SIZE)wsize, 
+		                                   width, 
+		                                   height });
 
 	return env.Undefined();
 }

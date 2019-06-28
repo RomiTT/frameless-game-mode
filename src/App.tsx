@@ -45,7 +45,14 @@ class App extends React.Component<any, object> {
     this.handleStopped = this.handleStopped.bind(this);
 
     let arg = [
-      { processName: 'sekiro.exe', wpos: 4, wsize: 0, width: 0, height: 0 }
+      {
+        processName: 'D:\\Games\\Sekiro\\sekiro.exe',
+        title: '',
+        wpos: 4,
+        wsize: 0,
+        width: 0,
+        height: 0
+      }
     ];
 
     FGM.setDataList(arg);

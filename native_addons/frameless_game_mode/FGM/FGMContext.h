@@ -32,6 +32,7 @@ namespace FGM {
 
   struct GameModeInfo {
     std::wstring processName;
+    std::wstring title;
     FGM_WINDOW_POSITION wpos;
     FGM_WINDOW_SIZE wsize;
     int width;
