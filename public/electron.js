@@ -80,9 +80,29 @@ function createWindow() {
     app.FGM.unInitialize();
     mainWindow = null;
   });
+
+  mainWindow.on('minimize', () => {
+    mainWindow.hide();
+  });
 }
 
-app.on('ready', createWindow);
+let tray = null;
+app.on('ready', () => {
+  createWindow();
+
+  const iconPath = path.join(__dirname, 'appIcon.ico');
+  tray = new electron.Tray(iconPath);
+  const contextMenu = electron.Menu.buildFromTemplate([
+    {
+      label: 'Show',
+      click: () => {
+        mainWindow.show();
+      }
+    }
+  ]);
+  tray.setToolTip('This is my application.');
+  tray.setContextMenu(contextMenu);
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
