@@ -343,6 +343,8 @@ Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("stop", Napi::Function::New(env, FGM::stop));
 	exports.Set("state", Napi::Function::New(env, FGM::state));
 	exports.Set("getWindowAppList", Napi::Function::New(env, FGM::getWindowAppList));
+	exports.Set("setMode", Napi::Function::New(env, FGM::setMode));
+	exports.Set("getMode", Napi::Function::New(env, FGM::getMode));
 
   return exports;
 }
