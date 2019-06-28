@@ -19,12 +19,12 @@ const { remote } = require('electron');
 const { FGM } = remote.app;
 
 enum FGM_STATE {
-  STATE_REQUESTED_STARTING,
-  STATE_STARTED,
-  STATE_REQUESTED_PAUSING,
-  STATE_PAUSED,
-  STATE_REQUESTED_STOPPING,
-  STATE_STOPPED
+  REQUESTED_STARTING,
+  STARTED,
+  REQUESTED_PAUSING,
+  PAUSED,
+  REQUESTED_STOPPING,
+  STOPPED
 }
 
 enum FGM_WINDOW_POSITION {
@@ -57,7 +57,7 @@ class App extends React.Component<any, object> {
   footerRef: any;
 
   state = {
-    FGMState: FGM_STATE.STATE_STOPPED
+    FGMState: FGM_STATE.STOPPED
   };
 
   constructor(props: any) {
@@ -84,6 +84,7 @@ class App extends React.Component<any, object> {
     FGM.setEventListener('started', this.handleStarted);
     FGM.setEventListener('paused', this.handlePaused);
     FGM.setEventListener('stopped', this.handleStopped);
+    FGM.setMode(FGM_MODE.ONLY_FOR_FOREGROUND_WINDOW);
   }
 
   handleStarted(msg: String) {
@@ -142,7 +143,7 @@ class App extends React.Component<any, object> {
               />
               <NavbarDivider />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.STATE_STARTED}
+                disabled={this.state.FGMState == FGM_STATE.STARTED}
                 className={Classes.MINIMAL}
                 icon='play'
                 onClick={() => {
@@ -151,8 +152,8 @@ class App extends React.Component<any, object> {
               />
               <Button
                 disabled={
-                  this.state.FGMState == FGM_STATE.STATE_PAUSED ||
-                  this.state.FGMState == FGM_STATE.STATE_STOPPED
+                  this.state.FGMState == FGM_STATE.PAUSED ||
+                  this.state.FGMState == FGM_STATE.STOPPED
                 }
                 className={Classes.MINIMAL}
                 icon='pause'
@@ -161,7 +162,7 @@ class App extends React.Component<any, object> {
                 }}
               />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.STATE_STOPPED}
+                disabled={this.state.FGMState == FGM_STATE.STOPPED}
                 className={Classes.MINIMAL}
                 icon='stop'
                 onClick={() => {
