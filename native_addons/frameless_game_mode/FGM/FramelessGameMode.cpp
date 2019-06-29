@@ -107,6 +107,44 @@ public:
 
 
 
+class GetWindowAppListWorker : public Napi::AsyncWorker {
+	std::vector<WindowApp> _list;
+
+public:
+  GetWindowAppListWorker(Napi::Function& callback)
+  : AsyncWorker(callback) {}
+
+  ~GetWindowAppListWorker() {}
+
+	// This code will be executed on the worker thread
+  void Execute() {
+		GetWindowAppList(_list);
+  }
+
+  void OnOK() {
+		auto env = Env();
+		Napi::HandleScope scope(env);
+
+		auto array = Napi::Array::New(env, _list.size());
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+		for (size_t i = 0; i < _list.size(); i++) {
+			auto item = Napi::Object::New(env);
+			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
+			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
+
+			item.Set("processName", processName);
+			item.Set("title", title);
+			array[i] = item;
+		}
+		
+		Callback().Call({array});
+	}
+};
+
+
+
+
 
 
 
@@ -278,26 +316,19 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 } 
 
 
-Napi::Array FGM::getWindowAppList(const Napi::CallbackInfo &info) {
+Napi::Value FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
 
-	std::vector<WindowApp> list;
-	GetWindowAppList(list);
+	auto callback = info[0].As<Napi::Function>();
+	auto worker = new GetWindowAppListWorker(callback);
+	worker->Queue();
 
-	auto array = Napi::Array::New(env, list.size());
-	for (size_t i = 0; i < list.size(); i++) {
-		auto item = Napi::Object::New(env);
-		auto processName = Napi::String::New(env, converter.to_bytes(list[i].processName));
-		auto title = Napi::String::New(env, converter.to_bytes(list[i].title));
-
-		item.Set("processName", processName);
-		item.Set("title", title);
-		array[i] = item;
-	}
-
-	return array;
+	return env.Undefined();
 }
 
 
