@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { List } from 'react-virtualized';
 import { Colors } from '@blueprintjs/core';
 const { remote } = require('electron');
@@ -7,10 +8,28 @@ let FGM = remote.app.FGM;
 class WindowAppList extends React.Component {
   listId = 'romitt_windowapplist_id';
   listNode = null;
-  state = { width: 0, height: 0, list: new Array() };
+  state = { width: 0, height: 0, rowHeight: 0, list: new Array() };
   timerId;
+  dummyElement = null;
+  listItemStyle = {
+    backgroundColor: Colors.DARK_GRAY2,
+    borderBottom: 'solid 1px',
+    borderBottomColor: Colors.GRAY1,
+    paddingLeft: '8px',
+    paddingRight: '8px',
+    paddingTop: '2px',
+    paddingBottom: '4px'
+  };
+  processNameStyle = {
+    fontSize: '1.2em',
+    color: Colors.GOLD5,
+    whiteSpace: 'nowrap'
+  };
+  titleStyle = { paddingLeft: '8px', fontSize: '0.9em', whiteSpace: 'nowrap' };
 
   componentDidMount() {
+    this.dummyElement = document.createElement('div');
+
     this.timerId = setInterval(() => {
       FGM.getWindowAppList(newList => {
         this.setState({ list: newList });
@@ -36,9 +55,12 @@ class WindowAppList extends React.Component {
       console.log(parent);
 
       if (parent) {
+        let newRowHeight = this.calcRowHeight();
+        console.log('newRowHeight=', newRowHeight);
         this.setState({
           width: parent.offsetWidth,
-          height: parent.offsetHeight
+          height: parent.offsetHeight,
+          rowHeight: newRowHeight
         });
       }
     }
@@ -54,27 +76,28 @@ class WindowAppList extends React.Component {
     const item = this.state.list[index];
 
     return (
-      <div
-        key={key}
-        style={{
-          backgroundColor: Colors.DARK_GRAY2,
-          borderBottom: 'solid 1px',
-          borderBottomColor: Colors.GRAY1,
-          paddingLeft: '8px',
-          paddingRight: '8px',
-          paddingTop: '2px',
-          paddingBottom: '4px'
-        }}
-      >
-        <p style={{ fontSize: '1em', color: 'Yellow', whiteSpace: 'nowrap' }}>
-          Process: {item.processName}
-        </p>
-        <p style={{ fontSize: '0.8em', whiteSpace: 'nowrap' }}>
-          Title: {item.title}
-        </p>
+      <div key={key} style={this.listItemStyle}>
+        <p style={this.processNameStyle}>Process: {item.processName}</p>
+        <p style={this.titleStyle}>Title: {item.title}</p>
       </div>
     );
   };
+
+  calcRowHeight() {
+    ReactDOM.render(
+      <div style={this.listItemStyle}>
+        <p style={this.processNameStyle}>Process: application.exe</p>
+        <p style={this.titleStyle}>Title: title</p>
+      </div>,
+      this.dummyElement
+    );
+
+    this.listNode.appendChild(this.dummyElement);
+    let h = this.dummyElement.offsetHeight;
+    this.listNode.removeChild(this.dummyElement);
+
+    return h;
+  }
 
   render() {
     return (
@@ -84,7 +107,7 @@ class WindowAppList extends React.Component {
         width={this.state.width}
         height={this.state.height}
         rowCount={this.state.list.length}
-        rowHeight={50}
+        rowHeight={this.state.rowHeight}
         rowRenderer={this.renderRow}
         style={{ backgroundColor: Colors.DARK_GRAY2 }}
       />
