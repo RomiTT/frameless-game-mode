@@ -5,6 +5,7 @@ interface MainContentProps {
   footerRef: React.RefObject<HTMLElement>;
   style?: Object;
   className?: string;
+  onHeightChanged?: Function;
 }
 
 class MainContent extends React.Component<MainContentProps, object> {
@@ -34,6 +35,10 @@ class MainContent extends React.Component<MainContentProps, object> {
           this.props.footerRef.current.offsetHeight);
 
       this.setState({ height: newHeight });
+
+      if (this.props.onHeightChanged) {
+        this.props.onHeightChanged(newHeight);
+      }
     }
   };
 
