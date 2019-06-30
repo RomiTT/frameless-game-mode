@@ -31,6 +31,7 @@ namespace FGM {
 
 
 struct WindowApp {
+  std::wstring processPath;
   std::wstring processName;
   std::wstring title;
 };

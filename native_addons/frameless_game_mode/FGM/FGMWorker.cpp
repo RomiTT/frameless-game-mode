@@ -105,7 +105,7 @@ void FGMWorker::ChangeState(FGM_STATE newState) {
 
 
 
-const WCHAR* GetProcessNameFromWindowHandle(HWND hwnd) {
+const WCHAR* GetProcessPathFromWindowHandle(HWND hwnd) {
 	DWORD buffSize = 1024;
 	static WCHAR buffer[1024];
 
@@ -239,12 +239,12 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {
 	std::vector<GameModeInfo>* list = reinterpret_cast<std::vector<GameModeInfo>*>(lParam);
 
 	if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK) {
-		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+		const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
 		const WCHAR* title = GetWindowTitle(hWnd);
 
-		if (processName != nullptr) {
+		if (processPath != nullptr) {
 			for (auto item : (*list)) {
-				if (lstrcmpi(processName, item.processName.c_str()) == 0) {
+				if (lstrcmpi(processPath, item.processPath.c_str()) == 0) {
 					MadeWindowFrameless(hWnd, item);
 					break;
 				}
@@ -267,11 +267,11 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 	HWND hWnd = GetForegroundWindow();					
 	if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK) {
-		const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+		const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
 
-		if (processName != nullptr) {
+		if (processPath != nullptr) {
 			for (auto item : list) {
-				if (wcsstr(processName, item.processName.c_str()) != NULL) {
+				if (wcsstr(processPath, item.processPath.c_str()) != NULL) {
 					MadeWindowFrameless(hWnd, item);
 					break;
 				}
@@ -286,12 +286,15 @@ void GetWindowAppList(std::vector<WindowApp>& out) {
 	hWnd = GetWindow(hWnd, GW_HWNDFIRST);
 	while (hWnd != NULL) {
 		if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK && IsMainWindow(hWnd)) {
-			const WCHAR* processName = GetProcessNameFromWindowHandle(hWnd);
+			const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
 			const WCHAR* title = GetWindowTitle(hWnd);
 
-			if (lstrlen(processName) > 0 || lstrlen(title) > 0) {
-				auto app = WindowApp{ (processName == NULL) ? L"" : processName,
-														  (title == NULL) ? L"" : title };
+			if (lstrlen(processPath) > 0 || lstrlen(title) > 0) {
+				WindowApp app;			
+				app.processPath = (processPath == NULL) ? L"" : processPath;
+				auto index = app.processPath.rfind(L'\\');
+				app.processName = app.processPath.substr(index+1);
+				app.title = (title == NULL) ? L"" : title;
 
 				if (!(wcsstr(app.processName.c_str(), L"explorer.exe") != NULL && app.title.size() == 0)) {
 					out.push_back(app);

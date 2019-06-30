@@ -2,6 +2,7 @@
 #include <codecvt>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 #include "FGMContext.h"
 #include "FramelessGameMode.h"
 #include "FGMWorker.h"
@@ -119,6 +120,10 @@ public:
 	// This code will be executed on the worker thread
   void Execute() {
 		GetWindowAppList(_list);
+
+		std::sort(_list.begin(), _list.end(), [](const WindowApp& a, const WindowApp& b) {
+			return (lstrcmpi(a.processName.c_str(), b.processName.c_str()) < 0);
+		});
   }
 
   void OnOK() {
@@ -130,10 +135,12 @@ public:
 
 		for (size_t i = 0; i < _list.size(); i++) {
 			auto item = Napi::Object::New(env);
-			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
+			auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
+			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));			
 			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
 
-			item.Set("processName", processName);
+			item.Set("processPath", processPath);
+			item.Set("processName",  processName);				
 			item.Set("title", title);
 			array[i] = item;
 		}
