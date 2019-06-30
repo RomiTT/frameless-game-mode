@@ -51,9 +51,7 @@ class WindowAppList extends React.Component {
     isVisible, // This row is visible within the List (eg it is not an overscanned row)
     style // Style object to be applied to row (to position it)
   }) => {
-    let app = this.state.list[index].processName;
-    let i = app.lastIndexOf('\\');
-    app = app.substring(i + 1);
+    const item = this.state.list[index];
 
     return (
       <div
@@ -69,10 +67,10 @@ class WindowAppList extends React.Component {
         }}
       >
         <p style={{ fontSize: '1em', color: 'Yellow', whiteSpace: 'nowrap' }}>
-          App: {app}
+          Process: {item.processName}
         </p>
         <p style={{ fontSize: '0.8em', whiteSpace: 'nowrap' }}>
-          Title: {this.state.list[index].title}
+          Title: {item.title}
         </p>
       </div>
     );
