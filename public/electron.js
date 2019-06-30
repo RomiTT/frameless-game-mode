@@ -14,10 +14,10 @@ electron.app.FGM.initialize();
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1000,
+    width: 620,
     height: 800,
-    minWidth: 400,
-    minHeight: 300,
+    minWidth: 300,
+    minHeight: 400,
     frame: false,
     titleBarStyle: 'hidden',
     webPreferences: {
