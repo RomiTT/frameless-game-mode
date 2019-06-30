@@ -84,7 +84,7 @@ class WindowAppList extends React.Component {
         width={this.state.width}
         height={this.state.height}
         rowCount={this.state.list.length}
-        rowHeight={60}
+        rowHeight={50}
         rowRenderer={this.renderRow}
         style={{ backgroundColor: Colors.DARK_GRAY2 }}
       />
