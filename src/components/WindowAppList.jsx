@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { List } from 'react-virtualized';
 import { Colors } from '@blueprintjs/core';
-const { remote } = require('electron');
-let FGM = remote.app.FGM;
+import { FGM } from './FGM';
 
 class WindowAppList extends React.Component {
   listId = 'romitt_windowapplist_id';
