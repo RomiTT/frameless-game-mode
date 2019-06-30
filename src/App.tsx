@@ -31,8 +31,7 @@ class App extends React.Component<any, object> {
   footerRef: any;
 
   state = {
-    FGMState: FGM_STATE.STOPPED,
-    listApp: new Array()
+    FGMState: FGM_STATE.STOPPED
   };
 
   constructor(props: any) {
@@ -145,7 +144,7 @@ class App extends React.Component<any, object> {
           </Navbar>
         </header>
 
-        <WindowAppList list={this.state.listApp} />
+        <WindowAppList />
 
         <footer
           className='has-text-centered'
