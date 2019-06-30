@@ -32,5 +32,5 @@ export enum FGM_MODE {
   ALL_WINDOWS
 }
 
-const { remote } = require('electron');
-export let FGM = remote.app.FGM;
+const app: any = require('electron').remote.app;
+export let FGM = app.FGM;
