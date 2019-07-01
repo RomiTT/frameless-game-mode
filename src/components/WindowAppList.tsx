@@ -1,20 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { autorun } from 'mobx';
+import { inject } from 'mobx-react';
 import { Colors, H4, H5 } from '@blueprintjs/core';
-import { FGM } from './FGM';
+import { IStoreFGM } from '../stores/StoreFGM';
+
 const { List } = require('react-virtualized');
 
 interface WindowAppListProps {
-  intervalToUpdate?: number;
+  storeFGM?: IStoreFGM;
+  //intervalToUpdate?: number;
 }
 
 interface WindowsAppListState {
   width: number;
   height: number;
   rowHeight: number;
-  list: Array<object>;
+  rowCount: number;
 }
 
+@inject('storeFGM')
 class WindowAppList extends React.Component<
   WindowAppListProps,
   WindowsAppListState
@@ -26,7 +31,7 @@ class WindowAppList extends React.Component<
   listId: string;
   listNode: HTMLElement | null;
   dummyElement: HTMLElement | null;
-  timerId: number;
+  timerId: any;
   listItemStyle: React.CSSProperties;
   processNameStyle: React.CSSProperties;
   titleStyle: React.CSSProperties;
@@ -38,7 +43,7 @@ class WindowAppList extends React.Component<
       width: 0,
       height: 0,
       rowHeight: 0,
-      list: new Array<object>()
+      rowCount: 0
     };
 
     this.listId = 'romitt_windowapplist_id';
@@ -69,11 +74,13 @@ class WindowAppList extends React.Component<
   }
 
   componentDidMount() {
+    autorun(() => {
+      this.setState({ rowCount: this.props.storeFGM!.listWindowApp.length });
+    });
+
     this.timerId = setInterval(() => {
-      FGM.getWindowAppList((newList: Array<object>) => {
-        this.setState({ list: newList });
-      });
-    }, this.props.intervalToUpdate);
+      this.props.storeFGM!.updateWindowAppList();
+    }, this.props.storeFGM!.intervalToUpdateList);
 
     window.addEventListener('DOMContentLoaded', this.handleResize);
     window.addEventListener('resize', this.handleResize);
@@ -112,7 +119,7 @@ class WindowAppList extends React.Component<
     isVisible: any; // This row is visible within the List (eg it is not an overscanned row)
     style: any; // Style object to be applied to row (to position it)
   }) => {
-    const item: any = this.state.list[arg.index];
+    const item: any = this.props.storeFGM!.listWindowApp[arg.index];
 
     return (
       <div key={arg.key} style={this.listItemStyle}>
@@ -152,7 +159,7 @@ class WindowAppList extends React.Component<
         autoHeight={true}
         width={this.state.width}
         height={this.state.height}
-        rowCount={this.state.list.length}
+        rowCount={this.state.rowCount}
         rowHeight={this.state.rowHeight}
         rowRenderer={this.renderRow}
         style={{ backgroundColor: Colors.DARK_GRAY2 }}

@@ -1,4 +1,6 @@
 import React from 'react';
+import { autorun } from 'mobx';
+import { inject } from 'mobx-react';
 import logo from './logo.svg';
 import './App.css';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
@@ -15,86 +17,40 @@ import {
   NavbarGroup,
   NavbarHeading
 } from '@blueprintjs/core';
-
-import {
-  FGM,
-  FGM_STATE,
-  FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE,
-  FGM_MODE
-} from './components/FGM';
+import { FGM_STATE, FGM_MODE } from './components/FGM';
 
 import WindowAppList from './components/WindowAppList';
+import { IStoreFGM } from './stores/StoreFGM';
 
-interface AppState {
-  FGMState: FGM_STATE;
+interface AppProps {
+  storeFGM?: IStoreFGM;
 }
 
-class App extends React.Component<any, AppState> {
+interface AppState {
+  stateFGM: FGM_STATE;
+}
+
+@inject('storeFGM')
+class App extends React.Component<AppProps, AppState> {
   headerRef: any;
   footerRef: any;
 
   constructor(props: any) {
     super(props);
 
-    this.state = {
-      FGMState: FGM_STATE.STOPPED
-    };
-
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
-
-    this.handleStarted = this.handleStarted.bind(this);
-    this.handlePaused = this.handlePaused.bind(this);
-    this.handleStopped = this.handleStopped.bind(this);
-
-    let arg = [
-      {
-        processName: 'D:\\Games\\Sekiro\\sekiro.exe',
-        title: '',
-        wpos: FGM_WINDOW_POSITION.MIDDLE_CENTER,
-        wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
-        width: 0,
-        height: 0
-      }
-    ];
-
-    FGM.setDataList(arg);
-    FGM.setEventListener('started', this.handleStarted);
-    FGM.setEventListener('paused', this.handlePaused);
-    FGM.setEventListener('stopped', this.handleStopped);
-    FGM.setMode(FGM_MODE.ALL_WINDOWS);
+    this.props.storeFGM!.load();
+    this.state = {
+      stateFGM: this.props.storeFGM!.state
+    };
   }
 
-  handleStarted(msg: String) {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
-    console.log(`FGM_STATE: ${FGM_WINDOW_POSITION.MIDDLE_CENTER}`);
-
-    let newState: FGM_STATE = FGM.state();
-    this.setState({
-      FGMState: newState
+  componentDidMount() {
+    autorun(() => {
+      this.setState({ stateFGM: this.props.storeFGM!.state });
     });
   }
-
-  handlePaused(msg: String) {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
-
-    let newState: FGM_STATE = FGM.state();
-    this.setState({
-      FGMState: newState
-    });
-  }
-
-  handleStopped(msg: String) {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
-
-    let newState: FGM_STATE = FGM.state();
-    this.setState({
-      FGMState: newState
-    });
-  }
-
-  componentDidMount() {}
 
   render() {
     return (
@@ -118,30 +74,30 @@ class App extends React.Component<any, AppState> {
               />
               <NavbarDivider />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.STARTED}
+                disabled={this.state.stateFGM == FGM_STATE.STARTED}
                 className={Classes.MINIMAL}
                 icon='play'
                 onClick={() => {
-                  FGM.start();
+                  this.props.storeFGM!.start();
                 }}
               />
               <Button
                 disabled={
-                  this.state.FGMState == FGM_STATE.PAUSED ||
-                  this.state.FGMState == FGM_STATE.STOPPED
+                  this.state.stateFGM == FGM_STATE.PAUSED ||
+                  this.state.stateFGM == FGM_STATE.STOPPED
                 }
                 className={Classes.MINIMAL}
                 icon='pause'
                 onClick={() => {
-                  FGM.pause();
+                  this.props.storeFGM!.pause();
                 }}
               />
               <Button
-                disabled={this.state.FGMState == FGM_STATE.STOPPED}
+                disabled={this.state.stateFGM == FGM_STATE.STOPPED}
                 className={Classes.MINIMAL}
                 icon='stop'
                 onClick={() => {
-                  FGM.stop();
+                  this.props.storeFGM!.stop();
                 }}
               />
               <Button className={Classes.MINIMAL} icon='cog' />
