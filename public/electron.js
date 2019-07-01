@@ -86,32 +86,46 @@ function createWindow() {
   });
 }
 
-let tray = null;
-app.on('ready', () => {
-  createWindow();
-
-  const iconPath = path.join(__dirname, 'appIcon.ico');
-  tray = new electron.Tray(iconPath);
-  const contextMenu = electron.Menu.buildFromTemplate([
-    {
-      label: 'Show',
-      click: () => {
-        mainWindow.show();
-      }
+const gotTheLock = app.requestSingleInstanceLock();
+if (!gotTheLock) {
+  app.quit();
+} else {
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Someone tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isVisible() === false) mainWindow.show();
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.focus();
     }
-  ]);
-  tray.setToolTip('This is my application.');
-  tray.setContextMenu(contextMenu);
-});
+  });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (mainWindow === null) {
+  let tray = null;
+  app.on('ready', () => {
     createWindow();
-  }
-});
+
+    const iconPath = path.join(__dirname, 'appIcon.ico');
+    tray = new electron.Tray(iconPath);
+    const contextMenu = electron.Menu.buildFromTemplate([
+      {
+        label: 'Show',
+        click: () => {
+          mainWindow.show();
+        }
+      }
+    ]);
+    tray.setToolTip('This is my application.');
+    tray.setContextMenu(contextMenu);
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
+
+  app.on('activate', () => {
+    if (mainWindow === null) {
+      createWindow();
+    }
+  });
+}
