@@ -1,35 +1,62 @@
 import React from 'react';
 import { Colors } from '@blueprintjs/core';
 
-class AppLayout extends React.Component {
-  headerId = 'romitt_applayout_header';
-  bodyId = 'romitt_applayout_body';
-  footerId = 'romitt_applayout_footer';
-  header;
-  footer;
-  containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    width: '100%'
-  };
-  headerStyle = {
-    flexGrow: 0,
-    flexShrink: 0,
-    backgroundColor: this.props.headerBackgroundColor
-  };
-  bodyStyle = {
-    flexGrow: 1,
-    flexShrink: 0,
-    overflow: 'auto',
-    backgroundColor: this.props.bodyBackgroundColor
-  };
-  footerStyle = {
-    flexGrow: 0,
-    flexShrink: 0,
-    backgroundColor: this.props.footerBackgroundColor
-  };
-  state = { bodyHeight: 0 };
+interface AppLayoutProps {
+  headerBackgroundColor?: string;
+  bodyBackgroundColor?: string;
+  footerBackgroundColor?: string;
+  className?: string;
+  style?: object;
+}
+
+interface AppLayoutState {
+  bodyHeight: number;
+}
+
+class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
+  headerId: string;
+  bodyId: string;
+  footerId: string;
+  header: HTMLElement | null;
+  body: HTMLElement | null;
+  footer: HTMLElement | null;
+  containerStyle: React.CSSProperties;
+  headerStyle: React.CSSProperties;
+  bodyStyle: React.CSSProperties;
+  footerStyle: React.CSSProperties;
+
+  constructor(props: AppLayoutProps) {
+    super(props);
+    this.headerId = 'romitt_applayout_header';
+    this.bodyId = 'romitt_applayout_body';
+    this.footerId = 'romitt_applayout_footer';
+    this.header = null;
+    this.body = null;
+    this.footer = null;
+    this.containerStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      width: '100%'
+    };
+    this.headerStyle = {
+      flexGrow: 0,
+      flexShrink: 0,
+      backgroundColor: this.props.headerBackgroundColor
+    };
+    this.bodyStyle = {
+      flexGrow: 1,
+      flexShrink: 0,
+      overflow: 'auto',
+      backgroundColor: this.props.bodyBackgroundColor
+    };
+    this.footerStyle = {
+      flexGrow: 0,
+      flexShrink: 0,
+      backgroundColor: this.props.footerBackgroundColor
+    };
+    this.state = { bodyHeight: 0 };
+  }
 
   componentDidMount() {
     window.addEventListener('DOMContentLoaded', this.handleResize);
@@ -55,7 +82,7 @@ class AppLayout extends React.Component {
       this.setState({ bodyHeight: newHeight });
 
       if (this.body) {
-        let mainContent = this.body.children[0];
+        let mainContent: any = this.body.children[0];
         mainContent.style.height = `${newHeight}px`;
         console.log('mainContent.height=', mainContent.style.height);
       }
