@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Colors } from '@blueprintjs/core';
+import { Colors, H4, H5 } from '@blueprintjs/core';
 import { FGM } from './FGM';
 const { List } = require('react-virtualized');
 
@@ -57,14 +57,13 @@ class WindowAppList extends React.Component<
     };
 
     this.processNameStyle = {
-      fontSize: '1.2em',
       color: Colors.GOLD5,
       whiteSpace: 'nowrap'
     };
 
     this.titleStyle = {
+      color: Colors.LIGHT_GRAY3,
       paddingLeft: '8px',
-      fontSize: '0.9em',
       whiteSpace: 'nowrap'
     };
   }
@@ -117,8 +116,10 @@ class WindowAppList extends React.Component<
 
     return (
       <div key={arg.key} style={this.listItemStyle}>
-        <p style={this.processNameStyle}>Process: {item.processName}</p>
-        <p style={this.titleStyle}>Title: {item.title}</p>
+        <H5 style={this.processNameStyle}>Process: {item.processName}</H5>
+        <p className='bp3-text-small' style={this.titleStyle}>
+          Title: {item.title}
+        </p>
       </div>
     );
   };
@@ -126,8 +127,10 @@ class WindowAppList extends React.Component<
   calcRowHeight() {
     ReactDOM.render(
       <div style={this.listItemStyle}>
-        <p style={this.processNameStyle}>Process: application.exe</p>
-        <p style={this.titleStyle}>Title: title</p>
+        <H5 style={this.processNameStyle}>Process: application.exe</H5>
+        <p className='bp3-text-small' style={this.titleStyle}>
+          Title: title
+        </p>
       </div>,
       this.dummyElement
     );
