@@ -26,16 +26,21 @@ import {
 
 import WindowAppList from './components/WindowAppList';
 
-class App extends React.Component<any, object> {
+interface AppState {
+  FGMState: FGM_STATE;
+}
+
+class App extends React.Component<any, AppState> {
   headerRef: any;
   footerRef: any;
 
-  state = {
-    FGMState: FGM_STATE.STOPPED
-  };
-
   constructor(props: any) {
     super(props);
+
+    this.state = {
+      FGMState: FGM_STATE.STOPPED
+    };
+
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
 
