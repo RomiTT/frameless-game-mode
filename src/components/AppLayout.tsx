@@ -1,5 +1,6 @@
 import React from 'react';
 import { Colors } from '@blueprintjs/core';
+import styles from './AppLayout.module.scss';
 
 interface AppLayoutProps {
   headerBackgroundColor?: string;
@@ -20,10 +21,6 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
   header: HTMLElement | null;
   body: HTMLElement | null;
   footer: HTMLElement | null;
-  containerStyle: React.CSSProperties;
-  headerStyle: React.CSSProperties;
-  bodyStyle: React.CSSProperties;
-  footerStyle: React.CSSProperties;
 
   constructor(props: AppLayoutProps) {
     super(props);
@@ -33,28 +30,6 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
     this.header = null;
     this.body = null;
     this.footer = null;
-    this.containerStyle = {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'stretch',
-      width: '100%'
-    };
-    this.headerStyle = {
-      flexGrow: 0,
-      flexShrink: 0,
-      backgroundColor: this.props.headerBackgroundColor
-    };
-    this.bodyStyle = {
-      flexGrow: 1,
-      flexShrink: 0,
-      overflow: 'auto',
-      backgroundColor: this.props.bodyBackgroundColor
-    };
-    this.footerStyle = {
-      flexGrow: 0,
-      flexShrink: 0,
-      backgroundColor: this.props.footerBackgroundColor
-    };
     this.state = { bodyHeight: 0 };
   }
 
@@ -121,19 +96,20 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
 
     return (
       <div
-        className={this.props.className}
-        style={{ ...this.props.style, ...this.containerStyle }}
+        className={`${this.props.className} ${styles.container}`}
+        style={this.props.style}
       >
-        <div style={this.headerStyle} id={this.headerId}>
+        <div className={styles.header} id={this.headerId}>
           {header}
         </div>
         <div
-          style={{ ...this.bodyStyle, height: this.state.bodyHeight }}
+          className={styles.body}
+          style={{ height: this.state.bodyHeight }}
           id={this.bodyId}
         >
           {body}
         </div>
-        <div style={this.footerStyle} id={this.footerId}>
+        <div className={styles.footer} id={this.footerId}>
           {footer}
         </div>
       </div>

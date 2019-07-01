@@ -4,6 +4,7 @@ import { autorun } from 'mobx';
 import { inject } from 'mobx-react';
 import { Colors, H4, H5 } from '@blueprintjs/core';
 import { IStoreFGM } from '../stores/StoreFGM';
+import styles from './WindowAppList.module.scss';
 
 const { List } = require('react-virtualized');
 
@@ -32,9 +33,6 @@ class WindowAppList extends React.Component<
   listNode: HTMLElement | null;
   dummyElement: HTMLElement | null;
   timerId: any;
-  listItemStyle: React.CSSProperties;
-  processNameStyle: React.CSSProperties;
-  titleStyle: React.CSSProperties;
 
   constructor(props: WindowAppListProps) {
     super(props);
@@ -50,27 +48,6 @@ class WindowAppList extends React.Component<
     this.listNode = document.getElementById(this.listId);
     this.dummyElement = document.createElement('div');
     this.timerId = 0;
-
-    this.listItemStyle = {
-      backgroundColor: Colors.DARK_GRAY2,
-      borderBottom: 'solid 1px',
-      borderBottomColor: Colors.GRAY1,
-      paddingLeft: '8px',
-      paddingRight: '8px',
-      paddingTop: '2px',
-      paddingBottom: '4px'
-    };
-
-    this.processNameStyle = {
-      color: Colors.GOLD5,
-      whiteSpace: 'nowrap'
-    };
-
-    this.titleStyle = {
-      color: Colors.LIGHT_GRAY3,
-      paddingLeft: '8px',
-      whiteSpace: 'nowrap'
-    };
   }
 
   componentDidMount() {
@@ -122,22 +99,22 @@ class WindowAppList extends React.Component<
     const item: any = this.props.storeFGM!.listWindowApp[arg.index];
 
     return (
-      <div key={arg.key} style={this.listItemStyle}>
-        <H5 style={this.processNameStyle}>Process: {item.processName}</H5>
-        <p className='bp3-text-small' style={this.titleStyle}>
-          Title: {item.title}
+      <div key={arg.key} className={styles.listItem}>
+        <p className={`bp3-text-large ${styles.processName}`}>
+          Process: {item.processName}
         </p>
+        <p className={`bp3-text-small ${styles.title}`}>Title: {item.title}</p>
       </div>
     );
   };
 
   calcRowHeight() {
     ReactDOM.render(
-      <div style={this.listItemStyle}>
-        <H5 style={this.processNameStyle}>Process: application.exe</H5>
-        <p className='bp3-text-small' style={this.titleStyle}>
-          Title: title
+      <div className={styles.listItem}>
+        <p className={`bp3-text-large ${styles.processName}`}>
+          Process: application.exe
         </p>
+        <p className={`bp3-text-small ${styles.title}`}>Title: title</p>
       </div>,
       this.dummyElement
     );

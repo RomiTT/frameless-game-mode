@@ -1,0 +1,22 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+.listItem {
+  background-color: $dark-gray2;
+  border-bottom: solid 1px;
+  border-bottom-color: $gray1;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+
+.processName {
+  color: $gold5;
+  white-space: nowrap;
+}
+
+.title {
+  color: $light-gray3;
+  padding-left: 8px;
+  white-space: nowrap;
+}

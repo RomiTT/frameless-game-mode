@@ -2,7 +2,6 @@ import React from 'react';
 import { autorun } from 'mobx';
 import { inject } from 'mobx-react';
 import logo from './logo.svg';
-import './App.css';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import MainContent from './components/MainContent';
 import AppLayout from './components/AppLayout';
@@ -21,6 +20,7 @@ import { FGM_STATE, FGM_MODE } from './components/FGM';
 
 import WindowAppList from './components/WindowAppList';
 import { IStoreFGM } from './stores/StoreFGM';
+import styles from './App.module.scss';
 
 interface AppProps {
   storeFGM?: IStoreFGM;
@@ -107,10 +107,7 @@ class App extends React.Component<AppProps, AppState> {
 
         <WindowAppList />
 
-        <footer
-          className='has-text-centered'
-          style={{ backgroundColor: Colors.DARK_GRAY5 }}
-        >
+        <footer className={`has-text-centered ${styles.footer}`}>
           <h1>Footer</h1>
         </footer>
       </AppLayout>
