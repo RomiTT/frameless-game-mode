@@ -111,6 +111,12 @@ if (!gotTheLock) {
         click: () => {
           mainWindow.show();
         }
+      },
+      {
+        label: 'Quit',
+        click: () => {
+          app.quit();
+        }
       }
     ]);
     tray.setToolTip('This is my application.');
