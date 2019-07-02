@@ -2,12 +2,20 @@
 
 .listItem {
   background-color: $dark-gray2;
-  border-bottom: solid 1px $gray1;
+  border-bottom: solid 1px $light-gray1;
   padding: {
     left: 8px;
     right: 8px;
     top: 2px;
     bottom: 4px;
+  }
+
+  &:hover {
+    background-color: $green2;
+  }
+
+  &:active {
+    background-color: $green1;
   }
 
   .processName {
@@ -20,4 +28,9 @@
     padding-left: 8px;
     white-space: nowrap;
   }
+}
+
+.listItemSelected {
+  @extend .listItem;
+  background-color: $green2;
 }

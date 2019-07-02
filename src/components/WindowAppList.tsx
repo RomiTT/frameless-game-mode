@@ -18,6 +18,7 @@ interface WindowsAppListState {
   height: number;
   rowHeight: number;
   rowCount: number;
+  selectedIndex: number;
 }
 
 @inject('storeFGM')
@@ -41,7 +42,8 @@ class WindowAppList extends React.Component<
       width: 0,
       height: 0,
       rowHeight: 0,
-      rowCount: 0
+      rowCount: 0,
+      selectedIndex: -1
     };
 
     this.listId = 'romitt_windowapplist_id';
@@ -97,9 +99,19 @@ class WindowAppList extends React.Component<
     style: any; // Style object to be applied to row (to position it)
   }) => {
     const item: any = this.props.storeFGM!.listWindowApp[arg.index];
+    const classes =
+      this.state.selectedIndex === arg.index
+        ? styles.listItemSelected
+        : styles.listItem;
 
     return (
-      <div key={arg.key} className={styles.listItem}>
+      <div
+        key={arg.key}
+        className={classes}
+        onClick={() => {
+          this.setState({ selectedIndex: arg.index });
+        }}
+      >
         <p className={`bp3-text-large ${styles.processName}`}>
           Process: {item.processName}
         </p>
