@@ -13,6 +13,7 @@ export interface IStoreFGM {
   listWindowApp: Array<Object>;
   state: FGM_STATE;
   mode: FGM_MODE;
+  startOnLaunch: boolean;
   load(): void;
   setMode(mode: FGM_MODE): void;
   start(): void;
@@ -26,6 +27,7 @@ export class StoreFGM implements IStoreFGM {
   @observable listWindowApp: Array<Object> = new Array<Object>();
   @observable state: FGM_STATE = FGM_STATE.STOPPED;
   @persist @observable mode: FGM_MODE = FGM_MODE.ALL_WINDOWS;
+  @persist @observable startOnLaunch: boolean = true;
 
   constructor() {
     FGM.setEventListener('started', this.handleStarted);

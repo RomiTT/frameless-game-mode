@@ -50,6 +50,10 @@ class App extends React.Component<AppProps, AppState> {
     autorun(() => {
       this.setState({ stateFGM: this.props.storeFGM!.state });
     });
+
+    if (this.props.storeFGM!.startOnLaunch) {
+      this.props.storeFGM!.start();
+    }
   }
 
   render() {
