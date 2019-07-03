@@ -57,7 +57,7 @@ class App extends React.Component<AppProps, AppState> {
       <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
         <header>
           <TitleBar
-            app='Game Save Points Manager'
+            app='Frameless Game Mode'
             icon={`./appIcon.ico`}
             theme={TitleBarTheme}
           />
@@ -66,12 +66,6 @@ class App extends React.Component<AppProps, AppState> {
               <NavbarHeading>Frameless Game Mode</NavbarHeading>
             </NavbarGroup>
             <NavbarGroup align={Alignment.RIGHT}>
-              <Button className={Classes.MINIMAL} icon='home' text='Home' />
-              <Button
-                className={Classes.MINIMAL}
-                icon='document'
-                text='Files'
-              />
               <NavbarDivider />
               <Button
                 disabled={this.state.stateFGM == FGM_STATE.STARTED}
