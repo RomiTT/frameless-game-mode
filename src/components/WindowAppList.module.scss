@@ -20,12 +20,20 @@
 
   .processName {
     color: $gold5;
+  }
+
+  .processNameNoWrap {
+    @extend .processName;
     white-space: nowrap;
   }
 
   .title {
     color: $light-gray3;
     padding-left: 8px;
+  }
+
+  .titleNoWrap {
+    @extend .title;
     white-space: nowrap;
   }
 }

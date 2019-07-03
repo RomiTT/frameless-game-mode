@@ -10,14 +10,15 @@ const { List } = require('react-virtualized');
 
 interface WindowAppListProps {
   storeFGM?: IStoreFGM;
+  enableVariableRowHeight?: boolean;
   //intervalToUpdate?: number;
 }
 
 interface WindowsAppListState {
   width: number;
   height: number;
-  rowHeight: number;
   rowCount: number;
+  rowHeight: number;
   selectedIndex: number;
 }
 
@@ -27,13 +28,16 @@ class WindowAppList extends React.Component<
   WindowsAppListState
 > {
   static defaultProps = {
-    intervalToUpdate: 300
+    enableVariableRowHeight: false
+    //intervalToUpdate: 300
   };
 
   listId: string;
   listNode: HTMLElement | null;
   dummyElement: HTMLElement | null;
+  dummyElement2: HTMLElement | null;
   timerId: any;
+  listComponent: any;
 
   constructor(props: WindowAppListProps) {
     super(props);
@@ -41,16 +45,31 @@ class WindowAppList extends React.Component<
     this.state = {
       width: 0,
       height: 0,
-      rowHeight: 0,
       rowCount: 0,
+      rowHeight: 0,
       selectedIndex: -1
     };
 
     this.listId = 'romitt_windowapplist_id';
     this.listNode = document.getElementById(this.listId);
     this.dummyElement = document.createElement('div');
+    this.dummyElement2 = document.createElement('div');
+    ReactDOM.render(
+      <div className={styles.listItem}>
+        <p className={`bp3-text-large ${styles.processNameNoWrap}`}>
+          Process: application.exe
+        </p>
+        <p className={`bp3-text-small ${styles.titleNoWrap}`}>Title: title</p>
+      </div>,
+      this.dummyElement2
+    );
+
     this.timerId = 0;
   }
+
+  _setRef = (ref: any) => {
+    this.listComponent = ref;
+  };
 
   componentDidMount() {
     autorun(() => {
@@ -77,19 +96,46 @@ class WindowAppList extends React.Component<
   handleResize = () => {
     if (this.listNode) {
       let parent = this.listNode.parentElement;
-      console.log(parent);
 
       if (parent) {
-        let newRowHeight = this.calcRowHeight();
-        console.log('newRowHeight=', newRowHeight);
-        this.setState({
-          width: parent.offsetWidth,
-          height: parent.offsetHeight,
-          rowHeight: newRowHeight
-        });
+        if (this.props.enableVariableRowHeight) {
+          this.setState({
+            width: parent.offsetWidth,
+            height: parent.offsetHeight
+          });
+
+          setTimeout(() => {
+            if (this.state.rowCount > 0) {
+              for (let i = 0; i < this.state.rowCount; i++) {
+                this.listComponent.recomputeRowHeights(i);
+              }
+            }
+
+            this.listComponent.forceUpdateGrid();
+          }, 10);
+        } else {
+          let newRowHeight = this.calcRowHeight();
+          console.log('newRowHeight=', newRowHeight);
+          this.setState({
+            width: parent.offsetWidth,
+            height: parent.offsetHeight,
+            rowHeight: newRowHeight
+          });
+        }
       }
     }
   };
+
+  calcRowHeight() {
+    let h = 0;
+    if (this.listNode && this.dummyElement2) {
+      this.listNode.appendChild(this.dummyElement2);
+      h = this.dummyElement2.offsetHeight;
+      this.listNode.removeChild(this.dummyElement2);
+    }
+
+    return h;
+  }
 
   renderRow = (arg: {
     key: any; // Unique key within array of rows
@@ -112,25 +158,38 @@ class WindowAppList extends React.Component<
           this.setState({ selectedIndex: arg.index });
         }}
       >
-        <p className={`bp3-text-large ${styles.processName}`}>
+        <p
+          className={`bp3-text-large ${
+            this.props.enableVariableRowHeight
+              ? styles.processName
+              : styles.processNameNoWrap
+          }`}
+        >
           Process: {item.processName}
         </p>
-        <p className={`bp3-text-small ${styles.title}`}>Title: {item.title}</p>
+        <p
+          className={`bp3-text-small ${
+            this.props.enableVariableRowHeight
+              ? styles.title
+              : styles.titleNoWrap
+          }`}
+        >
+          Title: {item.title}
+        </p>
       </div>
     );
   };
 
-  calcRowHeight() {
-    ReactDOM.render(
-      <div className={styles.listItem}>
-        <p className={`bp3-text-large ${styles.processName}`}>
-          Process: application.exe
-        </p>
-        <p className={`bp3-text-small ${styles.title}`}>Title: title</p>
-      </div>,
-      this.dummyElement
-    );
-
+  getRowHeight = (arg: { index: number }) => {
+    const item: any = this.props.storeFGM!.listWindowApp[arg.index];
+    this.dummyElement!.innerHTML = `
+    <div class='${styles.listItem}'>
+      <p class='bp3-text-large ${styles.processName}'>
+        Process: ${item.processName}
+      </p>
+      <p class='bp3-text-small ${styles.title}'>Title: ${item.title}</p>
+    </div>
+    `;
     let h = 0;
     if (this.listNode && this.dummyElement) {
       this.listNode.appendChild(this.dummyElement);
@@ -139,17 +198,22 @@ class WindowAppList extends React.Component<
     }
 
     return h;
-  }
+  };
 
   render() {
     return (
       <List
+        ref={this._setRef}
         id={this.listId}
         autoHeight={true}
         width={this.state.width}
         height={this.state.height}
         rowCount={this.state.rowCount}
-        rowHeight={this.state.rowHeight}
+        rowHeight={
+          this.props.enableVariableRowHeight
+            ? this.getRowHeight
+            : this.state.rowHeight
+        }
         rowRenderer={this.renderRow}
         style={{ backgroundColor: Colors.DARK_GRAY2 }}
       />
