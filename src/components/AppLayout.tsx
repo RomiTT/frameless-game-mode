@@ -55,12 +55,6 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
         (this.header.offsetHeight + this.footer.offsetHeight);
 
       this.setState({ bodyHeight: newHeight });
-
-      if (this.body) {
-        let mainContent: any = this.body.children[0];
-        mainContent.style.height = `${newHeight}px`;
-        console.log('mainContent.height=', mainContent.style.height);
-      }
     }
   };
 
