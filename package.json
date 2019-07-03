@@ -18,7 +18,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
-    "react-virtualized": "^9.21.1",
+    "react-tiny-virtual-list": "^2.2.0",
     "typescript": "3.5.2"
   },
   "main": "public/electron.js",
