@@ -10,7 +10,6 @@ import {
 
 export interface IStoreFGM {
   intervalToUpdateList: number;
-  listWindowApp: Array<Object>;
   state: FGM_STATE;
   mode: FGM_MODE;
   startOnLaunch: boolean;
@@ -19,12 +18,11 @@ export interface IStoreFGM {
   start(): void;
   pause(): void;
   stop(): void;
-  updateWindowAppList(): void;
+  updateWindowAppList(callback: Function): void;
 }
 
 export class StoreFGM implements IStoreFGM {
   @persist @observable intervalToUpdateList: number = 300;
-  @observable listWindowApp: Array<Object> = new Array<Object>();
   @observable state: FGM_STATE = FGM_STATE.STOPPED;
   @persist @observable mode: FGM_MODE = FGM_MODE.ALL_WINDOWS;
   @persist @observable startOnLaunch: boolean = true;
@@ -88,9 +86,9 @@ export class StoreFGM implements IStoreFGM {
   };
 
   @action
-  updateWindowAppList = () => {
-    FGM.getWindowAppList((list: Array<Object>) => {
-      this.listWindowApp = list;
+  updateWindowAppList = (callback: Function) => {
+    FGM.getWindowAppList((list: Array<object>) => {
+      callback(list);
     });
   };
 }

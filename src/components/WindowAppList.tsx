@@ -4,7 +4,6 @@ import { autorun } from 'mobx';
 import { inject } from 'mobx-react';
 import { Colors, H4, H5 } from '@blueprintjs/core';
 import { IStoreFGM } from '../stores/StoreFGM';
-import VirtualList from 'react-tiny-virtual-list';
 import styles from './WindowAppList.module.scss';
 
 interface WindowAppListProps {
@@ -14,7 +13,7 @@ interface WindowAppListProps {
 }
 
 interface WindowsAppListState {
-  listData: Array<Object>;
+  listData: Array<object>;
   selectedIndex: number;
 }
 
@@ -29,13 +28,12 @@ class WindowAppList extends React.Component<
   };
 
   timerId: any;
-  listComponent: VirtualList | null = null;
 
   constructor(props: WindowAppListProps) {
     super(props);
 
     this.state = {
-      listData: new Array<Object>(),
+      listData: new Array<object>(),
       selectedIndex: -1
     };
 
@@ -43,13 +41,10 @@ class WindowAppList extends React.Component<
   }
 
   componentDidMount() {
-    autorun(() => {
-      this.setState({ listData: this.props.storeFGM!.listWindowApp });
-      this.forceUpdate();
-    });
-
     this.timerId = setInterval(() => {
-      this.props.storeFGM!.updateWindowAppList();
+      this.props.storeFGM!.updateWindowAppList((list: Array<object>) => {
+        this.setState({ listData: list });
+      });
     }, this.props.storeFGM!.intervalToUpdateList);
   }
 
@@ -58,7 +53,7 @@ class WindowAppList extends React.Component<
   }
 
   renderItem = (index: number) => {
-    const item: any = this.props.storeFGM!.listWindowApp[index];
+    const item: any = this.state.listData[index];
     const classes =
       this.state.selectedIndex === index
         ? styles.listItemSelected
@@ -79,7 +74,7 @@ class WindowAppList extends React.Component<
 
   render() {
     const list = new Array<any>();
-    for (let i = 0; i < this.props.storeFGM!.listWindowApp.length; i++) {
+    for (let i = 0; i < this.state.listData.length; i++) {
       list.push(this.renderItem(i));
     }
 
