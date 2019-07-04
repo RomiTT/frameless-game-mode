@@ -18,7 +18,7 @@ export interface IStoreFGM {
   start(): void;
   pause(): void;
   stop(): void;
-  updateWindowAppList(callback: Function): void;
+  getWindowAppList(callback: Function): void;
 }
 
 export class StoreFGM implements IStoreFGM {
@@ -86,7 +86,7 @@ export class StoreFGM implements IStoreFGM {
   };
 
   @action
-  updateWindowAppList = (callback: Function) => {
+  getWindowAppList = (callback: Function) => {
     FGM.getWindowAppList((list: Array<object>) => {
       callback(list);
     });
