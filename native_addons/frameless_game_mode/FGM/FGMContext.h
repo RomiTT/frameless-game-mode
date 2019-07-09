@@ -31,7 +31,7 @@ namespace FGM {
   };
 
   struct GameModeInfo {
-    std::wstring processPath;
+    std::wstring processName;
 		std::wstring title;
     std::wstring key;
     FGM_WINDOW_POSITION wpos;
