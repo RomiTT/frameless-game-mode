@@ -99,6 +99,7 @@ export class StoreFGM implements IStoreFGM {
 
     this.listAppToMonitor.push(val);
     FGM.addGameModeInfo(val);
+    serializeObject(this);
   };
 
   @action
@@ -112,6 +113,7 @@ export class StoreFGM implements IStoreFGM {
     }
 
     FGM.removeGameModeInfo(key);
+    serializeObject(this);
   };
 
   @action
