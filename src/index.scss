@@ -40,7 +40,7 @@ disable dragging and selecting html elements
 
 /* width */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
 
 /* Track */
@@ -50,10 +50,10 @@ disable dragging and selecting html elements
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: $gray1;
+  background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: $gray3;
+  background: #555;
 }
