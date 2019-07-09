@@ -57,14 +57,10 @@ class App extends React.Component<AppProps, AppState> {
       this.props.storeFGM!.start();
     }
 
-    ipcRenderer.on('close', this.handleCloseWindow);
-
-    window.addEventListener('unload', this.handleCloseWindow);
+    ipcRenderer.on('close', this.handleCloseApp);
   }
 
-  componentWillUnmount() {}
-
-  handleCloseWindow = () => {
+  handleCloseApp = () => {
     this.props.storeFGM!.saveAppList();
     ipcRenderer.send('closed');
   };
