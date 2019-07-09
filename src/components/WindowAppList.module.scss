@@ -3,6 +3,7 @@
 .listItem {
   background-color: $dark-gray2;
   border-bottom: solid 1px $light-gray1;
+  cursor: pointer;
   padding: {
     left: 8px;
     right: 8px;
@@ -11,7 +12,7 @@
   }
 
   &:hover {
-    background-color: $green2;
+    background-color: $gray1;
   }
 
   &:active {
@@ -19,8 +20,9 @@
   }
 
   .processName {
-    font-size: 0.9em;
+    font-size: 1em;
     color: $gold5;
+    cursor: inherit;
   }
 
   .processNameNoWrap {
@@ -29,15 +31,21 @@
   }
 
   .title {
-    font-size: 0.7em;
+    font-size: 0.8em;
     color: $light-gray3;
     padding-left: 8px;
+    cursor: inherit;
   }
 
   .titleNoWrap {
     @extend .title;
     white-space: nowrap;
   }
+}
+
+.listItemMouseLeaved {
+  @extend .listItem;
+  pointer-events: none;
 }
 
 .listItemSelected {
