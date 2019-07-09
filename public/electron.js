@@ -16,8 +16,10 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 450,
     height: 800,
+    minWidth: 450,
+    minHeight: 800,
     frame: false,
-    resizable: false,
+    resizable: true,
     backgroundColor: '#182026',
     titleBarStyle: 'hidden',
     webPreferences: {
