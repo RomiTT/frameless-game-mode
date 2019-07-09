@@ -32,6 +32,7 @@ function createWindow() {
   });
 
   mainWindow.setTitle('');
+  mainWindow.setMenu(null);
 
   mainWindow.loadURL(
     isDev
