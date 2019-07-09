@@ -329,18 +329,30 @@ void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 
 
 
+bool isExcludedApp(const WCHAR* processName) {
+	auto len = g_excluded_apps.size();
+	for (auto i = 0; i < len; i++) {
+		if (lstrcmpi(processName, g_excluded_apps[i].c_str()) == 0) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void GetWindowAppList(std::vector<WindowApp>& out) {
 	HWND hWnd = GetForegroundWindow();
 	hWnd = GetWindow(hWnd, GW_HWNDFIRST);
 	while (hWnd != NULL) {
 		if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK && IsMainWindow(hWnd)) {
-			std::wstring processPath, processName, title, key;
+			std::wstring processPath, processName, title, key;			
 			GetProcessPathFromWindowHandle(hWnd, processPath);			
 			GetWindowTitle(hWnd, title);			
 
 			if (processPath.size() > 0 || title.size() > 0) {
-				if (!(lstrcmp(processName.c_str(), L"explorer.exe") == 0 && title.size() == 0)) {
-					GetProcessNameFromWindowHandle(hWnd, processName);
+				GetProcessNameFromWindowHandle(hWnd, processName);
+
+				if (isExcludedApp(processName.c_str()) == false) {					
 					MakeKeyFromWindowHandle(hWnd, key);
 
 					WindowApp app;

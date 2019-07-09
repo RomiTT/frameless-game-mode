@@ -160,7 +160,7 @@ public:
 			item.Set("processPath", processPath);
 			item.Set("processName",  processName);				
 			item.Set("title", title);
-			item.Set("Key", key);
+			item.Set("key", key);
 			array[i] = item;
 		}
 		
@@ -173,11 +173,22 @@ public:
 
 
 FramelessGameMode* g_FGM = NULL;
+std::vector<std::wstring> g_excluded_apps;
+
 
 Napi::Value FGM::initialize(const Napi::CallbackInfo &info) {
 	if (g_FGM == NULL) {
 		g_FGM = new FramelessGameMode();
 	}
+
+	g_excluded_apps.push_back(L"fgm.exe");
+	g_excluded_apps.push_back(L"explorer.exe");
+	// g_excluded_apps.push_back(L"iexplorer.exe");
+	// g_excluded_apps.push_back(L"chrome.exe");
+	// g_excluded_apps.push_back(L"firefox.exe");
+	// g_excluded_apps.push_back(L"taskmgr.exe");
+	// g_excluded_apps.push_back(L"devenv.exe");
+	// g_excluded_apps.push_back(L"code.exe");
 
 	return info.Env().Undefined();
 }
@@ -298,6 +309,28 @@ Napi::Value FGM::removeGameModeInfo(const Napi::CallbackInfo &info) {
 	auto key = converter.from_bytes(utf8Key);
 
 	g_FGM->RemoveGameModeInfo(key.c_str());
+	return env.Undefined();
+}
+
+Napi::Value FGM::excludeProcess(const Napi::CallbackInfo& info) {
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	auto utf8ProcessName = info[0].As<Napi::String>();
+	auto processName = converter.from_bytes(utf8ProcessName);
+
+	g_excluded_apps.push_back(std::move(processName));
+	return env.Undefined();
+
 }
 
 
@@ -421,6 +454,7 @@ Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("setDataList", Napi::Function::New(env, FGM::setDataList));
 	exports.Set("addGameModeInfo", Napi::Function::New(env, FGM::addGameModeInfo));
 	exports.Set("removeGameModeInfo", Napi::Function::New(env, FGM::removeGameModeInfo));
+	exports.Set("excludeProcess", Napi::Function::New(env, FGM::excludeProcess));
 	exports.Set("setEventListener", Napi::Function::New(env, FGM::setEventListener));
 	exports.Set("start", Napi::Function::New(env, FGM::start));
 	exports.Set("pause", Napi::Function::New(env, FGM::pause));

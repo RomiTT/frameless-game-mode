@@ -45,6 +45,11 @@ namespace FGM {
     ALL_WINDOWS
   };
 
+  enum FGM_MATCH_OPTION {
+    PROCESS_NAME_AND_TITLE,
+    PROCESS_NAME
+  };
+
   enum FGM_STATE {
     REQUESTED_STARTING,
     STARTED,
@@ -62,9 +67,12 @@ namespace FGM {
     Napi::FunctionReference callbackPaused;
     Napi::FunctionReference callbackStopped;
     FGM_STATE state = FGM_STATE::STOPPED;
-    FGM_MODE mode = FGM_MODE::ALL_WINDOWS;    
+    FGM_MODE mode = FGM_MODE::ALL_WINDOWS;   
+    FGM_MATCH_OPTION matchOption = FGM_MATCH_OPTION::PROCESS_NAME_AND_TITLE;
     DWORD interval = 500;
-  };
+  };	
 };
+
+extern std::vector<std::wstring> g_excluded_apps;
 
 #endif
