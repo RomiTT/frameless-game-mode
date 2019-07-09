@@ -40,20 +40,24 @@ disable dragging and selecting html elements
 
 /* width */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: $gray5;
+  background: $dark-gray2;
+  box-lines: single;
+  border-left: solid 1px $gray1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: $dark-gray3;
+  border-left: solid 1px $gray1;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: $dark-gray4;
+  border-left: solid 1px $gray1;
 }
