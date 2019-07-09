@@ -37,6 +37,7 @@ interface AppState {
 @inject('storeFGM')
 class App extends React.Component<AppProps, AppState> {
   headerRef: any;
+  listRef: React.RefObject<WindowAppList>;
   addAppDialogRef: React.RefObject<AddAppDialog>;
   addButtonRef: React.RefObject<FloatingButton>;
 
@@ -44,6 +45,7 @@ class App extends React.Component<AppProps, AppState> {
     super(props);
 
     this.headerRef = React.createRef();
+    this.listRef = React.createRef();
     this.addAppDialogRef = React.createRef();
     this.addButtonRef = React.createRef();
     this.props.storeFGM!.load();
@@ -84,7 +86,7 @@ class App extends React.Component<AppProps, AppState> {
           />
           <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
             <NavbarGroup align={Alignment.LEFT}>
-              <NavbarHeading>Frameless Game Mode</NavbarHeading>
+              <NavbarHeading>Game List</NavbarHeading>
             </NavbarGroup>
             <NavbarGroup align={Alignment.RIGHT}>
               <NavbarDivider />
@@ -132,7 +134,15 @@ class App extends React.Component<AppProps, AppState> {
           </Navbar>
         </header>
         <div>
-          <WindowAppList listApp={this.props.storeFGM!.listAppToMonitor} />
+          <WindowAppList
+            listApp={this.props.storeFGM!.listAppToMonitor}
+            ref={this.listRef}
+            onCtxMenu={(item: any) => {
+              console.log('item key:', item.key);
+              this.props.storeFGM!.removeApp(item.key);
+              this.listRef.current!.forceUpdate();
+            }}
+          />
           <FloatingButton
             position='fixed'
             left={addBtnLeft}
@@ -144,12 +154,18 @@ class App extends React.Component<AppProps, AppState> {
               this.addAppDialogRef.current!.open();
             }}
           />
-          <AddAppDialog ref={this.addAppDialogRef} />
+          <AddAppDialog
+            ref={this.addAppDialogRef}
+            onOK={(item, wpos, wsize, width, height) => {
+              console.log(item);
+              this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
+
+              this.listRef.current!.forceUpdate();
+            }}
+          />
         </div>
 
-        <footer className={`has-text-centered ${styles.footer}`}>
-          <h1>Footer</h1>
-        </footer>
+        <footer className={`has-text-centered ${styles.footer}`} />
       </AppLayout>
     );
   }

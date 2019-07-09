@@ -4,6 +4,8 @@ import styles from './WindowAppList.module.scss';
 interface WindowAppListProps {
   listApp: Array<object>;
   style?: React.CSSProperties;
+  onSelectionChange?: (item: any) => void;
+  onCtxMenu?: (item: any) => void;
 }
 
 interface WindowsAppListState {
@@ -48,16 +50,24 @@ class WindowAppList extends React.Component<
     if (e.keyCode === 38) {
       if (this.state.selectedIndex > 0) {
         let newIndex = this.state.selectedIndex - 1;
-        console.log('newIndex=', newIndex);
-        this.setState({ selectedIndex: newIndex });
+        if (this.state.selectedIndex != newIndex) {
+          this.setState({ selectedIndex: newIndex });
+          if (this.props.onSelectionChange) {
+            this.props.onSelectionChange(this.props.listApp[newIndex]);
+          }
+        }
       }
     }
     // Arrow Down
     else if (e.keyCode == 40) {
       if (this.state.selectedIndex < this.props.listApp.length - 1) {
         let newIndex = this.state.selectedIndex + 1;
-        console.log('newIndex=', newIndex);
-        this.setState({ selectedIndex: newIndex });
+        if (this.state.selectedIndex != newIndex) {
+          this.setState({ selectedIndex: newIndex });
+          if (this.props.onSelectionChange) {
+            this.props.onSelectionChange(this.props.listApp[newIndex]);
+          }
+        }
       }
     }
   };
@@ -72,8 +82,19 @@ class WindowAppList extends React.Component<
       <div
         key={index}
         className={classes}
+        onContextMenu={() => {
+          if (this.props.onCtxMenu) {
+            this.props.onCtxMenu(item);
+          }
+        }}
         onClick={() => {
-          this.setState({ selectedIndex: index });
+          if (this.state.selectedIndex != index) {
+            this.setState({ selectedIndex: index });
+            if (this.props.onSelectionChange) {
+              this.props.onSelectionChange(item);
+            }
+          }
+
           this.listRef.current!.focus();
         }}
       >

@@ -5,6 +5,7 @@ import App from './App';
 import { Provider } from 'mobx-react';
 import { stores } from './stores';
 // import * as serviceWorker from './serviceWorker';
+const storeFGM = stores.storeFGM;
 
 ReactDOM.render(
   <Provider {...stores}>
