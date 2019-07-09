@@ -1,5 +1,10 @@
 import { observable, action, computed } from 'mobx';
-import { persist } from 'mobx-persist';
+import {
+  serialize,
+  serializeObject,
+  deserializeObject,
+  serializeF
+} from './SerializeObject';
 import {
   FGM,
   FGM_STATE,
@@ -9,11 +14,12 @@ import {
 } from '../components/FGM';
 
 export interface IStoreFGM {
-  intervalToUpdateList: number;
+  listAppToMonitor: Array<object>;
   state: FGM_STATE;
   mode: FGM_MODE;
   startOnLaunch: boolean;
-  load(): void;
+  loadAppList(): void;
+  saveAppList(): void;
   setMode(mode: FGM_MODE): void;
   start(): void;
   pause(): void;
@@ -22,17 +28,16 @@ export interface IStoreFGM {
 }
 
 export class StoreFGM implements IStoreFGM {
-  @persist @observable intervalToUpdateList: number = 300;
-  @observable state: FGM_STATE = FGM_STATE.STOPPED;
-  @persist @observable mode: FGM_MODE = FGM_MODE.ALL_WINDOWS;
-  @persist @observable startOnLaunch: boolean = true;
+  @serialize @observable listAppToMonitor = new Array<object>();
+  @observable state = FGM_STATE.STOPPED;
+  @serialize @observable mode = FGM_MODE.ALL_WINDOWS;
+  @serialize @observable startOnLaunch = true;
 
   constructor() {
     FGM.setEventListener('started', this.handleStarted);
     FGM.setEventListener('paused', this.handlePaused);
     FGM.setEventListener('stopped', this.handleStopped);
     FGM.setMode(this.mode);
-    this.load();
   }
 
   handleStarted = (msg: string) => {
@@ -50,19 +55,13 @@ export class StoreFGM implements IStoreFGM {
     this.state = FGM.state();
   };
 
-  load = () => {
-    let arg = [
-      {
-        processName: 'D:\\Games\\Sekiro\\sekiro.exe',
-        title: '',
-        wpos: FGM_WINDOW_POSITION.MIDDLE_CENTER,
-        wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
-        width: 0,
-        height: 0
-      }
-    ];
+  loadAppList = () => {
+    deserializeObject(this);
+    FGM.setDataList(this.listAppToMonitor);
+  };
 
-    FGM.setDataList(arg);
+  saveAppList = () => {
+    serializeObject(this);
   };
 
   @action
