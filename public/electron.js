@@ -12,12 +12,15 @@ console.log('electron.app.FGM', electron.app.FGM);
 
 electron.app.FGM.initialize();
 
+const minWidth = 500;
+const minHeight = 600;
+
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 450,
-    height: 600,
-    minWidth: 450,
-    minHeight: 600,
+    width: minWidth,
+    height: minHeight,
+    minWidth: minWidth,
+    minHeight: minHeight,
     frame: false,
     resizable: true,
     backgroundColor: '#182026',
