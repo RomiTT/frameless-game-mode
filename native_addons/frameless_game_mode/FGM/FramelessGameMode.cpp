@@ -88,6 +88,18 @@ public:
 		_spContext->mtx.unlock();
 	}
 
+	void RemoveGameModeInfo(const WCHAR* key) {
+		_spContext->mtx.lock();
+		auto iter = std::find_if(_spContext->listGameModeInfo.begin(), _spContext->listGameModeInfo.end(), [&key](GameModeInfo& item) {
+			return lstrcmpi(key, item.key.c_str()) == 0;
+		});
+
+		if (iter != _spContext->listGameModeInfo.end()) {
+			_spContext->listGameModeInfo.erase(iter);
+		}
+		_spContext->mtx.unlock();
+	}
+
 	void SetEventListener(std::string& eventName, Napi::Function handler) {
 		if (eventName.compare("started") == 0) {
 			_spContext->callbackStarted = Napi::Persistent(handler);
@@ -269,6 +281,26 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 }
 
 
+Napi::Value FGM::removeGameModeInfo(const Napi::CallbackInfo &info) {
+		Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	auto utf8Key = info[0].As<Napi::String>();
+	auto key = converter.from_bytes(utf8Key);
+
+	g_FGM->RemoveGameModeInfo(key.c_str());
+}
+
+
 Napi::Value FGM::setEventListener(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 	if (g_FGM == NULL) {
@@ -388,6 +420,7 @@ Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("unInitialize", Napi::Function::New(env, FGM::unInitialize));
 	exports.Set("setDataList", Napi::Function::New(env, FGM::setDataList));
 	exports.Set("addGameModeInfo", Napi::Function::New(env, FGM::addGameModeInfo));
+	exports.Set("removeGameModeInfo", Napi::Function::New(env, FGM::removeGameModeInfo));
 	exports.Set("setEventListener", Napi::Function::New(env, FGM::setEventListener));
 	exports.Set("start", Napi::Function::New(env, FGM::start));
 	exports.Set("pause", Napi::Function::New(env, FGM::pause));
