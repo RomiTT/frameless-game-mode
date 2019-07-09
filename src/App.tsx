@@ -22,6 +22,8 @@ import WindowAppList from './components/WindowAppList';
 import { IStoreFGM } from './stores/StoreFGM';
 import styles from './App.module.scss';
 
+const { ipcRenderer } = require('electron');
+
 interface AppProps {
   storeFGM?: IStoreFGM;
 }
@@ -40,7 +42,7 @@ class App extends React.Component<AppProps, AppState> {
 
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
-    this.props.storeFGM!.load();
+    this.props.storeFGM!.loadAppList();
     this.state = {
       stateFGM: this.props.storeFGM!.state
     };
@@ -54,7 +56,18 @@ class App extends React.Component<AppProps, AppState> {
     if (this.props.storeFGM!.startOnLaunch) {
       this.props.storeFGM!.start();
     }
+
+    ipcRenderer.on('close', this.handleCloseWindow);
+
+    window.addEventListener('unload', this.handleCloseWindow);
   }
+
+  componentWillUnmount() {}
+
+  handleCloseWindow = () => {
+    this.props.storeFGM!.saveAppList();
+    ipcRenderer.send('closed');
+  };
 
   render() {
     return (
@@ -74,6 +87,9 @@ class App extends React.Component<AppProps, AppState> {
               <Button
                 disabled={this.state.stateFGM == FGM_STATE.STARTED}
                 className={Classes.MINIMAL}
+                intent={
+                  this.state.stateFGM == FGM_STATE.STARTED ? 'none' : 'success'
+                }
                 icon='play'
                 onClick={() => {
                   this.props.storeFGM!.start();
@@ -86,6 +102,12 @@ class App extends React.Component<AppProps, AppState> {
                 }
                 className={Classes.MINIMAL}
                 icon='pause'
+                intent={
+                  this.state.stateFGM == FGM_STATE.PAUSED ||
+                  this.state.stateFGM == FGM_STATE.STOPPED
+                    ? 'none'
+                    : 'success'
+                }
                 onClick={() => {
                   this.props.storeFGM!.pause();
                 }}
@@ -94,11 +116,14 @@ class App extends React.Component<AppProps, AppState> {
                 disabled={this.state.stateFGM == FGM_STATE.STOPPED}
                 className={Classes.MINIMAL}
                 icon='stop'
+                intent={
+                  this.state.stateFGM == FGM_STATE.STOPPED ? 'none' : 'danger'
+                }
                 onClick={() => {
                   this.props.storeFGM!.stop();
                 }}
               />
-              <Button className={Classes.MINIMAL} icon='cog' />
+              <Button className={Classes.MINIMAL} icon='cog' intent='warning' />
             </NavbarGroup>
           </Navbar>
         </header>

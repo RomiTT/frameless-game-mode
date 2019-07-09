@@ -15,9 +15,9 @@ electron.app.FGM.initialize();
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 450,
-    height: 800,
+    height: 600,
     minWidth: 450,
-    minHeight: 800,
+    minHeight: 600,
     frame: false,
     resizable: true,
     backgroundColor: '#182026',
@@ -78,9 +78,20 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   }
 
-  mainWindow.on('closed', () => {
-    app.FGM.unInitialize();
+  mainWindow.on('close', e => {
+    if (mainWindow) {
+      e.preventDefault();
+      mainWindow.send('close');
+    } else {
+      app.FGM.unInitialize();
+    }
+  });
+
+  electron.ipcMain.on('closed', () => {
     mainWindow = null;
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
   });
 
   mainWindow.on('minimize', () => {
