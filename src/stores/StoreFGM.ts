@@ -12,6 +12,7 @@ import {
   FGM_WINDOW_SIZE,
   FGM_MODE
 } from '../components/FGM';
+import { string } from 'prop-types';
 
 export interface IStoreFGM {
   listAppToMonitor: Array<object>;
@@ -20,6 +21,16 @@ export interface IStoreFGM {
   startOnLaunch: boolean;
   load(): void;
   save(): void;
+  addApp(
+    key: string,
+    processName: string,
+    title: string,
+    pos: FGM_WINDOW_POSITION,
+    size: FGM_WINDOW_SIZE,
+    width: number,
+    height: number
+  ): void;
+  removeApp(key: string): void;
   setMode(mode: FGM_MODE): void;
   start(): void;
   pause(): void;
@@ -55,13 +66,52 @@ export class StoreFGM implements IStoreFGM {
     this.state = FGM.state();
   };
 
+  @action
   load = () => {
     deserializeObject(this);
     FGM.setDataList(this.listAppToMonitor);
   };
 
+  @action
   save = () => {
     serializeObject(this);
+  };
+
+  @action
+  addApp = (
+    key: string,
+    processName: string,
+    title: string,
+    pos: FGM_WINDOW_POSITION,
+    size: FGM_WINDOW_SIZE,
+    width: number,
+    height: number
+  ) => {
+    let val = {
+      key: key,
+      processName: processName,
+      title: title,
+      wpos: pos,
+      wsize: size,
+      width: width,
+      height: height
+    };
+
+    this.listAppToMonitor.push(val);
+    FGM.addGameModeInfo(val);
+  };
+
+  @action
+  removeApp = (key: string) => {
+    const index = this.listAppToMonitor.findIndex(item => {
+      return (item as any).key === key;
+    });
+
+    if (index > -1) {
+      this.listAppToMonitor.splice(index, 1);
+    }
+
+    FGM.removeGameModeInfo(key);
   };
 
   @action
