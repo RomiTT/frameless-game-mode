@@ -34,8 +34,10 @@ struct WindowApp {
   std::wstring processPath;
   std::wstring processName;
   std::wstring title;
+  std::wstring key;
 };
 
+void MakeKey(const WCHAR* processName, const WCHAR* title, std::wstring& out);
 void GetWindowAppList(std::vector<WindowApp>& out);
 
 #endif

@@ -119,10 +119,15 @@ public:
 
 	// This code will be executed on the worker thread
   void Execute() {
+
 		GetWindowAppList(_list);
 
 		std::sort(_list.begin(), _list.end(), [](const WindowApp& a, const WindowApp& b) {
-			return (lstrcmpi(a.processName.c_str(), b.processName.c_str()) < 0);
+			auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
+			if (ret == 0) {
+				ret = lstrcmpi(a.title.c_str(), b.title.c_str());
+			}
+			return (ret < 0);
 		});
   }
 
@@ -138,18 +143,18 @@ public:
 			auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
 			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));			
 			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
+			auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
 
 			item.Set("processPath", processPath);
 			item.Set("processName",  processName);				
 			item.Set("title", title);
+			item.Set("Key", key);
 			array[i] = item;
 		}
 		
 		Callback().Call({array});
 	}
 };
-
-
 
 
 
@@ -204,6 +209,9 @@ Napi::Value FGM::setDataList(const Napi::CallbackInfo &info) {
 		std::wstring processName = converter.from_bytes(utf8ProcessName);
 		auto utf8Title = item.Get("title").As<Napi::String>().Utf8Value();
 		std::wstring title = converter.from_bytes(utf8Title);
+		std::wstring key;
+		MakeKey(processName.c_str(), title.c_str(), key);
+
 		auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 		auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 		auto width = (int)item.Get("width").As<Napi::Number>();
@@ -211,6 +219,7 @@ Napi::Value FGM::setDataList(const Napi::CallbackInfo &info) {
 
 		listGameModeInfo.push_back(GameModeInfo{ std::move(processName), 
 			                                       std::move(title), 
+																						 std::move(key),
 			                                       (FGM_WINDOW_POSITION)wpos, 
 			                                       (FGM_WINDOW_SIZE)wsize, 
 			                                       width, 
@@ -240,6 +249,9 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 	std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
 	auto utf8Title = item.Get("title").As<Napi::String>().Utf8Value();
 	std::wstring title = converter.from_bytes(utf8Title);
+	std::wstring key;
+	MakeKey(processName.c_str(), title.c_str(), key);
+
 	auto wpos = (int)item.Get("wpos").As<Napi::Number>();
 	auto wsize = (int)item.Get("wsize").As<Napi::Number>();
 	auto width = (int)item.Get("width").As<Napi::Number>();
@@ -247,6 +259,7 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 
 	g_FGM->AddGameModeInfo(GameModeInfo{ std::move(processName), 
 		                                   std::move(title), 
+																			 std::move(key),
 		                                   (FGM_WINDOW_POSITION)wpos, 
 		                                   (FGM_WINDOW_SIZE)wsize, 
 		                                   width, 

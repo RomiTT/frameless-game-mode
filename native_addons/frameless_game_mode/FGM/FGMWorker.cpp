@@ -105,34 +105,88 @@ void FGMWorker::ChangeState(FGM_STATE newState) {
 
 
 
-const WCHAR* GetProcessPathFromWindowHandle(HWND hwnd) {
-	DWORD buffSize = 1024;
-	static WCHAR buffer[1024];
+void GetProcessPathFromWindowHandle(HWND hWnd, std::wstring& out) {
+	DWORD bufferSize = 1024;
+	out.reserve(bufferSize);
+	WCHAR* buffer = (WCHAR*)out.data();
 
 	DWORD dwPID;
-	GetWindowThreadProcessId(hwnd, &dwPID);
+	GetWindowThreadProcessId(hWnd, &dwPID);
 	HANDLE handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE,	dwPID);
 
 	if (handle) {	
 		buffer[0] = 0;
-		if (QueryFullProcessImageName(handle, 0, buffer, &buffSize)) {
-			CloseHandle(handle);
-			return buffer;
+		if (QueryFullProcessImageName(handle, 0, buffer, &bufferSize)) {
+			out = buffer;
 		}
 
 		CloseHandle(handle);
 	}
-
-	return nullptr;
 }
 
 
-const WCHAR* GetWindowTitle(HWND hWnd) {
-	static WCHAR title[_MAX_PATH];
+void GetProcessNameFromWindowHandle(HWND hWnd, std::wstring& out) {
+	DWORD bufferSize = 1024;
+	out.reserve(bufferSize);
+	WCHAR* buffer = (WCHAR*)out.data();
+
+	DWORD dwPID;
+	GetWindowThreadProcessId(hWnd, &dwPID);
+	HANDLE handle = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, dwPID);
+
+	if (handle) {
+		buffer[0] = 0;
+		if (QueryFullProcessImageName(handle, 0, buffer, &bufferSize)) {
+			auto len = lstrlen(buffer);
+			for (auto i = len - 1; i >= 0; i--) {
+				if (buffer[i] == L'\\') {
+					out = const_cast<WCHAR*>(buffer + i + 1);
+					break;
+				}
+			}
+		}
+
+		CloseHandle(handle);
+	}
+}
+
+
+
+
+void GetWindowTitle(HWND hWnd, std::wstring& out) {
+	out.reserve(_MAX_PATH);
+	WCHAR* title = (WCHAR*)out.data();
+
 	title[0] = 0;
 	GetWindowText(hWnd, title, _MAX_PATH);
+	out = title;
+}
 
-	return title;
+
+void MakeKey(const WCHAR* processName, const WCHAR* title, std::wstring& out) {
+	out.reserve(_MAX_PATH);
+	WCHAR* key = (WCHAR*)out.data();
+	key[0] = 0;
+
+	if (processName != NULL) {
+		if (title != NULL) {
+			wsprintf(key, L"#key-%s-%s", processName, title);
+		}
+	}
+	else {
+		if (title != NULL) {
+			wsprintf(key, L"#key-%s", title);
+		}
+	}
+
+	out = key;
+}
+
+void MakeKeyFromWindowHandle(HWND hWnd, std::wstring& out) {
+	std::wstring processName, title;
+	GetProcessNameFromWindowHandle(hWnd, processName);
+	GetWindowTitle(hWnd, title);
+	MakeKey(processName.c_str(), title.c_str(), out);
 }
 
 
@@ -236,27 +290,19 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {
 		return TRUE;
 	}
 
-	std::vector<GameModeInfo>* list = reinterpret_cast<std::vector<GameModeInfo>*>(lParam);
+	auto list = reinterpret_cast<std::vector<GameModeInfo>*>(lParam);
 
 	if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK) {
-		const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
-		const WCHAR* title = GetWindowTitle(hWnd);
+		std::wstring key;
+		MakeKeyFromWindowHandle(hWnd, key);
 
-		if (processPath != nullptr) {
+		if (key.size() > 0) {
 			for (auto item : (*list)) {
-				if (lstrcmpi(processPath, item.processPath.c_str()) == 0) {
+				if (lstrcmpi(key.c_str(), item.key.c_str()) == 0) {
 					MadeWindowFrameless(hWnd, item);
 					break;
 				}
 			}
-		}
-		else if (title != nullptr) {
-			for (auto item : (*list)) {
-				if (lstrcmp(title, item.title.c_str()) == 0) {
-					MadeWindowFrameless(hWnd, item);
-					break;
-				}
-			}			
 		}
 	}
 
@@ -267,11 +313,12 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam) {
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 	HWND hWnd = GetForegroundWindow();					
 	if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK) {
-		const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
+		std::wstring key;
+		MakeKeyFromWindowHandle(hWnd, key);
 
-		if (processPath != nullptr) {
+		if (key.size() > 0) {
 			for (auto item : list) {
-				if (wcsstr(processPath, item.processPath.c_str()) != NULL) {
+				if (lstrcmpi(key.c_str(), item.key.c_str()) == 0) {
 					MadeWindowFrameless(hWnd, item);
 					break;
 				}
@@ -281,22 +328,27 @@ void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list) {
 }
 
 
+
 void GetWindowAppList(std::vector<WindowApp>& out) {
 	HWND hWnd = GetForegroundWindow();
 	hWnd = GetWindow(hWnd, GW_HWNDFIRST);
 	while (hWnd != NULL) {
 		if ((GetWindowLong(hWnd, GWL_STYLE) & WINDOW_STYLE_TO_CHECK) == WINDOW_STYLE_TO_CHECK && IsMainWindow(hWnd)) {
-			const WCHAR* processPath = GetProcessPathFromWindowHandle(hWnd);
-			const WCHAR* title = GetWindowTitle(hWnd);
+			std::wstring processPath, processName, title, key;
+			GetProcessPathFromWindowHandle(hWnd, processPath);			
+			GetWindowTitle(hWnd, title);			
 
-			if (lstrlen(processPath) > 0 || lstrlen(title) > 0) {
-				WindowApp app;			
-				app.processPath = (processPath == NULL) ? L"" : processPath;
-				auto index = app.processPath.rfind(L'\\');
-				app.processName = app.processPath.substr(index+1);
-				app.title = (title == NULL) ? L"" : title;
+			if (processPath.size() > 0 || title.size() > 0) {
+				if (!(lstrcmp(processName.c_str(), L"explorer.exe") == 0 && title.size() == 0)) {
+					GetProcessNameFromWindowHandle(hWnd, processName);
+					MakeKeyFromWindowHandle(hWnd, key);
 
-				if (!(wcsstr(app.processName.c_str(), L"explorer.exe") != NULL && app.title.size() == 0)) {
+					WindowApp app;
+					app.processPath = std::move(processPath);
+					app.processName = std::move(processName);
+					app.title = std::move(title);
+					app.key = std::move(key);
+
 					out.push_back(app);
 				}
 			}
