@@ -47,6 +47,7 @@
         "zip",
         "nsis"
       ],
+      "requestedExecutionLevel": "requireAdministrator",
       "icon": "./public/appIcon.ico"
     },
     "files": [
