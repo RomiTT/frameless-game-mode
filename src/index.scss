@@ -2,6 +2,7 @@
 @import '~@blueprintjs/icons/lib/css/blueprint-icons.css';
 @import '~@blueprintjs/core/lib/css/blueprint.css';
 @import '~bulma/css/bulma.css';
+@import '~@blueprintjs/core/lib/scss/variables';
 
 html {
   height: 100%;
@@ -35,4 +36,24 @@ disable dragging and selecting html elements
   -webkit-user-drag: none;
   -webkit-app-region: no-drag;
   cursor: default;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: $gray5;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $gray1;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: $gray3;
 }

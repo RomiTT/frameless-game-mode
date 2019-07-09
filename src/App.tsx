@@ -21,6 +21,8 @@ import { FGM_STATE, FGM_MODE } from './components/FGM';
 import WindowAppList from './components/WindowAppList';
 import { IStoreFGM } from './stores/StoreFGM';
 import styles from './App.module.scss';
+import FloatingButton from './components/FloatingButton';
+import AddAppDialog from './components/AddAppDialog';
 
 const { ipcRenderer } = require('electron');
 
@@ -35,13 +37,15 @@ interface AppState {
 @inject('storeFGM')
 class App extends React.Component<AppProps, AppState> {
   headerRef: any;
-  footerRef: any;
+  addAppDialogRef: React.RefObject<AddAppDialog>;
+  addButtonRef: React.RefObject<FloatingButton>;
 
   constructor(props: any) {
     super(props);
 
     this.headerRef = React.createRef();
-    this.footerRef = React.createRef();
+    this.addAppDialogRef = React.createRef();
+    this.addButtonRef = React.createRef();
     this.props.storeFGM!.load();
     this.state = {
       stateFGM: this.props.storeFGM!.state
@@ -66,9 +70,13 @@ class App extends React.Component<AppProps, AppState> {
   };
 
   render() {
+    let addBtnLeft = 0;
+    if (this.headerRef.current) {
+      addBtnLeft = this.headerRef.current.offsetWidth - 52;
+    }
     return (
       <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
-        <header>
+        <header ref={this.headerRef}>
           <TitleBar
             app='Frameless Game Mode'
             icon={`./appIcon.ico`}
@@ -123,8 +131,21 @@ class App extends React.Component<AppProps, AppState> {
             </NavbarGroup>
           </Navbar>
         </header>
-
-        <WindowAppList />
+        <div>
+          <WindowAppList listApp={this.props.storeFGM!.listAppToMonitor} />
+          <FloatingButton
+            position='fixed'
+            left={addBtnLeft}
+            top={87}
+            icon='add'
+            intent='danger'
+            scale={1.3}
+            onClick={() => {
+              this.addAppDialogRef.current!.open();
+            }}
+          />
+          <AddAppDialog ref={this.addAppDialogRef} />
+        </div>
 
         <footer className={`has-text-centered ${styles.footer}`}>
           <h1>Footer</h1>
