@@ -42,7 +42,7 @@ class App extends React.Component<AppProps, AppState> {
 
     this.headerRef = React.createRef();
     this.footerRef = React.createRef();
-    this.props.storeFGM!.loadAppList();
+    this.props.storeFGM!.load();
     this.state = {
       stateFGM: this.props.storeFGM!.state
     };
@@ -61,7 +61,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   handleCloseApp = () => {
-    this.props.storeFGM!.saveAppList();
+    this.props.storeFGM!.save();
     ipcRenderer.send('closed');
   };
 

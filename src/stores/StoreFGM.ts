@@ -18,8 +18,8 @@ export interface IStoreFGM {
   state: FGM_STATE;
   mode: FGM_MODE;
   startOnLaunch: boolean;
-  loadAppList(): void;
-  saveAppList(): void;
+  load(): void;
+  save(): void;
   setMode(mode: FGM_MODE): void;
   start(): void;
   pause(): void;
@@ -55,12 +55,12 @@ export class StoreFGM implements IStoreFGM {
     this.state = FGM.state();
   };
 
-  loadAppList = () => {
+  load = () => {
     deserializeObject(this);
     FGM.setDataList(this.listAppToMonitor);
   };
 
-  saveAppList = () => {
+  save = () => {
     serializeObject(this);
   };
 
