@@ -22,9 +22,7 @@ export interface IStoreFGM {
   load(): void;
   save(): void;
   addApp(
-    key: string,
-    processName: string,
-    title: string,
+    item: any,
     pos: FGM_WINDOW_POSITION,
     size: FGM_WINDOW_SIZE,
     width: number,
@@ -79,27 +77,30 @@ export class StoreFGM implements IStoreFGM {
 
   @action
   addApp = (
-    key: string,
-    processName: string,
-    title: string,
+    item: any,
     pos: FGM_WINDOW_POSITION,
     size: FGM_WINDOW_SIZE,
     width: number,
     height: number
   ) => {
+    const index = this.listAppToMonitor.findIndex(obj => {
+      return (obj as any).key === item.key;
+    });
+
+    if (index > -1) {
+      return;
+    }
+
     let val = {
-      key: key,
-      processName: processName,
-      title: title,
+      ...item,
       wpos: pos,
       wsize: size,
       width: width,
       height: height
     };
-
     this.listAppToMonitor.push(val);
     FGM.addGameModeInfo(val);
-    serializeObject(this);
+    this.save();
   };
 
   @action
@@ -113,7 +114,7 @@ export class StoreFGM implements IStoreFGM {
     }
 
     FGM.removeGameModeInfo(key);
-    serializeObject(this);
+    this.save();
   };
 
   @action
