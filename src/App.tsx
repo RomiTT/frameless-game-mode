@@ -133,7 +133,7 @@ class App extends React.Component<AppProps, AppState> {
             </NavbarGroup>
           </Navbar>
         </header>
-        <div>
+        <main>
           <WindowAppList
             listApp={this.props.storeFGM!.listAppToMonitor}
             ref={this.listRef}
@@ -163,7 +163,7 @@ class App extends React.Component<AppProps, AppState> {
               this.listRef.current!.forceUpdate();
             }}
           />
-        </div>
+        </main>
 
         <footer className={`has-text-centered ${styles.footer}`} />
       </AppLayout>
