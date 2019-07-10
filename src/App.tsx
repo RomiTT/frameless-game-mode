@@ -14,7 +14,10 @@ import {
   NavbarDivider,
   Button,
   NavbarGroup,
-  NavbarHeading
+  NavbarHeading,
+  ContextMenu,
+  Menu,
+  MenuItem
 } from '@blueprintjs/core';
 import { FGM_STATE, FGM_MODE } from './components/FGM';
 
@@ -23,6 +26,7 @@ import { IStoreFGM } from './stores/StoreFGM';
 import styles from './App.module.scss';
 import FloatingButton from './components/FloatingButton';
 import AddAppDialog from './components/AddAppDialog';
+import YesNoDialog from './components/YesNoDialog';
 
 const { ipcRenderer } = require('electron');
 
@@ -39,6 +43,7 @@ class App extends React.Component<AppProps, AppState> {
   headerRef: any;
   listRef: React.RefObject<WindowAppList>;
   addAppDialogRef: React.RefObject<AddAppDialog>;
+  yesNoDialogRef: React.RefObject<YesNoDialog>;
   addButtonRef: React.RefObject<FloatingButton>;
 
   constructor(props: any) {
@@ -47,6 +52,7 @@ class App extends React.Component<AppProps, AppState> {
     this.headerRef = React.createRef();
     this.listRef = React.createRef();
     this.addAppDialogRef = React.createRef();
+    this.yesNoDialogRef = React.createRef();
     this.addButtonRef = React.createRef();
     this.props.storeFGM!.load();
     this.state = {
@@ -137,9 +143,45 @@ class App extends React.Component<AppProps, AppState> {
           <WindowAppList
             listApp={this.props.storeFGM!.listAppToMonitor}
             ref={this.listRef}
-            onCtxMenu={(item: any) => {
-              this.props.storeFGM!.removeApp(item.key);
-              this.listRef.current!.forceUpdate();
+            onContextMenu={(e: any, item: any) => {
+              e.preventDefault();
+
+              const menu = React.createElement(
+                Menu,
+                { className: 'bp3-ui-text' }, // empty props
+                React.createElement(MenuItem, {
+                  //className: 'bp3-menu-item',
+                  text: 'Delete',
+                  icon: 'delete',
+                  onClick: () => {
+                    this.yesNoDialogRef.current!.open(
+                      'Delete item',
+                      'Are you sure to delete?',
+                      () => {
+                        // onOk
+                        this.props.storeFGM!.removeApp(item.key);
+                        this.listRef.current!.forceUpdate();
+                      }
+                    );
+                  }
+                }),
+                React.createElement(MenuItem, {
+                  //className: 'bp3-menu-item',
+                  text: 'Properties...',
+                  icon: 'properties',
+                  onClick: () => {}
+                })
+              );
+
+              // mouse position is available on event
+              ContextMenu.show(
+                menu,
+                { left: e.clientX, top: e.clientY },
+                () => {
+                  // menu was closed; callback optional
+                },
+                true
+              );
             }}
           />
           <FloatingButton
@@ -161,6 +203,7 @@ class App extends React.Component<AppProps, AppState> {
               this.listRef.current!.forceUpdate();
             }}
           />
+          <YesNoDialog ref={this.yesNoDialogRef} />
         </main>
 
         <footer className={`has-text-centered ${styles.footer}`} />
