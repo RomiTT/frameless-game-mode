@@ -46,7 +46,7 @@ class SelectAppPage extends React.Component<any, any> {
           />
           <FloatingButton
             position='absolute'
-            left={356}
+            left={361}
             top={6}
             icon='refresh'
             intent='success'
