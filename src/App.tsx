@@ -190,7 +190,7 @@ class App extends React.Component<AppProps, AppState> {
             top={87}
             icon='add'
             intent='danger'
-            scale={1.3}
+            scale={1.2}
             onClick={() => {
               this.addAppDialogRef.current!.open();
             }}
