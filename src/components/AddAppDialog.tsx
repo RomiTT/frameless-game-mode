@@ -25,7 +25,6 @@ class SelectAppPage extends React.Component<any, any> {
   };
 
   handleSelectionChange = (item: any) => {
-    console.log('selection change:', item);
     this.setState({ disabledNextButton: item == null });
   };
 
@@ -114,7 +113,6 @@ export default class AddAppDialog extends React.Component<
   };
   handleClose = () => this.setState({ isOpen: false });
   handleNext = (selectedItem: any) => {
-    console.log('selected item:', selectedItem);
     this.selectedItem = selectedItem;
     this.setState({ stage: 2 });
   };

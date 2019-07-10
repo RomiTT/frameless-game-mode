@@ -138,7 +138,6 @@ class App extends React.Component<AppProps, AppState> {
             listApp={this.props.storeFGM!.listAppToMonitor}
             ref={this.listRef}
             onCtxMenu={(item: any) => {
-              console.log('item key:', item.key);
               this.props.storeFGM!.removeApp(item.key);
               this.listRef.current!.forceUpdate();
             }}
@@ -157,7 +156,6 @@ class App extends React.Component<AppProps, AppState> {
           <AddAppDialog
             ref={this.addAppDialogRef}
             onOK={(item, wpos, wsize, width, height) => {
-              console.log(item);
               this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
 
               this.listRef.current!.forceUpdate();
