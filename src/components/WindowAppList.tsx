@@ -5,7 +5,7 @@ interface WindowAppListProps {
   listApp: Array<object>;
   style?: React.CSSProperties;
   onSelectionChange?: (item: any) => void;
-  onCtxMenu?: (item: any) => void;
+  onContextMenu?: (e: any, item: any) => void;
 }
 
 interface WindowsAppListState {
@@ -88,10 +88,10 @@ class WindowAppList extends React.Component<
       <div
         key={index}
         className={classes}
-        onContextMenu={() => {
+        onContextMenu={e => {
           this.selectItem(index);
-          if (this.props.onCtxMenu) {
-            this.props.onCtxMenu(item);
+          if (this.props.onContextMenu) {
+            this.props.onContextMenu(e, item);
           }
         }}
         onClick={() => {
