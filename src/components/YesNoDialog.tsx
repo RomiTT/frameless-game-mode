@@ -23,12 +23,13 @@ export default class YesNoDialog extends React.Component {
   };
 
   handleClose = () => {
-    this.setState({ isOpen: false });
     if (this.onNo) this.onNo();
+    this.setState({ isOpen: false });
   };
 
   handleYes = () => {
     if (this.onYes) this.onYes();
+    this.setState({ isOpen: false });
   };
 
   render() {
