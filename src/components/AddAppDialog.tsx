@@ -16,6 +16,7 @@ import WindowAppList from './WindowAppList';
 import { IStoreFGM } from '../stores/StoreFGM';
 import { inject } from 'mobx-react';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from './FGM';
+import FloatingButton from './FloatingButton';
 
 class SelectAppPage extends React.Component<any, any> {
   listRef: React.RefObject<WindowAppList> = React.createRef();
@@ -36,12 +37,21 @@ class SelectAppPage extends React.Component<any, any> {
   render() {
     return (
       <>
-        <div className={Classes.DIALOG_BODY}>
+        <div className={Classes.DIALOG_BODY} style={{ position: 'relative' }}>
           <WindowAppList
             ref={this.listRef}
             listApp={this.props.listApp}
             style={{ height: '350px', border: 'solid 1px gray' }}
             onSelectionChange={this.handleSelectionChange}
+          />
+          <FloatingButton
+            position='absolute'
+            left={356}
+            top={6}
+            icon='refresh'
+            intent='success'
+            scale={1.1}
+            onClick={this.props.onRefreshList}
           />
         </div>
         <Divider />
@@ -51,10 +61,22 @@ class SelectAppPage extends React.Component<any, any> {
               onClick={this.handleNext}
               intent='primary'
               disabled={this.state.disabledNextButton}
+              style={{
+                paddingLeft: this.props.buttonPadding,
+                paddingRight: this.props.buttonPadding
+              }}
             >
               Next
             </Button>
-            <Button onClick={this.props.handleClose}>Cancel</Button>
+            <Button
+              onClick={this.props.handleClose}
+              style={{
+                paddingLeft: this.props.buttonPadding,
+                paddingRight: this.props.buttonPadding
+              }}
+            >
+              Cancel
+            </Button>
           </div>
         </div>
       </>
@@ -74,8 +96,23 @@ class SetPositionAndSizePage extends React.Component<any, any> {
         <Divider />
         <div className={Classes.DIALOG_FOOTER} style={{ paddingTop: '10px' }}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button onClick={this.props.handlePrev}>Prev</Button>
-            <Button onClick={this.props.handleOK} intent='primary'>
+            <Button
+              onClick={this.props.handlePrev}
+              style={{
+                paddingLeft: this.props.buttonPadding,
+                paddingRight: this.props.buttonPadding
+              }}
+            >
+              Prev
+            </Button>
+            <Button
+              onClick={this.props.handleOK}
+              intent='primary'
+              style={{
+                paddingLeft: this.props.buttonPadding,
+                paddingRight: this.props.buttonPadding
+              }}
+            >
               OK
             </Button>
           </div>
@@ -116,14 +153,18 @@ export default class AddAppDialog extends React.Component<
       this.setState({ isOpen: true, stage: 1, listApp: list });
     });
   };
+
   handleClose = () => this.setState({ isOpen: false });
+
   handleNext = (selectedItem: any) => {
     this.selectedItem = selectedItem;
     this.setState({ stage: 2 });
   };
+
   handlePrev = () => {
     this.setState({ stage: 1 });
   };
+
   handleOK = () => {
     this.setState({ isOpen: false });
     this.props.onOK(
@@ -135,14 +176,23 @@ export default class AddAppDialog extends React.Component<
     );
   };
 
+  handleRefreshList = () => {
+    this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
+      this.setState({ listApp: list });
+    });
+  };
+
   render() {
     let title = 'Select a application';
     let icon: IconName | MaybeElement = 'list';
+    const buttonPadding = '25px';
     let page = (
       <SelectAppPage
         listApp={this.state.listApp}
         handleNext={this.handleNext}
         handleClose={this.handleClose}
+        onRefreshList={this.handleRefreshList}
+        buttonPadding={buttonPadding}
       />
     );
     if (this.state.stage == 2) {
@@ -152,6 +202,7 @@ export default class AddAppDialog extends React.Component<
         <SetPositionAndSizePage
           handlePrev={this.handlePrev}
           handleOK={this.handleOK}
+          buttonPadding={buttonPadding}
         />
       );
     }
