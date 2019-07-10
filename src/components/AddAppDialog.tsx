@@ -4,9 +4,14 @@ import {
   Tooltip,
   Button,
   AnchorButton,
-  Divider
+  Divider,
+  IconName
 } from '@blueprintjs/core/lib/esm/components';
-import { Classes, Intent } from '@blueprintjs/core/lib/esm/common';
+import {
+  Classes,
+  Intent,
+  MaybeElement
+} from '@blueprintjs/core/lib/esm/common';
 import WindowAppList from './WindowAppList';
 import { IStoreFGM } from '../stores/StoreFGM';
 import { inject } from 'mobx-react';
@@ -132,6 +137,7 @@ export default class AddAppDialog extends React.Component<
 
   render() {
     let title = 'Select a application';
+    let icon: IconName | MaybeElement = 'list';
     let page = (
       <SelectAppPage
         listApp={this.state.listApp}
@@ -141,6 +147,7 @@ export default class AddAppDialog extends React.Component<
     );
     if (this.state.stage == 2) {
       title = 'Set position and size';
+      icon = 'page-layout';
       page = (
         <SetPositionAndSizePage
           handlePrev={this.handlePrev}
@@ -155,6 +162,7 @@ export default class AddAppDialog extends React.Component<
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={title}
+        icon={icon}
         style={{ width: '450px', height: '500px' }}
         {...this.state}
       >
