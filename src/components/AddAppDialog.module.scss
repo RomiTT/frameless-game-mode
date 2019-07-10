@@ -1,0 +1,11 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+.dialogMain {
+  width: 450px;
+  height: 500px;
+
+  .buttonPadding {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+}

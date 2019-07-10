@@ -4,6 +4,7 @@ import styles from './WindowAppList.module.scss';
 interface WindowAppListProps {
   listApp: Array<object>;
   style?: React.CSSProperties;
+  className?: string;
   onSelectionChange?: (item: any) => void;
   onContextMenu?: (e: any, item: any) => void;
 }
@@ -118,7 +119,7 @@ class WindowAppList extends React.Component<
       <div
         style={this.props.style}
         tabIndex={0}
-        className={styles.appList}
+        className={`${styles.appList} ${this.props.className}`}
         ref={this.listRef}
         onKeyDown={this.handleKeyDown}
       >

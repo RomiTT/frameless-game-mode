@@ -1,15 +1,5 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 
-.dialogMain {
-  width: 450px;
-  height: 500px;
-}
-
-.buttonPadding {
-  padding-left: 25px;
-  padding-right: 25px;
-}
-
 .wposRoot {
   display: flex;
   flex-direction: column;
@@ -33,23 +23,6 @@
     .wposItemSelected {
       @extend .wposItem;
       background-color: $gold5;
-    }
-  }
-}
-
-.wsizeRoot {
-  .radioItem {
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  .inputContainer {
-    display: flex;
-    padding-left: 28px;
-    padding-bottom: 4px;
-
-    .label {
-      width: 65px;
     }
   }
 }

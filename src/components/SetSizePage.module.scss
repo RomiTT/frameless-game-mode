@@ -1,0 +1,16 @@
+.wsizeRoot {
+  .radioItem {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .inputContainer {
+    display: flex;
+    padding-left: 28px;
+    padding-bottom: 4px;
+
+    .label {
+      width: 65px;
+    }
+  }
+}
