@@ -25,7 +25,7 @@ import WindowAppList from './components/WindowAppList';
 import { IStoreFGM } from './stores/StoreFGM';
 import styles from './App.module.scss';
 import FloatingButton from './components/FloatingButton';
-import AddAppDialog from './components/AddAppDialog';
+import AddAppDialog from './components/AddAppDialog/AddAppDialog';
 import YesNoDialog from './components/YesNoDialog';
 
 const { ipcRenderer } = require('electron');
@@ -199,7 +199,6 @@ class App extends React.Component<AppProps, AppState> {
             ref={this.addAppDialogRef}
             onOK={(item, wpos, wsize, width, height) => {
               this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
-
               this.listRef.current!.forceUpdate();
             }}
           />
