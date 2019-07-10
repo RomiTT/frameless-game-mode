@@ -1,6 +1,48 @@
 import React from 'react';
 import styles from './WindowAppList.module.scss';
 
+interface WindowAppListRowItemProps {
+  item: any;
+  index: number;
+  className: string;
+  onClick: (index: number) => void;
+  onContextMenu: (e: any, index: number, item: any) => void;
+}
+
+class WindowAppListRowItem extends React.PureComponent<
+  WindowAppListRowItemProps,
+  any
+> {
+  handleContextMenu = (e: any) => {
+    if (this.props.onContextMenu) {
+      this.props.onContextMenu(e, this.props.index, this.props.item);
+    }
+  };
+
+  handleClick = () => {
+    if (this.props.onClick) {
+      this.props.onClick(this.props.index);
+    }
+  };
+
+  render() {
+    return (
+      <div
+        className={this.props.className}
+        onContextMenu={this.handleContextMenu}
+        onClick={this.handleClick}
+      >
+        <div className={styles.innerContainer}>
+          <p className={styles.processName}>
+            Process: {this.props.item.processName}
+          </p>
+          <p className={styles.title}>Title: {this.props.item.title}</p>
+        </div>
+      </div>
+    );
+  }
+}
+
 interface WindowAppListProps {
   listApp: Array<object>;
   style?: React.CSSProperties;
@@ -79,6 +121,18 @@ class WindowAppList extends React.Component<
     }
   };
 
+  handleClick = (index: number) => {
+    this.selectItem(index);
+    this.listRef.current!.focus();
+  };
+
+  handleContextMenu = (e: any, index: number, item: any) => {
+    this.selectItem(index);
+    if (this.props.onContextMenu) {
+      this.props.onContextMenu(e, item);
+    }
+  };
+
   renderItem = (index: number) => {
     const item: any = this.props.listApp[index];
     const classes =
@@ -86,25 +140,14 @@ class WindowAppList extends React.Component<
         ? styles.listItemSelected
         : styles.listItem;
     return (
-      <div
+      <WindowAppListRowItem
         key={index}
+        index={index}
+        item={item}
         className={classes}
-        onContextMenu={e => {
-          this.selectItem(index);
-          if (this.props.onContextMenu) {
-            this.props.onContextMenu(e, item);
-          }
-        }}
-        onClick={() => {
-          this.selectItem(index);
-          this.listRef.current!.focus();
-        }}
-      >
-        <div className={styles.innerContainer}>
-          <p className={styles.processName}>Process: {item.processName}</p>
-          <p className={styles.title}>Title: {item.title}</p>
-        </div>
-      </div>
+        onClick={this.handleClick}
+        onContextMenu={this.handleContextMenu}
+      />
     );
   };
 
