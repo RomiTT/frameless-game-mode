@@ -45,29 +45,35 @@ class WindowAppList extends React.Component<
     return this.props.listApp[this.state.selectedIndex];
   }
 
+  selectItem(index: number) {
+    if (index < 0 || index >= this.props.listApp.length) return;
+
+    if (this.state.selectedIndex != index) {
+      this.setState({ selectedIndex: index });
+      if (this.props.onSelectionChange) {
+        this.props.onSelectionChange(this.props.listApp[index]);
+      }
+    }
+  }
+
+  unselectItem() {
+    this.setState({ selectedIndex: -1 });
+    if (this.props.onSelectionChange) {
+      this.props.onSelectionChange(null);
+    }
+  }
+
   handleKeyDown = (e: any) => {
     // Arrow up
     if (e.keyCode === 38) {
       if (this.state.selectedIndex > 0) {
-        let newIndex = this.state.selectedIndex - 1;
-        if (this.state.selectedIndex != newIndex) {
-          this.setState({ selectedIndex: newIndex });
-          if (this.props.onSelectionChange) {
-            this.props.onSelectionChange(this.props.listApp[newIndex]);
-          }
-        }
+        this.selectItem(this.state.selectedIndex - 1);
       }
     }
     // Arrow Down
     else if (e.keyCode == 40) {
       if (this.state.selectedIndex < this.props.listApp.length - 1) {
-        let newIndex = this.state.selectedIndex + 1;
-        if (this.state.selectedIndex != newIndex) {
-          this.setState({ selectedIndex: newIndex });
-          if (this.props.onSelectionChange) {
-            this.props.onSelectionChange(this.props.listApp[newIndex]);
-          }
-        }
+        this.selectItem(this.state.selectedIndex + 1);
       }
     }
   };
@@ -83,18 +89,13 @@ class WindowAppList extends React.Component<
         key={index}
         className={classes}
         onContextMenu={() => {
+          this.selectItem(index);
           if (this.props.onCtxMenu) {
             this.props.onCtxMenu(item);
           }
         }}
         onClick={() => {
-          if (this.state.selectedIndex != index) {
-            this.setState({ selectedIndex: index });
-            if (this.props.onSelectionChange) {
-              this.props.onSelectionChange(item);
-            }
-          }
-
+          this.selectItem(index);
           this.listRef.current!.focus();
         }}
       >
