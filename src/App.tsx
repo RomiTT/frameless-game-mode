@@ -19,7 +19,12 @@ import {
   Menu,
   MenuItem
 } from '@blueprintjs/core';
-import { FGM_STATE, FGM_MODE } from './components/FGM';
+import {
+  FGM_STATE,
+  FGM_MODE,
+  FGM_WINDOW_POSITION,
+  FGM_WINDOW_SIZE
+} from './components/FGM';
 
 import WindowAppList from './components/WindowAppList';
 import { IStoreFGM } from './stores/StoreFGM';
@@ -77,6 +82,74 @@ class App extends React.Component<AppProps, AppState> {
     ipcRenderer.send('closed');
   };
 
+  handleStart = () => {
+    this.props.storeFGM!.start();
+  };
+
+  handlePause = () => {
+    this.props.storeFGM!.pause();
+  };
+
+  handleStop = () => {
+    this.props.storeFGM!.stop();
+  };
+
+  handleContextMenuFromAppList = (e: any, item: any) => {
+    e.preventDefault();
+
+    const menu = React.createElement(
+      Menu,
+      { className: 'bp3-ui-text' }, // empty props
+      React.createElement(MenuItem, {
+        //className: 'bp3-menu-item',
+        text: 'Delete',
+        icon: 'delete',
+        onClick: () => {
+          this.yesNoDialogRef.current!.open(
+            'Delete item',
+            'Are you sure to delete?',
+            () => {
+              // onOk
+              this.props.storeFGM!.removeApp(item.key);
+              this.listRef.current!.forceUpdate();
+            }
+          );
+        }
+      }),
+      React.createElement(MenuItem, {
+        //className: 'bp3-menu-item',
+        text: 'Properties...',
+        icon: 'properties',
+        onClick: () => {}
+      })
+    );
+
+    // mouse position is available on event
+    ContextMenu.show(
+      menu,
+      { left: e.clientX, top: e.clientY },
+      () => {
+        // menu was closed; callback optional
+      },
+      true
+    );
+  };
+
+  handleClickFromAddButton = () => {
+    this.addAppDialogRef.current!.open();
+  };
+
+  handleOKFromAddAppDialog = (
+    item: any,
+    wpos: FGM_WINDOW_POSITION,
+    wsize: FGM_WINDOW_SIZE,
+    width: number,
+    height: number
+  ) => {
+    this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
+    this.listRef.current!.forceUpdate();
+  };
+
   render() {
     let addBtnLeft = 0;
     if (this.headerRef.current) {
@@ -103,9 +176,7 @@ class App extends React.Component<AppProps, AppState> {
                   this.state.stateFGM == FGM_STATE.STARTED ? 'none' : 'success'
                 }
                 icon='play'
-                onClick={() => {
-                  this.props.storeFGM!.start();
-                }}
+                onClick={this.handleStart}
               />
               <Button
                 disabled={
@@ -120,9 +191,7 @@ class App extends React.Component<AppProps, AppState> {
                     ? 'none'
                     : 'success'
                 }
-                onClick={() => {
-                  this.props.storeFGM!.pause();
-                }}
+                onClick={this.handlePause}
               />
               <Button
                 disabled={this.state.stateFGM == FGM_STATE.STOPPED}
@@ -131,9 +200,7 @@ class App extends React.Component<AppProps, AppState> {
                 intent={
                   this.state.stateFGM == FGM_STATE.STOPPED ? 'none' : 'danger'
                 }
-                onClick={() => {
-                  this.props.storeFGM!.stop();
-                }}
+                onClick={this.handleStop}
               />
               <Button className={Classes.MINIMAL} icon='cog' intent='warning' />
             </NavbarGroup>
@@ -143,46 +210,7 @@ class App extends React.Component<AppProps, AppState> {
           <WindowAppList
             listApp={this.props.storeFGM!.listAppToMonitor}
             ref={this.listRef}
-            onContextMenu={(e: any, item: any) => {
-              e.preventDefault();
-
-              const menu = React.createElement(
-                Menu,
-                { className: 'bp3-ui-text' }, // empty props
-                React.createElement(MenuItem, {
-                  //className: 'bp3-menu-item',
-                  text: 'Delete',
-                  icon: 'delete',
-                  onClick: () => {
-                    this.yesNoDialogRef.current!.open(
-                      'Delete item',
-                      'Are you sure to delete?',
-                      () => {
-                        // onOk
-                        this.props.storeFGM!.removeApp(item.key);
-                        this.listRef.current!.forceUpdate();
-                      }
-                    );
-                  }
-                }),
-                React.createElement(MenuItem, {
-                  //className: 'bp3-menu-item',
-                  text: 'Properties...',
-                  icon: 'properties',
-                  onClick: () => {}
-                })
-              );
-
-              // mouse position is available on event
-              ContextMenu.show(
-                menu,
-                { left: e.clientX, top: e.clientY },
-                () => {
-                  // menu was closed; callback optional
-                },
-                true
-              );
-            }}
+            onContextMenu={this.handleContextMenuFromAppList}
           />
           <FloatingButton
             position='fixed'
@@ -191,16 +219,11 @@ class App extends React.Component<AppProps, AppState> {
             icon='add'
             intent='danger'
             scale={1.2}
-            onClick={() => {
-              this.addAppDialogRef.current!.open();
-            }}
+            onClick={this.handleClickFromAddButton}
           />
           <AddAppDialog
             ref={this.addAppDialogRef}
-            onOK={(item, wpos, wsize, width, height) => {
-              this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
-              this.listRef.current!.forceUpdate();
-            }}
+            onOK={this.handleOKFromAddAppDialog}
           />
           <YesNoDialog ref={this.yesNoDialogRef} />
         </main>
