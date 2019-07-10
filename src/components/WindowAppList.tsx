@@ -99,8 +99,10 @@ class WindowAppList extends React.Component<
           this.listRef.current!.focus();
         }}
       >
-        <p className={styles.processName}>Process: {item.processName}</p>
-        <p className={styles.title}>Title: {item.title}</p>
+        <div className={styles.innerContainer}>
+          <p className={styles.processName}>Process: {item.processName}</p>
+          <p className={styles.title}>Title: {item.title}</p>
+        </div>
       </div>
     );
   };

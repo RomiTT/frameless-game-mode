@@ -8,51 +8,47 @@
   position: relative;
 
   .listItem {
-    background-color: $dark-gray2;
     border-bottom: solid 1px $light-gray1;
-    cursor: pointer;
-    padding: {
-      left: 8px;
-      right: 8px;
-      top: 2px;
-      bottom: 4px;
-    }
+    background-color: $dark-gray2;
 
-    &:hover {
-      background-color: $gray1;
-    }
+    .innerContainer {
+      background-color: transparent;
+      cursor: pointer;
 
-    &:active {
-      background-color: $green1;
-    }
+      padding: {
+        left: 8px;
+        right: 8px;
+        top: 2px;
+        bottom: 4px;
+      }
 
-    .processName {
-      font-size: 1em;
-      color: $gold5;
-      cursor: inherit;
-    }
+      &:hover {
+        background-color: rgba(20, 28, 34, 0.8);
+      }
 
-    .processNameNoWrap {
-      @extend .processName;
-      white-space: nowrap;
-    }
+      .processName {
+        font-size: 1em;
+        color: $gold5;
+        cursor: inherit;
+      }
 
-    .title {
-      font-size: 0.8em;
-      color: $light-gray3;
-      padding-left: 8px;
-      cursor: inherit;
-    }
+      .processNameNoWrap {
+        @extend .processName;
+        white-space: nowrap;
+      }
 
-    .titleNoWrap {
-      @extend .title;
-      white-space: nowrap;
-    }
-  }
+      .title {
+        font-size: 0.8em;
+        color: $light-gray3;
+        padding-left: 8px;
+        cursor: inherit;
+      }
 
-  .listItemMouseLeaved {
-    @extend .listItem;
-    pointer-events: none;
+      .titleNoWrap {
+        @extend .title;
+        white-space: nowrap;
+      }
+    }
   }
 
   .listItemSelected {
