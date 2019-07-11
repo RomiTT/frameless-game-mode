@@ -3,7 +3,6 @@ import { autorun } from 'mobx';
 import { inject } from 'mobx-react';
 import logo from './logo.svg';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
-import MainContent from './components/MainContent';
 import AppLayout from './components/AppLayout';
 import {
   Navbar,
@@ -45,11 +44,9 @@ interface AppState {
 
 @inject('storeFGM')
 export default class App extends React.PureComponent<AppProps, AppState> {
-  private headerRef: React.RefObject<HTMLElement> = React.createRef();
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
-  private addButtonRef: React.RefObject<FloatingButton> = React.createRef();
   state = {
     stateFGM: this.props.storeFGM!.state
   };
@@ -61,7 +58,6 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     if (this.props.storeFGM!.startOnLaunch) {
       this.props.storeFGM!.start();
     }
-
     ipcRenderer.on('close', this.handleCloseApp);
     autorun(() => {
       this.setState({ stateFGM: this.props.storeFGM!.state });
@@ -143,13 +139,10 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   };
 
   render() {
-    let addBtnLeft = 0;
-    if (this.headerRef.current) {
-      addBtnLeft = this.headerRef.current.offsetWidth - 52;
-    }
+    let addBtnLeft = 500 - 52;
     return (
       <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
-        <header ref={this.headerRef}>
+        <header>
           <TitleBar
             app='Frameless Game Mode'
             icon={`./appIcon.png`}
