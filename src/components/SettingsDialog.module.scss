@@ -1,0 +1,13 @@
+.dialogRoot {
+  width: 430px;
+
+  .divider {
+    margin-bottom: 10px;
+  }
+
+  $button-padding: 30px;
+  .buttonPadding {
+    padding-left: $button-padding;
+    padding-right: $button-padding;
+  }
+}
