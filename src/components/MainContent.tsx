@@ -8,7 +8,7 @@ interface MainContentProps {
   onHeightChanged?: Function;
 }
 
-class MainContent extends React.Component<MainContentProps, object> {
+export default class MainContent extends React.PureComponent<MainContentProps> {
   state = {
     height: 0
   };
@@ -27,7 +27,7 @@ class MainContent extends React.Component<MainContentProps, object> {
     window.removeEventListener('resize', this.calcHeight);
   }
 
-  calcHeight = () => {
+  private calcHeight = () => {
     if (this.props.headerRef.current && this.props.footerRef.current) {
       let newHeight =
         window.innerHeight -
@@ -58,5 +58,3 @@ class MainContent extends React.Component<MainContentProps, object> {
     );
   }
 }
-
-export default MainContent;

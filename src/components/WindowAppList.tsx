@@ -55,7 +55,7 @@ interface WindowsAppListState {
   selectedIndex: number;
 }
 
-class WindowAppList extends React.PureComponent<
+export default class WindowAppList extends React.PureComponent<
   WindowAppListProps,
   WindowsAppListState
 > {
@@ -171,5 +171,3 @@ class WindowAppList extends React.PureComponent<
     );
   }
 }
-
-export default WindowAppList;

@@ -13,25 +13,31 @@ interface SetSizePageProps {
   renderButtons: (pageInstance: SetSizePage) => JSX.Element;
 }
 
-export default class SetSizePage extends React.Component<SetSizePageProps> {
+export default class SetSizePage extends React.PureComponent<SetSizePageProps> {
   state = {
     wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
     width: window.screen.width,
     height: window.screen.height
   };
 
-  handleWSizeChange = (val: FGM_WINDOW_SIZE) => {
+  private handleWSizeChange = (val: FGM_WINDOW_SIZE) => {
     this.setState({ wsize: val });
   };
 
-  handleWidthChange = (valueAsNumber: number, valueAsString: string) => {
+  private handleWidthChange = (
+    valueAsNumber: number,
+    valueAsString: string
+  ) => {
     if (valueAsNumber > window.screen.width) {
       valueAsNumber = window.screen.width;
     }
     this.setState({ width: valueAsNumber });
   };
 
-  handleHeightChange = (valueAsNumber: number, valueAsString: string) => {
+  private handleHeightChange = (
+    valueAsNumber: number,
+    valueAsString: string
+  ) => {
     if (valueAsNumber > window.screen.height) {
       valueAsNumber = window.screen.height;
     }

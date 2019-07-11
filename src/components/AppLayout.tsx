@@ -14,24 +14,17 @@ interface AppLayoutState {
   bodyHeight: number;
 }
 
-class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
-  headerId: string;
-  bodyId: string;
-  footerId: string;
-  header: HTMLElement | null;
-  body: HTMLElement | null;
-  footer: HTMLElement | null;
-
-  constructor(props: AppLayoutProps) {
-    super(props);
-    this.headerId = 'romitt_applayout_header';
-    this.bodyId = 'romitt_applayout_body';
-    this.footerId = 'romitt_applayout_footer';
-    this.header = null;
-    this.body = null;
-    this.footer = null;
-    this.state = { bodyHeight: 0 };
-  }
+export default class AppLayout extends React.PureComponent<
+  AppLayoutProps,
+  AppLayoutState
+> {
+  private headerId: string = 'romitt_applayout_header';
+  private bodyId: string = 'romitt_applayout_body';
+  private footerId: string = 'romitt_applayout_footer';
+  private header: HTMLElement | null = null;
+  private body: HTMLElement | null = null;
+  private footer: HTMLElement | null = null;
+  state = { bodyHeight: 0 };
 
   componentDidMount() {
     window.addEventListener('DOMContentLoaded', this.handleResize);
@@ -48,7 +41,7 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
     window.removeEventListener('resize', this.handleResize);
   }
 
-  handleResize = () => {
+  private handleResize = () => {
     if (this.header && this.footer) {
       let newHeight =
         window.innerHeight -
@@ -110,5 +103,3 @@ class AppLayout extends React.Component<AppLayoutProps, AppLayoutState> {
     );
   }
 }
-
-export default AppLayout;

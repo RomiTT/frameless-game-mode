@@ -26,24 +26,20 @@ interface AddAppDialogProps {
 }
 
 @inject('storeFGM')
-export default class AddAppDialog extends React.Component<
+export default class AddAppDialog extends React.PureComponent<
   AddAppDialogProps,
   any
 > {
-  selectedItem: any;
-  wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
-  wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
-  width = 0;
-  height = 0;
-
-  constructor(props: AddAppDialogProps) {
-    super(props);
-    this.state = {
-      listApp: new Array<object>(),
-      stage: 1,
-      disabledNextButton1: true
-    };
-  }
+  private selectedItem: any;
+  private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
+  private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
+  private width = 0;
+  private height = 0;
+  state = {
+    listApp: new Array<object>(),
+    stage: 1,
+    disabledNextButton1: true
+  };
 
   open = () => {
     this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
@@ -51,9 +47,9 @@ export default class AddAppDialog extends React.Component<
     });
   };
 
-  handleClose = () => this.setState({ isOpen: false });
+  private handleClose = () => this.setState({ isOpen: false });
 
-  handleOK = () => {
+  private handleOK = () => {
     this.setState({ isOpen: false });
     this.props.onOK(
       this.selectedItem,
@@ -64,7 +60,7 @@ export default class AddAppDialog extends React.Component<
     );
   };
 
-  handleRefreshList = () => {
+  private handleRefreshList = () => {
     this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
       this.setState({ listApp: list });
     });

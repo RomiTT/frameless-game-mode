@@ -7,18 +7,18 @@ interface SetPositionPageProps {
   renderButtons: (pageInstance: SetPositionPage) => JSX.Element;
 }
 
-export default class SetPositionPage extends React.Component<
+export default class SetPositionPage extends React.PureComponent<
   SetPositionPageProps
 > {
   state = {
     wposSelected: FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
 
-  handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
+  private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
     this.setState({ wposSelected: wpos });
   };
 
-  getClassName = (wpos: FGM_WINDOW_POSITION) => {
+  private getClassName = (wpos: FGM_WINDOW_POSITION) => {
     return this.state.wposSelected === wpos
       ? styles.wposItemSelected
       : styles.wposItem;

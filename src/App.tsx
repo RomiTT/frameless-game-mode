@@ -44,28 +44,19 @@ interface AppState {
 }
 
 @inject('storeFGM')
-class App extends React.Component<AppProps, AppState> {
-  headerRef: any;
-  listRef: React.RefObject<WindowAppList>;
-  addAppDialogRef: React.RefObject<AddAppDialog>;
-  yesNoDialogRef: React.RefObject<YesNoDialog>;
-  addButtonRef: React.RefObject<FloatingButton>;
-
-  constructor(props: any) {
-    super(props);
-
-    this.headerRef = React.createRef();
-    this.listRef = React.createRef();
-    this.addAppDialogRef = React.createRef();
-    this.yesNoDialogRef = React.createRef();
-    this.addButtonRef = React.createRef();
-    this.props.storeFGM!.load();
-    this.state = {
-      stateFGM: this.props.storeFGM!.state
-    };
-  }
+export default class App extends React.PureComponent<AppProps, AppState> {
+  private headerRef: React.RefObject<HTMLElement> = React.createRef();
+  private listRef: React.RefObject<WindowAppList> = React.createRef();
+  private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
+  private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
+  private addButtonRef: React.RefObject<FloatingButton> = React.createRef();
+  state = {
+    stateFGM: this.props.storeFGM!.state
+  };
 
   componentDidMount() {
+    this.props.storeFGM!.load();
+
     autorun(() => {
       this.setState({ stateFGM: this.props.storeFGM!.state });
     });
@@ -77,24 +68,24 @@ class App extends React.Component<AppProps, AppState> {
     ipcRenderer.on('close', this.handleCloseApp);
   }
 
-  handleCloseApp = () => {
+  private handleCloseApp = () => {
     this.props.storeFGM!.save();
     ipcRenderer.send('closed');
   };
 
-  handleStart = () => {
+  private handleStart = () => {
     this.props.storeFGM!.start();
   };
 
-  handlePause = () => {
+  private handlePause = () => {
     this.props.storeFGM!.pause();
   };
 
-  handleStop = () => {
+  private handleStop = () => {
     this.props.storeFGM!.stop();
   };
 
-  handleContextMenuFromAppList = (e: any, item: any) => {
+  private handleContextMenuFromAppList = (e: any, item: any) => {
     e.preventDefault();
 
     const menu = React.createElement(
@@ -135,11 +126,11 @@ class App extends React.Component<AppProps, AppState> {
     );
   };
 
-  handleClickFromAddButton = () => {
+  private handleClickFromAddButton = () => {
     this.addAppDialogRef.current!.open();
   };
 
-  handleOKFromAddAppDialog = (
+  private handleOKFromAddAppDialog = (
     item: any,
     wpos: FGM_WINDOW_POSITION,
     wsize: FGM_WINDOW_SIZE,
@@ -233,5 +224,3 @@ class App extends React.Component<AppProps, AppState> {
     );
   }
 }
-
-export default App;
