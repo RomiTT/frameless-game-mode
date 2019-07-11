@@ -56,16 +56,16 @@ export default class App extends React.PureComponent<AppProps, AppState> {
 
   componentDidMount() {
     this.props.storeFGM!.load();
-
-    autorun(() => {
-      this.setState({ stateFGM: this.props.storeFGM!.state });
-    });
+    this.listRef.current!.forceUpdate();
 
     if (this.props.storeFGM!.startOnLaunch) {
       this.props.storeFGM!.start();
     }
 
     ipcRenderer.on('close', this.handleCloseApp);
+    autorun(() => {
+      this.setState({ stateFGM: this.props.storeFGM!.state });
+    });
   }
 
   private handleCloseApp = () => {

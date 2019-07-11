@@ -49,17 +49,17 @@ export class StoreFGM implements IStoreFGM {
     FGM.setMode(this.mode);
   }
 
-  handleStarted = (msg: string) => {
+  private handleStarted = (msg: string) => {
     console.log(`%c${msg}`, 'font-size:2em; color:red;');
     this.state = FGM.state();
   };
 
-  handlePaused = (msg: string) => {
+  private handlePaused = (msg: string) => {
     console.log(`%c${msg}`, 'font-size:2em; color:red;');
     this.state = FGM.state();
   };
 
-  handleStopped = (msg: string) => {
+  private handleStopped = (msg: string) => {
     console.log(`%c${msg}`, 'font-size:2em; color:red;');
     this.state = FGM.state();
   };
