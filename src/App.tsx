@@ -31,6 +31,7 @@ import styles from './App.module.scss';
 import FloatingButton from './components/FloatingButton';
 import AddAppDialog from './components/AddAppDialog';
 import YesNoDialog from './components/YesNoDialog';
+import SettingsDialog from './components/SettingsDialog';
 
 const { ipcRenderer } = require('electron');
 
@@ -47,6 +48,9 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
+  private settingsDialogRef: React.RefObject<
+    SettingsDialog
+  > = React.createRef();
   state = {
     stateFGM: this.props.storeFGM!.state
   };
@@ -82,7 +86,11 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     this.props.storeFGM!.stop();
   };
 
-  private handleContextMenuFromAppList = (e: any, item: any) => {
+  private handleOpenSettings = () => {
+    this.settingsDialogRef.current!.open(() => {});
+  };
+
+  private handleContextMenu = (e: any, item: any) => {
     e.preventDefault();
 
     const menu = React.createElement(
@@ -123,19 +131,19 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     );
   };
 
-  private handleClickFromAddButton = () => {
-    this.addAppDialogRef.current!.open();
-  };
-
-  private handleOKFromAddAppDialog = (
-    item: any,
-    wpos: FGM_WINDOW_POSITION,
-    wsize: FGM_WINDOW_SIZE,
-    width: number,
-    height: number
-  ) => {
-    this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
-    this.listRef.current!.forceUpdate();
+  private handleOpenAddAppDialog = () => {
+    this.addAppDialogRef.current!.open(
+      (
+        item: any,
+        wpos: FGM_WINDOW_POSITION,
+        wsize: FGM_WINDOW_SIZE,
+        width: number,
+        height: number
+      ) => {
+        this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
+        this.listRef.current!.forceUpdate();
+      }
+    );
   };
 
   render() {
@@ -187,7 +195,12 @@ export default class App extends React.PureComponent<AppProps, AppState> {
                 }
                 onClick={this.handleStop}
               />
-              <Button className={Classes.MINIMAL} icon='cog' intent='warning' />
+              <Button
+                className={Classes.MINIMAL}
+                icon='cog'
+                intent='warning'
+                onClick={this.handleOpenSettings}
+              />
             </NavbarGroup>
           </Navbar>
         </header>
@@ -195,7 +208,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
           <WindowAppList
             listApp={this.props.storeFGM!.listAppToMonitor}
             ref={this.listRef}
-            onContextMenu={this.handleContextMenuFromAppList}
+            onContextMenu={this.handleContextMenu}
           />
           <FloatingButton
             position='fixed'
@@ -204,13 +217,11 @@ export default class App extends React.PureComponent<AppProps, AppState> {
             icon='add'
             intent='primary'
             scale={1.2}
-            onClick={this.handleClickFromAddButton}
+            onClick={this.handleOpenAddAppDialog}
           />
-          <AddAppDialog
-            ref={this.addAppDialogRef}
-            onOK={this.handleOKFromAddAppDialog}
-          />
+          <AddAppDialog ref={this.addAppDialogRef} />
           <YesNoDialog ref={this.yesNoDialogRef} />
+          <SettingsDialog ref={this.settingsDialogRef} />
         </main>
 
         <footer className={`has-text-centered ${styles.footer}`} />

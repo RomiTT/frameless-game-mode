@@ -95,8 +95,8 @@ export default class SetPositionPage extends React.PureComponent<
             />
           </div>
         </div>
-        <Divider />
-        <div className={Classes.DIALOG_FOOTER} style={{ paddingTop: '10px' }}>
+        <Divider className={styles.divider} />
+        <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
             {this.props.renderButtons(this)}
           </div>
