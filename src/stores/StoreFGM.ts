@@ -12,13 +12,13 @@ import {
   FGM_WINDOW_SIZE,
   FGM_WATCH_MODE
 } from '../components/FGM';
-import { string } from 'prop-types';
+const app: any = require('electron').remote.app;
 
 export interface IStoreFGM {
   readonly listAppToMonitor: Array<object>;
   readonly state: FGM_STATE;
   readonly mode: FGM_WATCH_MODE;
-  readonly autoLaunchOnSystemBoot: boolean;
+  readonly launchAtLogin: boolean;
   load(): void;
   save(): void;
   addApp(
@@ -41,12 +41,7 @@ export class StoreFGM implements IStoreFGM {
   @serialize @observable listAppToMonitor = new Array<object>();
   @observable state = FGM_STATE.STOPPED;
   @serialize @observable mode = FGM_WATCH_MODE.ALL_WINDOWS;
-  @serialize @observable autoLaunchOnSystemBoot = false;
-
-  appInfo = {
-    name: 'Frameless Game Mode',
-    path: process.execPath
-  };
+  @serialize @observable launchAtLogin = false;
 
   constructor() {
     FGM.setEventListener('started', this.handleStarted);
@@ -54,10 +49,9 @@ export class StoreFGM implements IStoreFGM {
     FGM.setEventListener('stopped', this.handleStopped);
     FGM.setMode(this.mode);
 
-    const AutoLaunch = require('auto-launch');
-    AutoLaunch.isEnabled().then((isEnabled: boolean) => {
-      this.autoLaunchOnSystemBoot = isEnabled;
-    });
+    const settings = app.getLoginItemSettings();
+    this.launchAtLogin = settings.openAtLogin;
+    console.debug('app settings-', settings);
   }
 
   private handleStarted = (msg: string) => {
@@ -76,26 +70,21 @@ export class StoreFGM implements IStoreFGM {
   };
 
   private enableAutoLaunch = () => {
-    const isDev = require('electron-is-dev');
-    if (isDev) {
-      console.log('enableAutoLaunch: ', this.appInfo);
-      return;
-    }
-    const AutoLaunch = require('auto-launch');
-    const autoRunInfo = new AutoLaunch(this.appInfo);
-    autoRunInfo.enable();
+    let settings = app.getLoginItemSettings();
+    if (settings.openAtLogin) return;
+
+    app.setLoginItemSettings({ openAtLogin: true });
+    settings = app.getLoginItemSettings();
+    this.launchAtLogin = settings.openAtLogin;
   };
 
   private disableAutoLaunch = () => {
-    const isDev = require('electron-is-dev');
-    if (isDev) {
-      console.log('disableAutoLaunch: ', this.appInfo);
-      return;
-    }
+    let settings = app.getLoginItemSettings();
+    if (settings.openAtLogin === false) return;
 
-    const AutoLaunch = require('auto-launch');
-    const autoRunInfo = new AutoLaunch(this.appInfo);
-    autoRunInfo.disable();
+    app.setLoginItemSettings({ openAtLogin: false });
+    settings = app.getLoginItemSettings();
+    this.launchAtLogin = settings.openAtLogin;
   };
 
   @action
@@ -161,11 +150,11 @@ export class StoreFGM implements IStoreFGM {
 
   @action
   setAutoLaunch = (val: boolean) => {
-    if (this.autoLaunchOnSystemBoot === val) {
+    if (this.launchAtLogin === val) {
       return;
     }
 
-    this.autoLaunchOnSystemBoot = val;
+    this.launchAtLogin = val;
     if (val) {
       this.enableAutoLaunch();
     } else {

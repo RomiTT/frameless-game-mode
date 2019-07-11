@@ -29,7 +29,7 @@ export default class SettingsDialog extends React.PureComponent<
   private store = this.props.storeFGM;
 
   open = () => {
-    this.setState({ isOpen: true });
+    this.setState({ isOpen: true, autoLaunch: this.store!.launchAtLogin });
   };
 
   private handleClose = () => {
@@ -56,7 +56,7 @@ export default class SettingsDialog extends React.PureComponent<
         <div className={Classes.DIALOG_BODY}>
           <Switch
             checked={this.state.autoLaunch}
-            label='Auto launch on system boot'
+            label='Launch at login'
             onChange={e => {
               let newVal = !this.state.autoLaunch;
               this.setState({ autoLaunch: newVal });
