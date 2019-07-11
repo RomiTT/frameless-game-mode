@@ -4,8 +4,9 @@
   width: 450px;
   height: 500px;
 
+  $button-padding: 25px;
   .buttonPadding {
-    padding-left: 25px;
-    padding-right: 25px;
+    padding-left: $button-padding;
+    padding-right: $button-padding;
   }
 }
