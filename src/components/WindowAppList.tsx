@@ -13,13 +13,13 @@ class WindowAppListRowItem extends React.PureComponent<
   WindowAppListRowItemProps,
   any
 > {
-  handleContextMenu = (e: any) => {
+  private handleContextMenu = (e: any) => {
     if (this.props.onContextMenu) {
       this.props.onContextMenu(e, this.props.index, this.props.item);
     }
   };
 
-  handleClick = () => {
+  private handleClick = () => {
     if (this.props.onClick) {
       this.props.onClick(this.props.index);
     }
@@ -55,7 +55,7 @@ interface WindowsAppListState {
   selectedIndex: number;
 }
 
-class WindowAppList extends React.Component<
+class WindowAppList extends React.PureComponent<
   WindowAppListProps,
   WindowsAppListState
 > {
@@ -106,7 +106,7 @@ class WindowAppList extends React.Component<
     }
   }
 
-  handleKeyDown = (e: any) => {
+  private handleKeyDown = (e: any) => {
     // Arrow up
     if (e.keyCode === 38) {
       if (this.state.selectedIndex > 0) {
@@ -121,19 +121,19 @@ class WindowAppList extends React.Component<
     }
   };
 
-  handleClick = (index: number) => {
+  private handleClick = (index: number) => {
     this.selectItem(index);
     this.listRef.current!.focus();
   };
 
-  handleContextMenu = (e: any, index: number, item: any) => {
+  private handleContextMenu = (e: any, index: number, item: any) => {
     this.selectItem(index);
     if (this.props.onContextMenu) {
       this.props.onContextMenu(e, item);
     }
   };
 
-  renderItem = (index: number) => {
+  private renderItem = (index: number) => {
     const item: any = this.props.listApp[index];
     const classes =
       this.state.selectedIndex === index
