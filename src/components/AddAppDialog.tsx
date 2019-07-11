@@ -30,9 +30,6 @@ export default class AddAppDialog extends React.Component<
   AddAppDialogProps,
   any
 > {
-  selectAppPageRef: React.RefObject<SelectAppPage> = React.createRef();
-  setPositionPageRef: React.RefObject<SetPositionPage> = React.createRef();
-  setSizePageRef: React.RefObject<SetSizePage> = React.createRef();
   selectedItem: any;
   wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
@@ -77,23 +74,17 @@ export default class AddAppDialog extends React.Component<
     let title = 'Select a application';
     let icon: IconName | MaybeElement = 'list';
     let page = (
-      <>
-        <div className={Classes.DIALOG_BODY}>
-          <SelectAppPage
-            ref={this.selectAppPageRef}
-            listApp={this.state.listApp}
-            onRefreshList={this.handleRefreshList}
-            onSelectionChange={(item: any) => {
-              this.setState({ disabledNextButton1: item == null });
-            }}
-          />
-        </div>
-        <Divider />
-        <div className={Classes.DIALOG_FOOTER} style={{ paddingTop: '10px' }}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+      <SelectAppPage
+        listApp={this.state.listApp}
+        onRefreshList={this.handleRefreshList}
+        onSelectionChange={(item: any) => {
+          this.setState({ disabledNextButton1: item == null });
+        }}
+        renderButtons={pageInstance => (
+          <>
             <Button
               onClick={() => {
-                this.selectedItem = this.selectAppPageRef.current!.getData();
+                this.selectedItem = pageInstance.getData();
                 this.setState({ stage: 2 });
               }}
               intent='primary'
@@ -105,21 +96,18 @@ export default class AddAppDialog extends React.Component<
             <Button onClick={this.handleClose} className={styles.buttonPadding}>
               Cancel
             </Button>
-          </div>
-        </div>
-      </>
+          </>
+        )}
+      />
     );
+
     if (this.state.stage === 2) {
       title = 'Set position';
       icon = 'page-layout';
       page = (
-        <>
-          <div className={Classes.DIALOG_BODY}>
-            <SetPositionPage ref={this.setPositionPageRef} />
-          </div>
-          <Divider />
-          <div className={Classes.DIALOG_FOOTER} style={{ paddingTop: '10px' }}>
-            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+        <SetPositionPage
+          renderButtons={pageInstance => (
+            <>
               <Button
                 onClick={() => {
                   this.setState({ stage: 1 });
@@ -130,7 +118,7 @@ export default class AddAppDialog extends React.Component<
               </Button>
               <Button
                 onClick={() => {
-                  this.wpos = this.setPositionPageRef.current!.getData();
+                  this.wpos = pageInstance.getData();
                   this.setState({ stage: 3 });
                 }}
                 intent='primary'
@@ -144,21 +132,17 @@ export default class AddAppDialog extends React.Component<
               >
                 Cancel
               </Button>
-            </div>
-          </div>
-        </>
+            </>
+          )}
+        />
       );
     } else if (this.state.stage === 3) {
       title = 'Set size';
       icon = 'page-layout';
       page = (
-        <>
-          <div className={`${Classes.DIALOG_BODY} ${styles.wsizeRoot}`}>
-            <SetSizePage ref={this.setSizePageRef} />
-          </div>
-          <Divider />
-          <div className={Classes.DIALOG_FOOTER} style={{ paddingTop: '10px' }}>
-            <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+        <SetSizePage
+          renderButtons={pageInstance => (
+            <>
               <Button
                 onClick={() => {
                   this.setState({ stage: 2 });
@@ -175,7 +159,7 @@ export default class AddAppDialog extends React.Component<
               </Button>
               <Button
                 onClick={() => {
-                  const data = this.setSizePageRef.current!.getData();
+                  const data = pageInstance.getData();
                   this.wsize = data.wsize;
                   if (data.wsize === FGM_WINDOW_SIZE.CUSTOM_SIZE) {
                     this.width = data.width;
@@ -192,9 +176,9 @@ export default class AddAppDialog extends React.Component<
               >
                 OK
               </Button>
-            </div>
-          </div>
-        </>
+            </>
+          )}
+        />
       );
     }
 
