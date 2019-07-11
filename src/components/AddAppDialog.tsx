@@ -16,13 +16,6 @@ import styles from './AddAppDialog.module.scss';
 
 interface AddAppDialogProps {
   storeFGM?: IStoreFGM;
-  onOK: (
-    item: any,
-    wpos: FGM_WINDOW_POSITION,
-    wsize: FGM_WINDOW_SIZE,
-    width: number,
-    height: number
-  ) => void;
 }
 
 @inject('storeFGM')
@@ -35,13 +28,29 @@ export default class AddAppDialog extends React.PureComponent<
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
   private width = 0;
   private height = 0;
+  private onOK?: (
+    item: any,
+    wpos: FGM_WINDOW_POSITION,
+    wsize: FGM_WINDOW_SIZE,
+    width: number,
+    height: number
+  ) => void;
   state = {
     listApp: new Array<object>(),
     stage: 1,
     disabledNextButton1: true
   };
 
-  open = () => {
+  open = (
+    onOK?: (
+      item: any,
+      wpos: FGM_WINDOW_POSITION,
+      wsize: FGM_WINDOW_SIZE,
+      width: number,
+      height: number
+    ) => void
+  ) => {
+    this.onOK = onOK;
     this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
       this.setState({ isOpen: true, stage: 1, listApp: list });
     });
@@ -51,13 +60,15 @@ export default class AddAppDialog extends React.PureComponent<
 
   private handleOK = () => {
     this.setState({ isOpen: false });
-    this.props.onOK(
-      this.selectedItem,
-      this.wpos,
-      this.wsize,
-      this.width,
-      this.height
-    );
+    if (this.onOK) {
+      this.onOK(
+        this.selectedItem,
+        this.wpos,
+        this.wsize,
+        this.width,
+        this.height
+      );
+    }
   };
 
   private handleRefreshList = () => {
