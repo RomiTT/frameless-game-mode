@@ -40,7 +40,7 @@ namespace FGM {
     int height;
   };
 
-  enum FGM_MODE {
+  enum FGM_WATCH_MODE {
     ONLY_FOR_FOREGROUND_WINDOW,
     ALL_WINDOWS
   };
@@ -67,7 +67,7 @@ namespace FGM {
     Napi::FunctionReference callbackPaused;
     Napi::FunctionReference callbackStopped;
     FGM_STATE state = FGM_STATE::STOPPED;
-    FGM_MODE mode = FGM_MODE::ALL_WINDOWS;   
+    FGM_WATCH_MODE mode = FGM_WATCH_MODE::ALL_WINDOWS;   
     FGM_MATCH_OPTION matchOption = FGM_MATCH_OPTION::PROCESS_NAME_AND_TITLE;
     DWORD interval = 500;
   };	

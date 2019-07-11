@@ -114,8 +114,8 @@ public:
 
 	FGM_STATE State() { return _spContext->state; }
 
-	void SetMode(FGM_MODE mode) { _spContext->mode = mode; }
-	FGM_MODE GetMode() { return _spContext->mode; }
+	void SetMode(FGM_WATCH_MODE mode) { _spContext->mode = mode; }
+	FGM_WATCH_MODE GetMode() { return _spContext->mode; }
 };
 
 
@@ -431,7 +431,7 @@ Napi::Value FGM::setMode(const Napi::CallbackInfo &info)
 	}	
 
 	auto mode = (int)info[0].As<Napi::Number>();
-	g_FGM->SetMode((FGM_MODE)mode);  
+	g_FGM->SetMode((FGM_WATCH_MODE)mode);  
 	return env.Undefined();	
 }
 

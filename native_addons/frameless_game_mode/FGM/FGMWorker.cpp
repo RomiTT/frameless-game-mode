@@ -68,10 +68,10 @@ void FGMWorker::Execute() {
 
         _spContext->mtx.lock();
         switch (_spContext->mode) {
-          case FGM_MODE::ONLY_FOR_FOREGROUND_WINDOW:
+          case FGM_WATCH_MODE::ONLY_FOR_FOREGROUND_WINDOW:
             ProcessOnlyForForegroundWindow(_spContext->listGameModeInfo);
             break;
-          case FGM_MODE::ALL_WINDOWS:
+          case FGM_WATCH_MODE::ALL_WINDOWS:
             EnumWindows(EnumWindowProcForFGM, reinterpret_cast<LPARAM>(&_spContext->listGameModeInfo));
             break;
         }
