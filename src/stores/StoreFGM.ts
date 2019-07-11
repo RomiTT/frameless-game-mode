@@ -41,7 +41,7 @@ export class StoreFGM implements IStoreFGM {
   @serialize @observable listAppToMonitor = new Array<object>();
   @observable state = FGM_STATE.STOPPED;
   @serialize @observable mode = FGM_WATCH_MODE.ALL_WINDOWS;
-  @serialize @observable autoLaunchOnSystemBoot = true;
+  @serialize @observable autoLaunchOnSystemBoot = false;
 
   appInfo = {
     name: 'Frameless Game Mode',
@@ -53,6 +53,11 @@ export class StoreFGM implements IStoreFGM {
     FGM.setEventListener('paused', this.handlePaused);
     FGM.setEventListener('stopped', this.handleStopped);
     FGM.setMode(this.mode);
+
+    const AutoLaunch = require('auto-launch');
+    AutoLaunch.isEnabled().then((isEnabled: boolean) => {
+      this.autoLaunchOnSystemBoot = isEnabled;
+    });
   }
 
   private handleStarted = (msg: string) => {

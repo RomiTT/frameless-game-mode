@@ -41,7 +41,7 @@
   },
   "build": {
     "appId": "romitt.frameless-game-mode",
-    "productName": "fgm",
+    "productName": "Frameless Game Mode",
     "copyright": "Copyright © 2019 ${author}",
     "win": {
       "target": [

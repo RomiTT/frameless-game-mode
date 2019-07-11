@@ -66,9 +66,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     this.store!.load();
     this.listRef.current!.forceUpdate();
 
-    if (this.store!.autoLaunchOnSystemBoot) {
-      this.store!.start();
-    }
+    this.store!.start();
+
     ipcRenderer.on('close', this.handleCloseApp);
     autorun(() => {
       const newState = this.store!.state;
@@ -78,7 +77,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
       switch (newState) {
         case FGM_STATE.STARTED:
           newStateText = 'started';
-          newStateColor = Colors.GREEN2;
+          newStateColor = Colors.GREEN5;
           break;
 
         case FGM_STATE.PAUSED:
