@@ -16,5 +16,19 @@
 }
 
 .footer {
+  display: flex;
+  height: 100%;
   background-color: $dark-gray5;
+
+  .stateIcon {
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .stateText {
+    margin-top: 2px;
+    font-size: 0.8rem;
+  }
 }

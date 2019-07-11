@@ -16,7 +16,9 @@ import {
   NavbarHeading,
   ContextMenu,
   Menu,
-  MenuItem
+  MenuItem,
+  Icon,
+  Intent
 } from '@blueprintjs/core';
 import {
   FGM_STATE,
@@ -41,6 +43,8 @@ interface AppProps {
 
 interface AppState {
   stateFGM: FGM_STATE;
+  stateText: string;
+  stateColor: string;
 }
 
 @inject('storeFGM')
@@ -53,7 +57,9 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     SettingsDialog
   > = React.createRef();
   state = {
-    stateFGM: this.store!.state
+    stateFGM: this.store!.state,
+    stateText: '',
+    stateColor: Colors.GRAY3
   };
 
   componentDidMount() {
@@ -65,7 +71,31 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     }
     ipcRenderer.on('close', this.handleCloseApp);
     autorun(() => {
-      this.setState({ stateFGM: this.store!.state });
+      const newState = this.store!.state;
+      let newStateText: string = '';
+      let newStateColor: string = Colors.GRAY3;
+
+      switch (newState) {
+        case FGM_STATE.STARTED:
+          newStateText = 'started';
+          newStateColor = Colors.GREEN2;
+          break;
+
+        case FGM_STATE.PAUSED:
+          newStateText = 'paused';
+          newStateColor = Colors.GOLD3;
+          break;
+
+        case FGM_STATE.STOPPED:
+          newStateText = 'stopped';
+          newStateColor = Colors.GRAY3;
+          break;
+      }
+      this.setState({
+        stateFGM: newState,
+        stateText: newStateText,
+        stateColor: newStateColor
+      });
     });
   }
 
@@ -168,9 +198,6 @@ export default class App extends React.PureComponent<AppProps, AppState> {
               <Button
                 disabled={this.state.stateFGM == FGM_STATE.STARTED}
                 className={Classes.MINIMAL}
-                intent={
-                  this.state.stateFGM == FGM_STATE.STARTED ? 'none' : 'success'
-                }
                 icon='play'
                 onClick={this.handleStart}
               />
@@ -181,27 +208,17 @@ export default class App extends React.PureComponent<AppProps, AppState> {
                 }
                 className={Classes.MINIMAL}
                 icon='pause'
-                intent={
-                  this.state.stateFGM == FGM_STATE.PAUSED ||
-                  this.state.stateFGM == FGM_STATE.STOPPED
-                    ? 'none'
-                    : 'success'
-                }
                 onClick={this.handlePause}
               />
               <Button
                 disabled={this.state.stateFGM == FGM_STATE.STOPPED}
                 className={Classes.MINIMAL}
                 icon='stop'
-                intent={
-                  this.state.stateFGM == FGM_STATE.STOPPED ? 'none' : 'danger'
-                }
                 onClick={this.handleStop}
               />
               <Button
                 className={Classes.MINIMAL}
                 icon='cog'
-                intent='warning'
                 onClick={this.handleOpenSettings}
               />
             </NavbarGroup>
@@ -218,7 +235,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
             left={addBtnLeft}
             top={87}
             icon='add'
-            intent='primary'
+            intent='warning'
             scale={1.2}
             onClick={this.handleOpenAddAppDialog}
           />
@@ -227,7 +244,15 @@ export default class App extends React.PureComponent<AppProps, AppState> {
           <SettingsDialog ref={this.settingsDialogRef} />
         </main>
 
-        <footer className={`has-text-centered ${styles.footer}`} />
+        <footer className={`has-text-centered ${styles.footer}`}>
+          <Icon
+            className={styles.stateIcon}
+            icon='record'
+            iconSize={18}
+            color={this.state.stateColor}
+          />
+          <p className={styles.stateText}>{this.state.stateText}</p>
+        </footer>
       </AppLayout>
     );
   }
