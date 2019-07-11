@@ -33,7 +33,7 @@ function createWindow() {
     }
   });
 
-  mainWindow.setTitle('');
+  mainWindow.setTitle('Frameless Game Mode');
   mainWindow.setMenu(null);
 
   mainWindow.loadURL(
