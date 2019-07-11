@@ -1,15 +1,15 @@
 import React from 'react';
 import { Dialog, Button, Divider } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
+import styles from './YesNoDialog.module.scss';
 
-export default class YesNoDialog extends React.Component {
+export default class YesNoDialog extends React.PureComponent {
   state = {
     title: '',
     message: ''
   };
-
-  onYes?: () => void;
-  onNo?: () => void;
+  private onYes?: () => void;
+  private onNo?: () => void;
 
   open = (
     title: string,
@@ -22,26 +22,24 @@ export default class YesNoDialog extends React.Component {
     this.setState({ isOpen: true, title: title, message: message });
   };
 
-  handleClose = () => {
+  private handleClose = () => {
     if (this.onNo) this.onNo();
     this.setState({ isOpen: false });
   };
 
-  handleYes = () => {
+  private handleYes = () => {
     if (this.onYes) this.onYes();
     this.setState({ isOpen: false });
   };
 
   render() {
-    const buttonPadding = '30px';
     return (
       <Dialog
-        className='bp3-dark'
+        className={`bp3-dark  ${styles.dialogRoot}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={this.state.title}
         icon='info-sign'
-        style={{ width: '430px' }}
         {...this.state}
       >
         <div className={Classes.DIALOG_BODY}>
@@ -50,22 +48,16 @@ export default class YesNoDialog extends React.Component {
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
             <Button
+              className={styles.buttonPadding}
               onClick={this.handleYes}
               intent='primary'
-              style={{
-                paddingLeft: buttonPadding,
-                paddingRight: buttonPadding
-              }}
             >
               Yes
             </Button>
             <Button
+              className={styles.buttonPadding}
               onClick={this.handleClose}
               autoFocus={true}
-              style={{
-                paddingLeft: buttonPadding,
-                paddingRight: buttonPadding
-              }}
             >
               No
             </Button>

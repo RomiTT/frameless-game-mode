@@ -1,0 +1,9 @@
+.dialogRoot {
+  width: 430px;
+
+  $button-padding: 30px;
+  .buttonPadding {
+    padding-left: $button-padding;
+    padding-right: $button-padding;
+  }
+}
