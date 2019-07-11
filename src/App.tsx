@@ -217,7 +217,7 @@ class App extends React.Component<AppProps, AppState> {
             left={addBtnLeft}
             top={87}
             icon='add'
-            intent='danger'
+            intent='primary'
             scale={1.2}
             onClick={this.handleClickFromAddButton}
           />
