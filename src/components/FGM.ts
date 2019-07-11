@@ -27,7 +27,7 @@ export enum FGM_WINDOW_SIZE {
   CUSTOM_SIZE
 }
 
-export enum FGM_MODE {
+export enum FGM_WATCH_MODE {
   ONLY_FOR_FOREGROUND_WINDOW,
   ALL_WINDOWS
 }
