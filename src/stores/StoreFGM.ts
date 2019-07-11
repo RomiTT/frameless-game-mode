@@ -10,15 +10,15 @@ import {
   FGM_STATE,
   FGM_WINDOW_POSITION,
   FGM_WINDOW_SIZE,
-  FGM_MODE
+  FGM_WATCH_MODE
 } from '../components/FGM';
 import { string } from 'prop-types';
 
 export interface IStoreFGM {
-  listAppToMonitor: Array<object>;
-  state: FGM_STATE;
-  mode: FGM_MODE;
-  startOnLaunch: boolean;
+  readonly listAppToMonitor: Array<object>;
+  readonly state: FGM_STATE;
+  readonly mode: FGM_WATCH_MODE;
+  readonly autoLaunchOnSystemBoot: boolean;
   load(): void;
   save(): void;
   addApp(
@@ -29,7 +29,8 @@ export interface IStoreFGM {
     height: number
   ): void;
   removeApp(key: string): void;
-  setMode(mode: FGM_MODE): void;
+  setWatchMode(mode: FGM_WATCH_MODE): void;
+  setAutoLaunch(val: boolean): void;
   start(): void;
   pause(): void;
   stop(): void;
@@ -39,8 +40,13 @@ export interface IStoreFGM {
 export class StoreFGM implements IStoreFGM {
   @serialize @observable listAppToMonitor = new Array<object>();
   @observable state = FGM_STATE.STOPPED;
-  @serialize @observable mode = FGM_MODE.ALL_WINDOWS;
-  @serialize @observable startOnLaunch = true;
+  @serialize @observable mode = FGM_WATCH_MODE.ALL_WINDOWS;
+  @serialize @observable autoLaunchOnSystemBoot = true;
+
+  appInfo = {
+    name: 'Frameless Game Mode',
+    path: process.execPath
+  };
 
   constructor() {
     FGM.setEventListener('started', this.handleStarted);
@@ -62,6 +68,29 @@ export class StoreFGM implements IStoreFGM {
   private handleStopped = (msg: string) => {
     console.log(`%c${msg}`, 'font-size:2em; color:red;');
     this.state = FGM.state();
+  };
+
+  private enableAutoLaunch = () => {
+    const isDev = require('electron-is-dev');
+    if (isDev) {
+      console.log('enableAutoLaunch: ', this.appInfo);
+      return;
+    }
+    const AutoLaunch = require('auto-launch');
+    const autoRunInfo = new AutoLaunch(this.appInfo);
+    autoRunInfo.enable();
+  };
+
+  private disableAutoLaunch = () => {
+    const isDev = require('electron-is-dev');
+    if (isDev) {
+      console.log('disableAutoLaunch: ', this.appInfo);
+      return;
+    }
+
+    const AutoLaunch = require('auto-launch');
+    const autoRunInfo = new AutoLaunch(this.appInfo);
+    autoRunInfo.disable();
   };
 
   @action
@@ -100,7 +129,6 @@ export class StoreFGM implements IStoreFGM {
     };
     this.listAppToMonitor.push(val);
     FGM.addGameModeInfo(val);
-    this.save();
   };
 
   @action
@@ -114,14 +142,32 @@ export class StoreFGM implements IStoreFGM {
     }
 
     FGM.removeGameModeInfo(key);
-    this.save();
   };
 
   @action
-  setMode = (mode: FGM_MODE) => {
+  setWatchMode = (mode: FGM_WATCH_MODE) => {
+    if (this.mode === mode) {
+      return;
+    }
+
     FGM.setMode(mode);
     this.mode = mode;
   };
+
+  @action
+  setAutoLaunch = (val: boolean) => {
+    if (this.autoLaunchOnSystemBoot === val) {
+      return;
+    }
+
+    this.autoLaunchOnSystemBoot = val;
+    if (val) {
+      this.enableAutoLaunch();
+    } else {
+      this.disableAutoLaunch();
+    }
+  };
+
   @action
   start = () => {
     FGM.start();
