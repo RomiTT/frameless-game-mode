@@ -70,6 +70,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
 
   private handleCloseApp = () => {
     this.props.storeFGM!.save();
+    this.props.storeFGM!.stop();
     ipcRenderer.send('closed');
   };
 
