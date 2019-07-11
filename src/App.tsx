@@ -115,13 +115,13 @@ class App extends React.Component<AppProps, AppState> {
             }
           );
         }
-      }),
-      React.createElement(MenuItem, {
-        //className: 'bp3-menu-item',
-        text: 'Properties...',
-        icon: 'properties',
-        onClick: () => {}
       })
+      // React.createElement(MenuItem, {
+      //   //className: 'bp3-menu-item',
+      //   text: 'Properties...',
+      //   icon: 'properties',
+      //   onClick: () => {}
+      // })
     );
 
     // mouse position is available on event
