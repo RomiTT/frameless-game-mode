@@ -122,7 +122,7 @@ if (!gotTheLock) {
   app.on('ready', () => {
     createWindow();
 
-    const iconPath = path.join(__dirname, 'appIcon.ico');
+    const iconPath = path.join(__dirname, 'appIcon.png');
     tray = new electron.Tray(iconPath);
     const contextMenu = electron.Menu.buildFromTemplate([
       {

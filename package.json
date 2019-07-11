@@ -48,7 +48,7 @@
         "nsis"
       ],
       "requestedExecutionLevel": "requireAdministrator",
-      "icon": "./public/appIcon.ico"
+      "icon": "./public/appIcon.png"
     },
     "files": [
       "build/**/*",

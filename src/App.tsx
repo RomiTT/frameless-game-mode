@@ -160,7 +160,7 @@ class App extends React.Component<AppProps, AppState> {
         <header ref={this.headerRef}>
           <TitleBar
             app='Frameless Game Mode'
-            icon={`./appIcon.ico`}
+            icon={`./appIcon.png`}
             theme={TitleBarTheme}
           />
           <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
