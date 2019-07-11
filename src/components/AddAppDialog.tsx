@@ -23,6 +23,7 @@ export default class AddAppDialog extends React.PureComponent<
   AddAppDialogProps,
   any
 > {
+  private store = this.props.storeFGM;
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
@@ -51,7 +52,7 @@ export default class AddAppDialog extends React.PureComponent<
     ) => void
   ) => {
     this.onOK = onOK;
-    this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
+    this.store!.getWindowAppList((list: Array<object>) => {
       this.setState({ isOpen: true, stage: 1, listApp: list });
     });
   };
@@ -72,7 +73,7 @@ export default class AddAppDialog extends React.PureComponent<
   };
 
   private handleRefreshList = () => {
-    this.props.storeFGM!.getWindowAppList((list: Array<object>) => {
+    this.store!.getWindowAppList((list: Array<object>) => {
       this.setState({ listApp: list });
     });
   };

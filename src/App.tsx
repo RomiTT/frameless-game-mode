@@ -20,7 +20,7 @@ import {
 } from '@blueprintjs/core';
 import {
   FGM_STATE,
-  FGM_MODE,
+  FGM_WATCH_MODE,
   FGM_WINDOW_POSITION,
   FGM_WINDOW_SIZE
 } from './components/FGM';
@@ -45,6 +45,7 @@ interface AppState {
 
 @inject('storeFGM')
 export default class App extends React.PureComponent<AppProps, AppState> {
+  private store = this.props.storeFGM;
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
@@ -52,42 +53,42 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     SettingsDialog
   > = React.createRef();
   state = {
-    stateFGM: this.props.storeFGM!.state
+    stateFGM: this.store!.state
   };
 
   componentDidMount() {
-    this.props.storeFGM!.load();
+    this.store!.load();
     this.listRef.current!.forceUpdate();
 
-    if (this.props.storeFGM!.startOnLaunch) {
-      this.props.storeFGM!.start();
+    if (this.store!.autoLaunchOnSystemBoot) {
+      this.store!.start();
     }
     ipcRenderer.on('close', this.handleCloseApp);
     autorun(() => {
-      this.setState({ stateFGM: this.props.storeFGM!.state });
+      this.setState({ stateFGM: this.store!.state });
     });
   }
 
   private handleCloseApp = () => {
-    this.props.storeFGM!.save();
-    this.props.storeFGM!.stop();
+    this.store!.save();
+    this.store!.stop();
     ipcRenderer.send('closed');
   };
 
   private handleStart = () => {
-    this.props.storeFGM!.start();
+    this.store!.start();
   };
 
   private handlePause = () => {
-    this.props.storeFGM!.pause();
+    this.store!.pause();
   };
 
   private handleStop = () => {
-    this.props.storeFGM!.stop();
+    this.store!.stop();
   };
 
   private handleOpenSettings = () => {
-    this.settingsDialogRef.current!.open(() => {});
+    this.settingsDialogRef.current!.open();
   };
 
   private handleContextMenu = (e: any, item: any) => {
@@ -106,7 +107,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
             'Are you sure to delete?',
             () => {
               // onOk
-              this.props.storeFGM!.removeApp(item.key);
+              this.store!.removeApp(item.key);
+              this.store!.save();
               this.listRef.current!.forceUpdate();
             }
           );
@@ -140,7 +142,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
         width: number,
         height: number
       ) => {
-        this.props.storeFGM!.addApp(item, wpos, wsize, width, height);
+        this.store!.addApp(item, wpos, wsize, width, height);
+        this.store!.save();
         this.listRef.current!.forceUpdate();
       }
     );
@@ -206,7 +209,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
         </header>
         <main>
           <WindowAppList
-            listApp={this.props.storeFGM!.listAppToMonitor}
+            listApp={this.store!.listAppToMonitor}
             ref={this.listRef}
             onContextMenu={this.handleContextMenu}
           />

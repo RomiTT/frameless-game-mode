@@ -26,7 +26,7 @@ export default class SettingsDialog extends React.PureComponent<
     watchMode: FGM_WATCH_MODE.ALL_WINDOWS
   };
 
-  store = this.props.storeFGM;
+  private store = this.props.storeFGM;
 
   open = () => {
     this.setState({ isOpen: true });
