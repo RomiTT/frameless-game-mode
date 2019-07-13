@@ -17,7 +17,7 @@ export let TitleBarTheme = {
   // should the icon be shown in the center of the toolbar on Mac/Linux apps alongside the app or title property
   showIconDarwin: true,
   /* Menu */
-  menuStyle: 'horizontal', // horizontal, vertical, stacked
+  menuStyle: 'none', // horizontal, vertical, stacked
   menuDimItems: true, // dim other active menu items when menu list is open
   menuDimOpacity: 0.6,
   menuDisabledOpacity: 0.3,

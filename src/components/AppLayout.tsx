@@ -45,7 +45,9 @@ export default class AppLayout extends React.PureComponent<
     if (this.header && this.footer) {
       let newHeight =
         window.innerHeight -
-        (this.header.offsetHeight + this.footer.offsetHeight);
+        (this.header.offsetTop +
+          this.header.offsetHeight +
+          this.footer.offsetHeight);
 
       this.setState({ bodyHeight: newHeight });
     }
