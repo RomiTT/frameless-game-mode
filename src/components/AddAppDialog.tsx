@@ -192,7 +192,7 @@ export default class AddAppDialog extends React.PureComponent<
 
     return (
       <Dialog
-        className={`bp3-dark ${styles.dialogMain}`}
+        className={`bp3-dark ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={title}

@@ -1,15 +1,15 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 
-.wposRoot {
+.dialogPage {
   display: flex;
   flex-direction: column;
   height: 300px;
 
-  .wposRow {
+  .row {
     display: flex;
     flex-grow: 1;
 
-    .wposItem {
+    .item {
       box-sizing: content-box;
       flex-grow: 1;
       background-color: $dark-gray1;
@@ -20,8 +20,8 @@
       }
     }
 
-    .wposItemSelected {
-      @extend .wposItem;
+    .itemSelected {
+      @extend .item;
       background-color: $gold5;
     }
   }

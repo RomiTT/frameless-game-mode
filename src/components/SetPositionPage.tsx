@@ -11,30 +11,28 @@ export default class SetPositionPage extends React.PureComponent<
   SetPositionPageProps
 > {
   state = {
-    wposSelected: FGM_WINDOW_POSITION.MIDDLE_CENTER
+    selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
 
   private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
-    this.setState({ wposSelected: wpos });
+    this.setState({ selectedItem: wpos });
   };
 
   private getClassName = (wpos: FGM_WINDOW_POSITION) => {
-    return this.state.wposSelected === wpos
-      ? styles.wposItemSelected
-      : styles.wposItem;
+    return this.state.selectedItem === wpos ? styles.itemSelected : styles.item;
   };
 
   getData = () => {
-    return this.state.wposSelected;
+    return this.state.selectedItem;
   };
 
   render() {
     return (
       <>
-        <div className={`${Classes.DIALOG_BODY} ${styles.wposRoot}`}>
+        <div className={`${Classes.DIALOG_BODY} ${styles.dialogPage}`}>
           <p>Set position</p>
           <br />
-          <div className={styles.wposRow}>
+          <div className={styles.row}>
             <div
               className={this.getClassName(FGM_WINDOW_POSITION.LEFT_TOP)}
               onClick={() =>
@@ -54,7 +52,7 @@ export default class SetPositionPage extends React.PureComponent<
               }
             />
           </div>
-          <div className={styles.wposRow}>
+          <div className={styles.row}>
             <div
               className={this.getClassName(FGM_WINDOW_POSITION.LEFT_CENTER)}
               onClick={() =>
@@ -74,7 +72,7 @@ export default class SetPositionPage extends React.PureComponent<
               }
             />
           </div>
-          <div className={styles.wposRow}>
+          <div className={styles.row}>
             <div
               className={this.getClassName(FGM_WINDOW_POSITION.LEFT_BOTTOM)}
               onClick={() =>

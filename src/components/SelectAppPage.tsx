@@ -26,7 +26,7 @@ export default class SelectAppPage extends React.Component<SelectAppPageProps> {
   render() {
     return (
       <>
-        <div className={`${Classes.DIALOG_BODY} ${styles.selectAppRoot}`}>
+        <div className={`${Classes.DIALOG_BODY} ${styles.dialogPage}`}>
           <WindowAppList
             ref={this.listRef}
             listApp={this.props.listApp}

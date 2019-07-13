@@ -55,7 +55,7 @@ export default class SetSizePage extends React.PureComponent<SetSizePageProps> {
   render() {
     return (
       <>
-        <div className={`${Classes.DIALOG_BODY} ${styles.wsizeRoot}`}>
+        <div className={`${Classes.DIALOG_BODY} ${styles.dialogPage}`}>
           <RadioGroup
             label='Set size'
             onChange={() => {}}

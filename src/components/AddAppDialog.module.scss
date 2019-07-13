@@ -1,6 +1,11 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 
-.dialogMain {
+.dialog {
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-app-region: no-drag;
+  cursor: default;
+
   width: 450px;
   height: 500px;
 

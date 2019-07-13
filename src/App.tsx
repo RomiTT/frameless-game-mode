@@ -181,78 +181,80 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   render() {
     let addBtnLeft = 500 - 52;
     return (
-      <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
-        <header>
-          <TitleBar
-            app='Frameless Game Mode'
-            icon={`./appIcon.png`}
-            theme={TitleBarTheme}
-          />
-          <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
-            <NavbarGroup align={Alignment.LEFT}>
-              <NavbarHeading>Game List</NavbarHeading>
-            </NavbarGroup>
-            <NavbarGroup align={Alignment.RIGHT}>
-              <NavbarDivider />
-              <Button
-                disabled={this.state.stateFGM == FGM_STATE.STARTED}
-                className={Classes.MINIMAL}
-                icon='play'
-                onClick={this.handleStart}
-              />
-              <Button
-                disabled={
-                  this.state.stateFGM == FGM_STATE.PAUSED ||
-                  this.state.stateFGM == FGM_STATE.STOPPED
-                }
-                className={Classes.MINIMAL}
-                icon='pause'
-                onClick={this.handlePause}
-              />
-              <Button
-                disabled={this.state.stateFGM == FGM_STATE.STOPPED}
-                className={Classes.MINIMAL}
-                icon='stop'
-                onClick={this.handleStop}
-              />
-              <Button
-                className={Classes.MINIMAL}
-                icon='cog'
-                onClick={this.handleOpenSettings}
-              />
-            </NavbarGroup>
-          </Navbar>
-        </header>
-        <main>
-          <WindowAppList
-            listApp={this.store!.listAppToMonitor}
-            ref={this.listRef}
-            onContextMenu={this.handleContextMenu}
-          />
-          <FloatingButton
-            position='fixed'
-            left={addBtnLeft}
-            top={87}
-            icon='add'
-            intent='warning'
-            scale={1.2}
-            onClick={this.handleOpenAddAppDialog}
-          />
-          <AddAppDialog ref={this.addAppDialogRef} />
-          <YesNoDialog ref={this.yesNoDialogRef} />
-          <SettingsDialog ref={this.settingsDialogRef} />
-        </main>
+      <>
+        <TitleBar
+          app='Frameless Game Mode'
+          icon={`./appIcon.png`}
+          theme={TitleBarTheme}
+        />
+        <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
+          <header>
+            <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
+              <NavbarGroup align={Alignment.LEFT}>
+                <NavbarHeading>Game List</NavbarHeading>
+              </NavbarGroup>
+              <NavbarGroup align={Alignment.RIGHT}>
+                <NavbarDivider />
+                <Button
+                  disabled={this.state.stateFGM == FGM_STATE.STARTED}
+                  className={Classes.MINIMAL}
+                  icon='play'
+                  onClick={this.handleStart}
+                />
+                <Button
+                  disabled={
+                    this.state.stateFGM == FGM_STATE.PAUSED ||
+                    this.state.stateFGM == FGM_STATE.STOPPED
+                  }
+                  className={Classes.MINIMAL}
+                  icon='pause'
+                  onClick={this.handlePause}
+                />
+                <Button
+                  disabled={this.state.stateFGM == FGM_STATE.STOPPED}
+                  className={Classes.MINIMAL}
+                  icon='stop'
+                  onClick={this.handleStop}
+                />
+                <Button
+                  className={Classes.MINIMAL}
+                  icon='cog'
+                  onClick={this.handleOpenSettings}
+                />
+              </NavbarGroup>
+            </Navbar>
+          </header>
+          <main>
+            <WindowAppList
+              listApp={this.store!.listAppToMonitor}
+              ref={this.listRef}
+              onContextMenu={this.handleContextMenu}
+            />
+            <FloatingButton
+              position='fixed'
+              left={addBtnLeft}
+              top={87}
+              icon='add'
+              intent='warning'
+              scale={1.2}
+              onClick={this.handleOpenAddAppDialog}
+            />
+            <AddAppDialog ref={this.addAppDialogRef} />
+            <YesNoDialog ref={this.yesNoDialogRef} />
+            <SettingsDialog ref={this.settingsDialogRef} />
+          </main>
 
-        <footer className={`has-text-centered ${styles.footer}`}>
-          <Icon
-            className={styles.stateIcon}
-            icon='record'
-            iconSize={18}
-            color={this.state.stateColor}
-          />
-          <p className={styles.stateText}>{this.state.stateText}</p>
-        </footer>
-      </AppLayout>
+          <footer className={`has-text-centered ${styles.footer}`}>
+            <Icon
+              className={styles.stateIcon}
+              icon='record'
+              iconSize={18}
+              color={this.state.stateColor}
+            />
+            <p className={styles.stateText}>{this.state.stateText}</p>
+          </footer>
+        </AppLayout>
+      </>
     );
   }
 }

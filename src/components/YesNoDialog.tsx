@@ -35,7 +35,7 @@ export default class YesNoDialog extends React.PureComponent {
   render() {
     return (
       <Dialog
-        className={`bp3-dark  ${styles.dialogRoot}`}
+        className={`bp3-dark  ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={this.state.title}
