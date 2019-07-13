@@ -2,16 +2,6 @@
   "name": "frameless-game-mode",
   "version": "1.0.0-beta",
   "private": true,
-  "dependencies": {
-    "bulma": "^0.7.5",
-    "electron-is-dev": "^1.1.0",
-    "mobx": "^5.10.1",
-    "mobx-react": "^6.1.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "reflect-metadata": "^0.1.13",
-    "frameless-titlebar": "^1.0.8"
-  },
   "main": "public/electron.js",
   "scripts": {
     "start": "node ./.build.addon.js && rescripts start",
@@ -64,16 +54,26 @@
       "last 1 safari version"
     ]
   },
+  "dependencies": {
+    "electron-is-dev": "^1.1.0"
+  },
   "devDependencies": {
     "@blueprintjs/core": "^3.16.2",
     "@types/jest": "24.0.15",
     "@types/node": "12.0.10",
     "@types/react": "16.8.22",
     "@types/react-dom": "16.8.4",
+    "bulma": "^0.7.5",
     "concurrently": "^4.1.0",
     "electron": "^5.0.5",
     "electron-builder": "^20.44.4",
+    "frameless-titlebar": "^1.0.8",
     "node-sass": "^4.12.0",
+    "mobx": "^5.10.1",
+    "mobx-react": "^6.1.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "reflect-metadata": "^0.1.13",
     "react-scripts": "^3.0.1",
     "@rescripts/cli": "^0.0.10",
     "@rescripts/rescript-env": "^0.0.10",
