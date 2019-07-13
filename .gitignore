@@ -360,3 +360,4 @@ yarn-error.log*
 /native_addons/frameless_game_mode/build
 /native_addons/frameless_game_mode/node_modules
 /public/fgm.node
+/public/launchAtLogon.node
