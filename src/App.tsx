@@ -35,7 +35,7 @@ import AddAppDialog from './components/AddAppDialog';
 import YesNoDialog from './components/YesNoDialog';
 import SettingsDialog from './components/SettingsDialog';
 
-const { ipcRenderer } = require('electron');
+const { remote, ipcRenderer } = require('electron');
 
 interface AppProps {
   storeFGM?: IStoreFGM;
@@ -66,6 +66,17 @@ export default class App extends React.PureComponent<AppProps, AppState> {
 
   componentDidMount() {
     this.store!.load();
+
+    const bound = this.store!.windowBound;
+    const mainWindow = remote.getCurrentWindow();
+
+    if (bound.width === 0 && bound.height === 0) {
+      this.store!.setWindowBound(mainWindow.getBounds());
+    } else {
+      mainWindow.setBounds(bound);
+    }
+
+    mainWindow.show();
     this.listRef.current!.forceUpdate();
 
     this.store!.start();
@@ -108,6 +119,9 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   };
 
   private handleCloseApp = () => {
+    const mainWindow = remote.getCurrentWindow();
+    this.store!.setWindowBound(mainWindow.getBounds());
+
     this.store!.save();
     this.store!.stop();
     window.removeEventListener('resize', this.handleResize);

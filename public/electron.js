@@ -23,6 +23,7 @@ function createWindow() {
     minHeight: height,
     // maxWidth: width,
     // maxHeight: height,
+    show: false,
     frame: false,
     resizable: true,
     backgroundColor: '#182026',

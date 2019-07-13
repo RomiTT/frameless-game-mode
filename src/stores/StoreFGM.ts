@@ -14,11 +14,19 @@ import {
 } from '../components/FGM';
 const app: any = require('electron').remote.app;
 
+export interface WindowBound {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
 export interface IStoreFGM {
   readonly listAppToMonitor: Array<object>;
   readonly state: FGM_STATE;
   readonly mode: FGM_WATCH_MODE;
   readonly launchAtLogin: boolean;
+  readonly windowBound: WindowBound;
   load(): void;
   save(): void;
   addApp(
@@ -31,6 +39,7 @@ export interface IStoreFGM {
   removeApp(key: string): void;
   setWatchMode(mode: FGM_WATCH_MODE): void;
   setAutoLaunch(val: boolean): void;
+  setWindowBound(windowBound: WindowBound): void;
   start(): void;
   pause(): void;
   stop(): void;
@@ -42,6 +51,12 @@ export class StoreFGM implements IStoreFGM {
   @observable state = FGM_STATE.STOPPED;
   @serialize @observable mode = FGM_WATCH_MODE.ALL_WINDOWS;
   @serialize @observable launchAtLogin = false;
+  @serialize @observable windowBound: WindowBound = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0
+  };
 
   constructor() {
     FGM.setEventListener('started', this.handleStarted);
@@ -160,6 +175,11 @@ export class StoreFGM implements IStoreFGM {
     } else {
       this.disableAutoLaunch();
     }
+  };
+
+  @action
+  setWindowBound = (windowBound: WindowBound) => {
+    this.windowBound = { ...windowBound };
   };
 
   @action
