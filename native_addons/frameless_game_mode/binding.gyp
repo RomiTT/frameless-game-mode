@@ -4,10 +4,10 @@
         "cflags!": [ "-fno-exceptions" ],
         "cflags_cc!": [ "-fno-exceptions" ],
         "sources": [
-            "main.cpp",
-            "FGM/FramelessGameMode.cpp",
-            "FGM/FGMWorker.cpp",
-            "FGM/ThreadSafeFunction.cpp"
+            "src/main.cpp",
+            "src/FramelessGameMode.cpp",
+            "src/FGMWorker.cpp",
+            "src/ThreadSafeFunction.cpp"
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")"

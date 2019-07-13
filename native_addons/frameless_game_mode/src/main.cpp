@@ -1,5 +1,5 @@
 #include <napi.h>
-#include "./FGM/FramelessGameMode.h"
+#include "FramelessGameMode.h"
 
 
 Napi::Object InitAll(Napi::Env env, Napi::Object exports)
