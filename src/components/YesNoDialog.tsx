@@ -3,8 +3,18 @@ import { Dialog, Button, Divider } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import styles from './YesNoDialog.module.scss';
 
-export default class YesNoDialog extends React.PureComponent {
+interface YesNoDialogState {
+  isOpen: boolean;
+  title: string;
+  message: string;
+}
+
+export default class YesNoDialog extends React.PureComponent<
+  any,
+  YesNoDialogState
+> {
   state = {
+    isOpen: false,
     title: '',
     message: ''
   };

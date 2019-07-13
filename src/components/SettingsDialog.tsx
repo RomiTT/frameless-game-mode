@@ -17,11 +17,19 @@ interface SettingsDialogProps {
   storeFGM?: IStoreFGM;
 }
 
+interface SettingsDialogState {
+  isOpen: boolean;
+  autoLaunch: boolean;
+  watchMode: FGM_WATCH_MODE;
+}
+
 @inject('storeFGM')
 export default class SettingsDialog extends React.PureComponent<
-  SettingsDialogProps
+  SettingsDialogProps,
+  SettingsDialogState
 > {
   state = {
+    isOpen: false,
     autoLaunch: false,
     watchMode: FGM_WATCH_MODE.ALL_WINDOWS
   };

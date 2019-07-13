@@ -7,8 +7,13 @@ interface SetPositionPageProps {
   renderButtons: (pageInstance: SetPositionPage) => JSX.Element;
 }
 
+interface SetPositionPageState {
+  selectedItem: FGM_WINDOW_POSITION;
+}
+
 export default class SetPositionPage extends React.PureComponent<
-  SetPositionPageProps
+  SetPositionPageProps,
+  SetPositionPageState
 > {
   state = {
     selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER

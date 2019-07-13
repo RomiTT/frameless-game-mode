@@ -18,10 +18,17 @@ interface AddAppDialogProps {
   storeFGM?: IStoreFGM;
 }
 
+interface AddAppDialogState {
+  isOpen: boolean;
+  listApp: Array<object>;
+  stage: number;
+  disabledNextButton1: boolean;
+}
+
 @inject('storeFGM')
 export default class AddAppDialog extends React.PureComponent<
   AddAppDialogProps,
-  any
+  AddAppDialogState
 > {
   private store = this.props.storeFGM;
   private selectedItem: any;
@@ -37,6 +44,7 @@ export default class AddAppDialog extends React.PureComponent<
     height: number
   ) => void;
   state = {
+    isOpen: false,
     listApp: new Array<object>(),
     stage: 1,
     disabledNextButton1: true

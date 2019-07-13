@@ -13,7 +13,16 @@ interface SetSizePageProps {
   renderButtons: (pageInstance: SetSizePage) => JSX.Element;
 }
 
-export default class SetSizePage extends React.PureComponent<SetSizePageProps> {
+interface SetSizePageState {
+  wsize: FGM_WINDOW_SIZE;
+  width: number;
+  height: number;
+}
+
+export default class SetSizePage extends React.PureComponent<
+  SetSizePageProps,
+  SetSizePageState
+> {
   state = {
     wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
     width: window.screen.width,
