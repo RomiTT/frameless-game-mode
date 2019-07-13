@@ -23,6 +23,7 @@ interface AddAppDialogState {
   listApp: Array<object>;
   stage: number;
   disabledNextButton1: boolean;
+  selectedIndex: number;
 }
 
 @inject('storeFGM')
@@ -47,7 +48,8 @@ export default class AddAppDialog extends React.PureComponent<
     isOpen: false,
     listApp: new Array<object>(),
     stage: 1,
-    disabledNextButton1: true
+    disabledNextButton1: true,
+    selectedIndex: -1
   };
 
   open = (
@@ -82,7 +84,7 @@ export default class AddAppDialog extends React.PureComponent<
 
   private handleRefreshList = () => {
     this.store!.getWindowAppList((list: Array<object>) => {
-      this.setState({ listApp: list });
+      this.setState({ listApp: list, selectedIndex: -1 });
     });
   };
 
@@ -92,6 +94,7 @@ export default class AddAppDialog extends React.PureComponent<
     let page = (
       <SelectAppPage
         listApp={this.state.listApp}
+        selectedIndex={this.state.selectedIndex}
         onRefreshList={this.handleRefreshList}
         onSelectionChange={(item: any) => {
           this.setState({ disabledNextButton1: item == null });
@@ -100,8 +103,9 @@ export default class AddAppDialog extends React.PureComponent<
           <>
             <Button
               onClick={() => {
-                this.selectedItem = pageInstance.getData();
-                this.setState({ stage: 2 });
+                const data = pageInstance.getData()!;
+                this.selectedItem = data.selectedItemData;
+                this.setState({ stage: 2, selectedIndex: data.selectedIndex });
               }}
               intent='primary'
               disabled={this.state.disabledNextButton1}

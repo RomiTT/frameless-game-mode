@@ -73,7 +73,7 @@ export default class SettingsDialog extends React.PureComponent<
           <br />
           <RadioGroup
             label='Watch mode'
-            onChange={v => console.log(v)}
+            onChange={() => {}}
             selectedValue={this.state.watchMode}
           >
             <Radio

@@ -45,6 +45,7 @@ class WindowAppListRowItem extends React.PureComponent<
 
 interface WindowAppListProps {
   listApp: Array<object>;
+  selectedIndex?: number;
   style?: React.CSSProperties;
   className?: string;
   onSelectionChange?: (item: any) => void;
@@ -67,7 +68,7 @@ export default class WindowAppList extends React.PureComponent<
     super(props);
 
     this.state = {
-      selectedIndex: -1
+      selectedIndex: this.props.selectedIndex ? this.props.selectedIndex! : -1
     };
 
     this.listRef = React.createRef();
@@ -88,7 +89,7 @@ export default class WindowAppList extends React.PureComponent<
     return this.props.listApp[this.state.selectedIndex];
   }
 
-  selectItem(index: number) {
+  select(index: number) {
     if (index < 0 || index >= this.props.listApp.length) return;
 
     if (this.state.selectedIndex != index) {
@@ -99,7 +100,7 @@ export default class WindowAppList extends React.PureComponent<
     }
   }
 
-  unselectItem() {
+  unselect() {
     this.setState({ selectedIndex: -1 });
     if (this.props.onSelectionChange) {
       this.props.onSelectionChange(null);
@@ -110,24 +111,24 @@ export default class WindowAppList extends React.PureComponent<
     // Arrow up
     if (e.keyCode === 38) {
       if (this.state.selectedIndex > 0) {
-        this.selectItem(this.state.selectedIndex - 1);
+        this.select(this.state.selectedIndex - 1);
       }
     }
     // Arrow Down
     else if (e.keyCode == 40) {
       if (this.state.selectedIndex < this.props.listApp.length - 1) {
-        this.selectItem(this.state.selectedIndex + 1);
+        this.select(this.state.selectedIndex + 1);
       }
     }
   };
 
   private handleClick = (index: number) => {
-    this.selectItem(index);
+    this.select(index);
     this.listRef.current!.focus();
   };
 
   private handleContextMenu = (e: any, index: number, item: any) => {
-    this.selectItem(index);
+    this.select(index);
     if (this.props.onContextMenu) {
       this.props.onContextMenu(e, item);
     }

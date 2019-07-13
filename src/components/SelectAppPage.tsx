@@ -7,6 +7,7 @@ import { Divider } from '@blueprintjs/core';
 
 interface SelectAppPageProps {
   listApp: Array<object>;
+  selectedIndex: number;
   onRefreshList: () => void;
   onSelectionChange?: (item: any) => void;
   renderButtons: (pageInstance: SelectAppPage) => JSX.Element;
@@ -15,9 +16,17 @@ interface SelectAppPageProps {
 export default class SelectAppPage extends React.Component<SelectAppPageProps> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
 
+  private handleRefreshList = () => {
+    this.listRef.current!.unselect();
+    this.props.onRefreshList();
+  };
+
   getData = () => {
     if (this.listRef.current) {
-      return this.listRef.current.getSelectedItem();
+      return {
+        selectedIndex: this.listRef.current.getSelectedIndex(),
+        selectedItemData: this.listRef.current.getSelectedItem()
+      };
     }
 
     return null;
@@ -30,6 +39,7 @@ export default class SelectAppPage extends React.Component<SelectAppPageProps> {
           <WindowAppList
             ref={this.listRef}
             listApp={this.props.listApp}
+            selectedIndex={this.props.selectedIndex}
             className={styles.appList}
             onSelectionChange={this.props.onSelectionChange}
           />
@@ -40,7 +50,7 @@ export default class SelectAppPage extends React.Component<SelectAppPageProps> {
             icon='refresh'
             intent='success'
             scale={1.1}
-            onClick={this.props.onRefreshList}
+            onClick={this.handleRefreshList}
           />
         </div>
         <Divider className={styles.divider} />
