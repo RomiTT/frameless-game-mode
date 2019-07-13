@@ -45,6 +45,7 @@ interface AppState {
   stateFGM: FGM_STATE;
   stateText: string;
   stateColor: string;
+  addBtnLeftPos: number;
 }
 
 @inject('storeFGM')
@@ -59,7 +60,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   state = {
     stateFGM: this.store!.state,
     stateText: '',
-    stateColor: Colors.GRAY3
+    stateColor: Colors.GRAY3,
+    addBtnLeftPos: 0
   };
 
   componentDidMount() {
@@ -67,6 +69,9 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     this.listRef.current!.forceUpdate();
 
     this.store!.start();
+
+    window.addEventListener('resize', this.handleResize);
+    this.handleResize();
 
     ipcRenderer.on('close', this.handleCloseApp);
     autorun(() => {
@@ -98,9 +103,14 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     });
   }
 
+  private handleResize = () => {
+    this.setState({ addBtnLeftPos: window.innerWidth - 52 });
+  };
+
   private handleCloseApp = () => {
     this.store!.save();
     this.store!.stop();
+    window.removeEventListener('resize', this.handleResize);
     ipcRenderer.send('closed');
   };
 
@@ -179,7 +189,6 @@ export default class App extends React.PureComponent<AppProps, AppState> {
   };
 
   render() {
-    let addBtnLeft = 500 - 52;
     return (
       <>
         <TitleBar
@@ -232,7 +241,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
             />
             <FloatingButton
               position='fixed'
-              left={addBtnLeft}
+              left={this.state.addBtnLeftPos}
               top={87}
               icon='add'
               intent='warning'
