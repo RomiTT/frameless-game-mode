@@ -5,12 +5,12 @@
   "dependencies": {
     "bulma": "^0.7.5",
     "electron-is-dev": "^1.1.0",
-    "frameless-titlebar": "^1.0.8",
     "mobx": "^5.10.1",
     "mobx-react": "^6.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.1.13",
+    "frameless-titlebar": "^1.0.8"
   },
   "main": "public/electron.js",
   "scripts": {
