@@ -3,21 +3,13 @@
   "version": "1.0.0-beta",
   "private": true,
   "dependencies": {
-    "@blueprintjs/core": "^3.16.2",
-    "@types/jest": "24.0.15",
-    "@types/node": "12.0.10",
-    "@types/react": "16.8.22",
-    "@types/react-dom": "16.8.4",
     "electron-is-dev": "^1.1.0",
     "frameless-titlebar": "^1.0.8",
     "mobx": "^5.10.1",
     "mobx-react": "^6.1.1",
-    "node-sass": "^4.12.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
-    "reflect-metadata": "^0.1.13",
-    "typescript": "3.5.2"
+    "reflect-metadata": "^0.1.13"
   },
   "main": "public/electron.js",
   "scripts": {
@@ -72,12 +64,20 @@
     ]
   },
   "devDependencies": {
+    "@blueprintjs/core": "^3.16.2",
+    "@types/jest": "24.0.15",
+    "@types/node": "12.0.10",
+    "@types/react": "16.8.22",
+    "@types/react-dom": "16.8.4",
     "@rescripts/cli": "^0.0.10",
     "@rescripts/rescript-env": "^0.0.10",
     "concurrently": "^4.1.0",
     "electron": "^5.0.5",
     "electron-builder": "^20.44.4",
+    "node-sass": "^4.12.0",
+    "react-scripts": "^3.0.1",
     "shelljs": "^0.8.3",
+    "typescript": "^3.5.3",
     "wait-on": "^3.2.0"
   }
 }
