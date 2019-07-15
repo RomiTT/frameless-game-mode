@@ -56,6 +56,9 @@ class App extends React.PureComponent<AppProps, AppState> {
   };
 
   componentDidMount() {
+    const remote = require('electron').remote;
+    const argv = remote.process.argv;
+
     this.taskFGM.load();
 
     const bound = store.getState().windowBound;
@@ -65,7 +68,9 @@ class App extends React.PureComponent<AppProps, AppState> {
       mainWindow.setBounds(bound);
     }
 
-    mainWindow.show();
+    if (argv.length <= 1 || argv[1] !== '--silent') {
+      mainWindow.show();
+    }
 
     this.taskFGM.start();
 
