@@ -33,7 +33,7 @@ class FGMTask {
 
   load = () => {
     const localStorage = window.localStorage;
-    const state = store.getState();
+    let state = store.getState();
     const newState = {};
     for (let [key, value] of Object.entries(state)) {
       let itemVal = localStorage.getItem(key);
@@ -46,6 +46,8 @@ class FGMTask {
     }
 
     Actions.loadAppState(newState);
+    state = store.getState();
+    FGM.setDataList(state.listAppToMonitor);
   };
 
   save = () => {
