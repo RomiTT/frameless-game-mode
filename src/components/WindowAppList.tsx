@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './WindowAppList.module.scss';
 
-interface WindowAppListRowItemProps {
+interface IWindowAppListRowItemProps {
   item: any;
   index: number;
   className: string;
@@ -10,7 +10,7 @@ interface WindowAppListRowItemProps {
 }
 
 class WindowAppListRowItem extends React.PureComponent<
-  WindowAppListRowItemProps,
+  IWindowAppListRowItemProps,
   any
 > {
   private handleContextMenu = (e: any) => {
@@ -43,8 +43,8 @@ class WindowAppListRowItem extends React.PureComponent<
   }
 }
 
-interface WindowAppListProps {
-  listApp: Array<object>;
+interface IWindowAppListProps {
+  listApp: ReadonlyArray<object>;
   selectedIndex?: number;
   style?: React.CSSProperties;
   className?: string;
@@ -52,19 +52,19 @@ interface WindowAppListProps {
   onContextMenu?: (e: any, item: any) => void;
 }
 
-interface WindowsAppListState {
+interface IWindowsAppListState {
   selectedIndex: number;
 }
 
 export default class WindowAppList extends React.PureComponent<
-  WindowAppListProps,
-  WindowsAppListState
+  IWindowAppListProps,
+  IWindowsAppListState
 > {
   static defaultProps = {};
 
   listRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props: WindowAppListProps) {
+  constructor(props: IWindowAppListProps) {
     super(props);
 
     this.state = {

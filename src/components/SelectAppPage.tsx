@@ -1,11 +1,11 @@
+import FloatingButton from './FloatingButton';
 import React from 'react';
 import WindowAppList from './WindowAppList';
-import FloatingButton from './FloatingButton';
-import styles from './SelectAppPage.module.scss';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import { Divider } from '@blueprintjs/core';
+import styles from './SelectAppPage.module.scss';
 
-interface SelectAppPageProps {
+interface ISelectAppPageProps {
   listApp: Array<object>;
   selectedIndex: number;
   onRefreshList: () => void;
@@ -13,7 +13,9 @@ interface SelectAppPageProps {
   renderButtons: (pageInstance: SelectAppPage) => JSX.Element;
 }
 
-export default class SelectAppPage extends React.Component<SelectAppPageProps> {
+export default class SelectAppPage extends React.Component<
+  ISelectAppPageProps
+> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
 
   private handleRefreshList = () => {

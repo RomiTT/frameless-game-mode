@@ -39,5 +39,7 @@ export function deserializeObject(obj: object) {
     }
   }
 
+  console.log('deserialize obj: ', newObj);
+
   return newObj;
 }

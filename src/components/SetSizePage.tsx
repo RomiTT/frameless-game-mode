@@ -1,27 +1,27 @@
 import React from 'react';
+import { Classes } from '@blueprintjs/core';
 import {
-  RadioGroup,
-  Radio,
+  Divider,
   NumericInput,
-  Divider
+  Radio,
+  RadioGroup
 } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from './FGM';
 import styles from './SetSizePage.module.scss';
-import { Classes } from '@blueprintjs/core';
 
-interface SetSizePageProps {
+interface ISetSizePageProps {
   renderButtons: (pageInstance: SetSizePage) => JSX.Element;
 }
 
-interface SetSizePageState {
+interface ISetSizePageState {
   wsize: FGM_WINDOW_SIZE;
   width: number;
   height: number;
 }
 
 export default class SetSizePage extends React.PureComponent<
-  SetSizePageProps,
-  SetSizePageState
+  ISetSizePageProps,
+  ISetSizePageState
 > {
   state = {
     wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,

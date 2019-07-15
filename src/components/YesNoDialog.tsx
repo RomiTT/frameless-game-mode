@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, Button, Divider } from '@blueprintjs/core/lib/esm/components';
+import { Button, Dialog, Divider } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import styles from './YesNoDialog.module.scss';
 
@@ -8,6 +8,8 @@ interface YesNoDialogState {
   title: string;
   message: string;
 }
+
+type DialogCallback = () => void;
 
 export default class YesNoDialog extends React.PureComponent<
   any,
@@ -18,14 +20,14 @@ export default class YesNoDialog extends React.PureComponent<
     title: '',
     message: ''
   };
-  private onYes?: () => void;
-  private onNo?: () => void;
+  private onYes?: DialogCallback;
+  private onNo?: DialogCallback;
 
   open = (
     title: string,
     message: string,
-    onYes?: () => void,
-    onNo?: () => void
+    onYes?: DialogCallback,
+    onNo?: DialogCallback
   ) => {
     this.onYes = onYes;
     this.onNo = onNo;

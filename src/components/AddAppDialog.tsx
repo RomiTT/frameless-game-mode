@@ -1,24 +1,16 @@
 import React from 'react';
-import {
-  Button,
-  Dialog,
-  IconName,
-  Divider
-} from '@blueprintjs/core/lib/esm/components';
-import { MaybeElement, Classes } from '@blueprintjs/core/lib/esm/common';
-import { IStoreFGM } from '../stores/StoreFGM';
-import { inject } from 'mobx-react';
-import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from './FGM';
 import SelectAppPage from './SelectAppPage';
 import SetPositionPage from './SetPositionPage';
 import SetSizePage from './SetSizePage';
+import Tasks from '../redux/Tasks';
+import { Button, Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
+import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from './FGM';
+import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
 
-interface AddAppDialogProps {
-  storeFGM?: IStoreFGM;
-}
+interface IAddAppDialogProps {}
 
-interface AddAppDialogState {
+interface IAddAppDialogState {
   isOpen: boolean;
   listApp: Array<object>;
   stage: number;
@@ -26,24 +18,25 @@ interface AddAppDialogState {
   selectedIndex: number;
 }
 
-@inject('storeFGM')
-export default class AddAppDialog extends React.PureComponent<
-  AddAppDialogProps,
-  AddAppDialogState
+type onOKCallback = (
+  item: any,
+  wpos: FGM_WINDOW_POSITION,
+  wsize: FGM_WINDOW_SIZE,
+  width: number,
+  height: number
+) => void;
+
+class AddAppDialog extends React.PureComponent<
+  IAddAppDialogProps,
+  IAddAppDialogState
 > {
-  private store = this.props.storeFGM;
+  private taskFGM = Tasks.FGM;
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
   private width = 0;
   private height = 0;
-  private onOK?: (
-    item: any,
-    wpos: FGM_WINDOW_POSITION,
-    wsize: FGM_WINDOW_SIZE,
-    width: number,
-    height: number
-  ) => void;
+  private onOK?: onOKCallback;
   state = {
     isOpen: false,
     listApp: new Array<object>(),
@@ -52,17 +45,9 @@ export default class AddAppDialog extends React.PureComponent<
     selectedIndex: -1
   };
 
-  open = (
-    onOK?: (
-      item: any,
-      wpos: FGM_WINDOW_POSITION,
-      wsize: FGM_WINDOW_SIZE,
-      width: number,
-      height: number
-    ) => void
-  ) => {
+  open = (onOK: onOKCallback) => {
     this.onOK = onOK;
-    this.store!.getWindowAppList((list: Array<object>) => {
+    this.taskFGM.getWindowAppList((list: Array<object>) => {
       this.setState({ isOpen: true, stage: 1, listApp: list });
     });
   };
@@ -83,7 +68,7 @@ export default class AddAppDialog extends React.PureComponent<
   };
 
   private handleRefreshList = () => {
-    this.store!.getWindowAppList((list: Array<object>) => {
+    this.taskFGM.getWindowAppList((list: Array<object>) => {
       this.setState({ listApp: list, selectedIndex: -1 });
     });
   };
@@ -204,7 +189,8 @@ export default class AddAppDialog extends React.PureComponent<
 
     return (
       <Dialog
-        className={`bp3-dark ${styles.dialog}`}
+        className={`${styles.dialog} bp3-dark`}
+        style={{ width: 450 }}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={title}
@@ -216,3 +202,5 @@ export default class AddAppDialog extends React.PureComponent<
     );
   }
 }
+
+export default AddAppDialog;

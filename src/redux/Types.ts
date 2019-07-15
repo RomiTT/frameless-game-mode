@@ -9,8 +9,8 @@ export interface IWindowBound {
 
 export interface IAppState {
   readonly listAppToMonitor: ReadonlyArray<object>;
-  readonly state: FGM_STATE;
-  readonly mode: FGM_WATCH_MODE;
+  readonly stateFGM: FGM_STATE;
+  readonly watchMode: FGM_WATCH_MODE;
   readonly launchAtLogon: boolean;
   readonly windowBound: IWindowBound;
 }

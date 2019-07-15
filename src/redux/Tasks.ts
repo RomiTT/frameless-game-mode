@@ -1,5 +1,5 @@
-import store from './Store';
-import { Actions } from './Actions';
+import store, { isSerializable } from './Store';
+import Actions from './Actions';
 import { deserializeObject, serializeObject } from './SerializeObject';
 import {
   FGM,
@@ -32,11 +32,31 @@ class FGMTask {
   };
 
   load = () => {
-    Actions.loadAppState(deserializeObject(store.getState()));
+    const localStorage = window.localStorage;
+    const state = store.getState();
+    const newState = {};
+    for (let [key, value] of Object.entries(state)) {
+      let itemVal = localStorage.getItem(key);
+      if (itemVal) {
+        Object.defineProperty(newState, key, {
+          value: JSON.parse(itemVal),
+          writable: true
+        });
+      }
+    }
+
+    Actions.loadAppState(newState);
   };
 
   save = () => {
-    serializeObject(store.getState());
+    const localStorage = window.localStorage;
+    const state = store.getState();
+
+    for (let [key, value] of Object.entries(state)) {
+      if (isSerializable(key)) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    }
   };
 
   addApp = (

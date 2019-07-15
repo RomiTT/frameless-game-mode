@@ -1,43 +1,47 @@
 import React from 'react';
+import store from '../redux/Store';
 import {
-  Radio,
-  Dialog,
   Button,
   Classes,
+  Dialog,
   Divider,
-  Switch,
-  RadioGroup
+  Radio,
+  RadioGroup,
+  Switch
 } from '@blueprintjs/core';
-import styles from './SettingsDialog.module.scss';
 import { FGM_WATCH_MODE } from './FGM';
-import { IStoreFGM } from '../stores/StoreFGM';
-import { inject } from 'mobx-react';
+import styles from './SettingsDialog.module.scss';
 
-interface SettingsDialogProps {
-  storeFGM?: IStoreFGM;
-}
+interface ISettingsDialogProps {}
 
-interface SettingsDialogState {
+interface ISettingsDialogState {
   isOpen: boolean;
   autoLaunch: boolean;
   watchMode: FGM_WATCH_MODE;
 }
 
-@inject('storeFGM')
-export default class SettingsDialog extends React.PureComponent<
-  SettingsDialogProps,
-  SettingsDialogState
+type OnOKCallback = (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE) => void;
+
+class SettingsDialog extends React.PureComponent<
+  ISettingsDialogProps,
+  ISettingsDialogState
 > {
+  private onOK?: OnOKCallback;
+
   state = {
     isOpen: false,
     autoLaunch: false,
     watchMode: FGM_WATCH_MODE.ALL_WINDOWS
   };
 
-  private store = this.props.storeFGM;
-
-  open = () => {
-    this.setState({ isOpen: true, autoLaunch: this.store!.launchAtLogin });
+  open = (onOK: OnOKCallback) => {
+    this.onOK = onOK;
+    const appState = store.getState();
+    this.setState({
+      isOpen: true,
+      autoLaunch: appState.launchAtLogon,
+      watchMode: appState.watchMode
+    });
   };
 
   private handleClose = () => {
@@ -45,9 +49,7 @@ export default class SettingsDialog extends React.PureComponent<
   };
 
   private handleOK = () => {
-    this.store!.setWatchMode(this.state.watchMode);
-    this.store!.setAutoLaunch(this.state.autoLaunch);
-    this.store!.save();
+    if (this.onOK) this.onOK(this.state.autoLaunch, this.state.watchMode);
     this.setState({ isOpen: false });
   };
 
@@ -55,6 +57,7 @@ export default class SettingsDialog extends React.PureComponent<
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
+        style={{ width: 430 }}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title='Settings'
@@ -117,3 +120,5 @@ export default class SettingsDialog extends React.PureComponent<
     );
   }
 }
+
+export default SettingsDialog;

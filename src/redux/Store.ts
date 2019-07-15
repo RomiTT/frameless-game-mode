@@ -1,19 +1,38 @@
-import { Actions } from './Actions';
-import { createStore, Store } from 'redux';
+import Actions from './Actions';
+import { createStore, Store, bindActionCreators } from 'redux';
 import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
 import { IAppState, IReduxAction } from './Types';
 import { serialize } from './SerializeObject';
 const isDev = require('electron-is-dev');
 
-class AppState implements IAppState {
-  @serialize listAppToMonitor = new Array<object>();
-  state = FGM_STATE.STOPPED;
-  @serialize mode = FGM_WATCH_MODE.ALL_WINDOWS;
-  @serialize launchAtLogon = false;
-  @serialize windowBound = { x: 0, y: 0, width: 0, height: 0 };
-}
+// class AppState implements IAppState {
+//   @serialize listAppToMonitor = new Array<object>();
+//   stateFGM = FGM_STATE.STOPPED;
+//   @serialize watchMode = FGM_WATCH_MODE.ALL_WINDOWS;
+//   @serialize launchAtLogon = false;
+//   @serialize windowBound = { x: 0, y: 0, width: 0, height: 0 };
+// }
+//
+// const appState = new AppState() as IAppState;
 
-const appState = new AppState() as IAppState;
+const appState: IAppState = {
+  listAppToMonitor: new Array<object>(),
+  stateFGM: FGM_STATE.STOPPED,
+  watchMode: FGM_WATCH_MODE.ALL_WINDOWS,
+  launchAtLogon: false,
+  windowBound: { x: 0, y: 0, width: 0, height: 0 }
+};
+
+const blackList = ['stateFGM'];
+export function isSerializable(key: string) {
+  for (let name of blackList) {
+    if (name === key) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 const createStoreWithDevTools = new Function(
   'createStore',
@@ -37,11 +56,11 @@ function initActions(store: any) {
   const dispatch = store.dispatch;
   for (let [key, value] of Object.entries(Actions)) {
     Object.defineProperty(Actions, key, {
-      // value: bindActionCreators(value, dispatch),
-      value: function() {
-        const action = value as Function;
-        dispatch(action.apply(null, arguments));
-      },
+      value: bindActionCreators(value, dispatch),
+      // value: function() {
+      //   const action = value as Function;
+      //   dispatch(action.apply(null, arguments));
+      // },
       writable: false
     });
   }

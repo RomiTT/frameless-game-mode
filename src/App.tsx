@@ -1,56 +1,50 @@
-import React from 'react';
-import { autorun } from 'mobx';
-import { inject } from 'mobx-react';
-import logo from './logo.svg';
-import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
+import AddAppDialog from './components/AddAppDialog';
 import AppLayout from './components/AppLayout';
+import FloatingButton from './components/FloatingButton';
+import React from 'react';
+import SettingsDialog from './components/SettingsDialog';
+import Tasks from './redux/Tasks';
+import WindowAppList from './components/WindowAppList';
+import YesNoDialog from './components/YesNoDialog';
 import {
-  Navbar,
-  Colors,
-  H1,
-  Classes,
   Alignment,
-  NavbarDivider,
   Button,
-  NavbarGroup,
-  NavbarHeading,
+  Classes,
+  Colors,
   ContextMenu,
+  Icon,
   Menu,
   MenuItem,
-  Icon,
-  Intent
+  Navbar,
+  NavbarDivider,
+  NavbarGroup,
+  NavbarHeading
 } from '@blueprintjs/core';
+import { connect } from 'react-redux';
 import {
   FGM_STATE,
-  FGM_WATCH_MODE,
   FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE
+  FGM_WINDOW_SIZE,
+  FGM_WATCH_MODE
 } from './components/FGM';
-
-import WindowAppList from './components/WindowAppList';
-import { IStoreFGM } from './stores/StoreFGM';
+import { IAppState, IWindowBound } from './redux/Types';
+import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
+import store from './redux/Store';
 import styles from './App.module.scss';
-import FloatingButton from './components/FloatingButton';
-import AddAppDialog from './components/AddAppDialog';
-import YesNoDialog from './components/YesNoDialog';
-import SettingsDialog from './components/SettingsDialog';
 
 const { remote, ipcRenderer } = require('electron');
 
 interface AppProps {
-  storeFGM?: IStoreFGM;
+  listAppToMonitor: ReadonlyArray<object>;
+  stateFGM: FGM_STATE;
 }
 
 interface AppState {
-  stateFGM: FGM_STATE;
-  stateText: string;
-  stateColor: string;
   addBtnLeftPos: number;
 }
 
-@inject('storeFGM')
-export default class App extends React.PureComponent<AppProps, AppState> {
-  private store = this.props.storeFGM;
+class App extends React.PureComponent<AppProps, AppState> {
+  private taskFGM = Tasks.FGM;
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
@@ -58,60 +52,27 @@ export default class App extends React.PureComponent<AppProps, AppState> {
     SettingsDialog
   > = React.createRef();
   state = {
-    stateFGM: this.store!.state,
-    stateText: '',
-    stateColor: Colors.GRAY3,
     addBtnLeftPos: 0
   };
 
   componentDidMount() {
-    this.store!.load();
+    this.taskFGM.load();
 
-    const bound = this.store!.windowBound;
+    const bound = store.getState().windowBound;
     const mainWindow = remote.getCurrentWindow();
 
-    if (bound.width === 0 && bound.height === 0) {
-      this.store!.setWindowBound(mainWindow.getBounds());
-    } else {
+    if (bound.width > 0 && bound.height > 0) {
       mainWindow.setBounds(bound);
     }
 
     mainWindow.show();
-    this.listRef.current!.forceUpdate();
 
-    this.store!.start();
+    this.taskFGM.start();
 
     window.addEventListener('resize', this.handleResize);
     this.handleResize();
 
     ipcRenderer.on('close', this.handleCloseApp);
-    autorun(() => {
-      const newState = this.store!.state;
-      let newStateText: string = '';
-      let newStateColor: string = Colors.GRAY3;
-
-      switch (newState) {
-        case FGM_STATE.STARTED:
-          newStateText = 'started';
-          newStateColor = Colors.GREEN5;
-          break;
-
-        case FGM_STATE.PAUSED:
-          newStateText = 'paused';
-          newStateColor = Colors.GOLD3;
-          break;
-
-        case FGM_STATE.STOPPED:
-          newStateText = 'stopped';
-          newStateColor = Colors.GRAY3;
-          break;
-      }
-      this.setState({
-        stateFGM: newState,
-        stateText: newStateText,
-        stateColor: newStateColor
-      });
-    });
   }
 
   private handleResize = () => {
@@ -120,28 +81,33 @@ export default class App extends React.PureComponent<AppProps, AppState> {
 
   private handleCloseApp = () => {
     const mainWindow = remote.getCurrentWindow();
-    this.store!.setWindowBound(mainWindow.getBounds());
-
-    this.store!.save();
-    this.store!.stop();
+    this.taskFGM.setWindowBound(mainWindow.getBounds());
+    this.taskFGM.save();
+    this.taskFGM.stop();
     window.removeEventListener('resize', this.handleResize);
     ipcRenderer.send('closed');
   };
 
   private handleStart = () => {
-    this.store!.start();
+    this.taskFGM.start();
   };
 
   private handlePause = () => {
-    this.store!.pause();
+    this.taskFGM.pause();
   };
 
   private handleStop = () => {
-    this.store!.stop();
+    this.taskFGM.stop();
   };
 
   private handleOpenSettings = () => {
-    this.settingsDialogRef.current!.open();
+    this.settingsDialogRef.current!.open(
+      (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE) => {
+        this.taskFGM.setLaunchAtLogon(launchAtLogon);
+        this.taskFGM.setWatchMode(watchMode);
+        this.taskFGM.save();
+      }
+    );
   };
 
   private handleContextMenu = (e: any, item: any) => {
@@ -160,8 +126,8 @@ export default class App extends React.PureComponent<AppProps, AppState> {
             'Are you sure to delete?',
             () => {
               // onOk
-              this.store!.removeApp(item.key);
-              this.store!.save();
+              this.taskFGM.removeApp(item.key);
+              this.taskFGM.save();
               this.listRef.current!.forceUpdate();
             }
           );
@@ -195,14 +161,35 @@ export default class App extends React.PureComponent<AppProps, AppState> {
         width: number,
         height: number
       ) => {
-        this.store!.addApp(item, wpos, wsize, width, height);
-        this.store!.save();
+        this.taskFGM.addApp(item, wpos, wsize, width, height);
+        this.taskFGM.save();
         this.listRef.current!.forceUpdate();
       }
     );
   };
 
   render() {
+    const newState = this.props.stateFGM;
+    let stateText: string = '';
+    let stateColor: string = Colors.GRAY3;
+
+    switch (newState) {
+      case FGM_STATE.STARTED:
+        stateText = 'started';
+        stateColor = Colors.GREEN5;
+        break;
+
+      case FGM_STATE.PAUSED:
+        stateText = 'paused';
+        stateColor = Colors.GOLD3;
+        break;
+
+      case FGM_STATE.STOPPED:
+        stateText = 'stopped';
+        stateColor = Colors.GRAY3;
+        break;
+    }
+
     return (
       <>
         <TitleBar
@@ -219,22 +206,22 @@ export default class App extends React.PureComponent<AppProps, AppState> {
               <NavbarGroup align={Alignment.RIGHT}>
                 <NavbarDivider />
                 <Button
-                  disabled={this.state.stateFGM == FGM_STATE.STARTED}
+                  disabled={this.props.stateFGM == FGM_STATE.STARTED}
                   className={Classes.MINIMAL}
                   icon='play'
                   onClick={this.handleStart}
                 />
                 <Button
                   disabled={
-                    this.state.stateFGM == FGM_STATE.PAUSED ||
-                    this.state.stateFGM == FGM_STATE.STOPPED
+                    this.props.stateFGM == FGM_STATE.PAUSED ||
+                    this.props.stateFGM == FGM_STATE.STOPPED
                   }
                   className={Classes.MINIMAL}
                   icon='pause'
                   onClick={this.handlePause}
                 />
                 <Button
-                  disabled={this.state.stateFGM == FGM_STATE.STOPPED}
+                  disabled={this.props.stateFGM == FGM_STATE.STOPPED}
                   className={Classes.MINIMAL}
                   icon='stop'
                   onClick={this.handleStop}
@@ -249,7 +236,7 @@ export default class App extends React.PureComponent<AppProps, AppState> {
           </header>
           <main>
             <WindowAppList
-              listApp={this.store!.listAppToMonitor}
+              listApp={this.props.listAppToMonitor}
               ref={this.listRef}
               onContextMenu={this.handleContextMenu}
             />
@@ -272,12 +259,28 @@ export default class App extends React.PureComponent<AppProps, AppState> {
               className={styles.stateIcon}
               icon='record'
               iconSize={18}
-              color={this.state.stateColor}
+              color={stateColor}
             />
-            <p className={styles.stateText}>{this.state.stateText}</p>
+            <p className={styles.stateText}>{stateText}</p>
           </footer>
         </AppLayout>
       </>
     );
   }
 }
+
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  console.log('mapStateToProps, state=', state, ', ownProps=', ownProps);
+  return {
+    listAppToMonitor: state.listAppToMonitor,
+    stateFGM: state.stateFGM
+  };
+};
+
+// export default connect(
+//   mapStateToProps,
+//   null,
+//   null,
+//   { pure: true }
+// )(App);
+export default connect(mapStateToProps)(App);

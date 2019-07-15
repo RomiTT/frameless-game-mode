@@ -2,16 +2,17 @@ import produce from 'immer';
 import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
 import { IAppState, IWindowBound } from './Types';
 
-export const Actions = {
+const Actions = {
   loadAppState: (val: object) => ({
     type: 'ACTION_LOAD_APP_STATE',
     reducer: (state: IAppState) => {
       return produce(state, draft => {
-        for (let [key, value] of Object.entries(val as object)) {
-          if (key in draft) {
+        for (let [key, value] of Object.entries(draft)) {
+          if (key in val) {
             const destObj = draft as any;
+            const srcObj = val as any;
             if (destObj[key].constructor === value.constructor)
-              destObj[key] = value;
+              destObj[key] = srcObj[key];
           }
         }
       });
@@ -43,20 +44,22 @@ export const Actions = {
     }
   }),
 
-  setFGMState: (val: FGM_STATE) => ({
-    type: 'ACTION_SET_FGM_STATE',
-    reducer: (state: IAppState) => {
-      return produce(state, draft => {
-        draft.state = val;
-      });
-    }
-  }),
+  setFGMState: (val: FGM_STATE) => {
+    return {
+      type: 'ACTION_SET_FGM_STATE',
+      reducer: (state: IAppState) => {
+        return produce(state, draft => {
+          draft.stateFGM = val;
+        });
+      }
+    };
+  },
 
   setWatchMode: (val: FGM_WATCH_MODE) => ({
     TYPE: 'ACTION_SET_WATCH_MODE',
     reducer: (state: IAppState) => {
       return produce(state, draft => {
-        draft.mode = val;
+        draft.watchMode = val;
       });
     }
   }),
@@ -79,3 +82,5 @@ export const Actions = {
     }
   })
 };
+
+export default Actions;

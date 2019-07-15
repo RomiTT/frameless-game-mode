@@ -1,15 +1,13 @@
+import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import store from './redux/Store';
+import { Provider } from 'react-redux';
 import './index.scss';
-import App from './App';
-import { Provider } from 'mobx-react';
-import { stores } from './stores';
-import reduxStore from './redux/Store';
 // import * as serviceWorker from './serviceWorker';
-const storeFGM = stores.storeFGM;
 
 ReactDOM.render(
-  <Provider {...stores}>
+  <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('root')

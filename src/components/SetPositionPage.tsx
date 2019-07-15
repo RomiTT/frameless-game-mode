@@ -1,19 +1,19 @@
 import React from 'react';
+import { Classes, Divider } from '@blueprintjs/core';
 import { FGM_WINDOW_POSITION } from './FGM';
 import styles from './SetPositionPage.module.scss';
-import { Classes, Divider } from '@blueprintjs/core';
 
-interface SetPositionPageProps {
+interface ISetPositionPageProps {
   renderButtons: (pageInstance: SetPositionPage) => JSX.Element;
 }
 
-interface SetPositionPageState {
+interface ISetPositionPageState {
   selectedItem: FGM_WINDOW_POSITION;
 }
 
 export default class SetPositionPage extends React.PureComponent<
-  SetPositionPageProps,
-  SetPositionPageState
+  ISetPositionPageProps,
+  ISetPositionPageState
 > {
   state = {
     selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
