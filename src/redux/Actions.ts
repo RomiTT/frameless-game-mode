@@ -1,5 +1,5 @@
 import produce from 'immer';
-import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
+import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IWindowBound } from './Types';
 
 const Actions = {
@@ -55,14 +55,16 @@ const Actions = {
     };
   },
 
-  setWatchMode: (val: FGM_WATCH_MODE) => ({
-    TYPE: 'ACTION_SET_WATCH_MODE',
-    reducer: (state: IAppState) => {
-      return produce(state, draft => {
-        draft.watchMode = val;
-      });
-    }
-  }),
+  setWatchMode: (val: FGM_WATCH_MODE) => {
+    return {
+      type: 'ACTION_SET_WATCH_MODE',
+      reducer: (state: IAppState) => {
+        return produce(state, draft => {
+          draft.watchMode = val;
+        });
+      }
+    };
+  },
 
   setLaunchAtLogon: (val: boolean) => ({
     type: 'ACTION_SET_LAUNCH_AT_LOGON',

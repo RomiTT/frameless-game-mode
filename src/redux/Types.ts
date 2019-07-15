@@ -1,4 +1,4 @@
-import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
+import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 
 export interface IWindowBound {
   readonly x: number;

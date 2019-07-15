@@ -6,8 +6,9 @@ import {
   FGM_WATCH_MODE,
   FGM_WINDOW_POSITION,
   FGM_WINDOW_SIZE
-} from '../components/FGM';
+} from '../lib/FGM';
 import { IWindowBound } from './Types';
+import { LaunchAtLogon } from '../lib/LaunchAtLogon';
 
 class FGMTask {
   constructor() {
@@ -34,7 +35,7 @@ class FGMTask {
   load = () => {
     const localStorage = window.localStorage;
     let state = store.getState();
-    const newState = {};
+    const newState: any = {};
     for (let [key, value] of Object.entries(state)) {
       let itemVal = localStorage.getItem(key);
       if (itemVal) {
@@ -44,6 +45,8 @@ class FGMTask {
         });
       }
     }
+
+    newState['launchAtLogon'] = LaunchAtLogon.get();
 
     Actions.loadAppState(newState);
     state = store.getState();
@@ -99,7 +102,11 @@ class FGMTask {
   };
 
   setLaunchAtLogon = (val: boolean) => {
-    //FGM.setLaunchAtLogon(val);
+    LaunchAtLogon.set(val);
+    if (LaunchAtLogon.get() !== val) {
+      console.log(`Failed to call LaunchAtLogon.set(${val})`);
+      return;
+    }
     Actions.setLaunchAtLogon(val);
   };
 

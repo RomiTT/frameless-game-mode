@@ -1,6 +1,6 @@
 import Actions from './Actions';
 import { createStore, Store, bindActionCreators } from 'redux';
-import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
+import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IReduxAction } from './Types';
 import { serialize } from './SerializeObject';
 const isDev = require('electron-is-dev');
@@ -13,7 +13,7 @@ const appState: IAppState = {
   windowBound: { x: 0, y: 0, width: 0, height: 0 }
 };
 
-const blackList = ['stateFGM'];
+const blackList = ['stateFGM', 'launchAtLogon'];
 export function isSerializable(key: string) {
   for (let name of blackList) {
     if (name === key) {

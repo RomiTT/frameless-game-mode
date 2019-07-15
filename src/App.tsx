@@ -26,7 +26,7 @@ import {
   FGM_WINDOW_POSITION,
   FGM_WINDOW_SIZE,
   FGM_WATCH_MODE
-} from './components/FGM';
+} from './lib/FGM';
 import { IAppState, IWindowBound } from './redux/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './redux/Store';
@@ -117,7 +117,6 @@ class App extends React.PureComponent<AppProps, AppState> {
       Menu,
       { className: 'bp3-ui-text' }, // empty props
       React.createElement(MenuItem, {
-        //className: 'bp3-menu-item',
         text: 'Delete',
         icon: 'delete',
         onClick: () => {
@@ -132,13 +131,12 @@ class App extends React.PureComponent<AppProps, AppState> {
             }
           );
         }
+      }),
+      React.createElement(MenuItem, {
+        text: 'Properties...',
+        icon: 'properties',
+        onClick: () => {}
       })
-      // React.createElement(MenuItem, {
-      //   //className: 'bp3-menu-item',
-      //   text: 'Properties...',
-      //   icon: 'properties',
-      //   onClick: () => {}
-      // })
     );
 
     // mouse position is available on event
