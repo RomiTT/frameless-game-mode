@@ -52,6 +52,7 @@ export default class YesNoDialog extends React.PureComponent<
         onClose={this.handleClose}
         title={this.state.title}
         icon='info-sign'
+        lazy={false}
         {...this.state}
       >
         <div className={Classes.DIALOG_BODY}>

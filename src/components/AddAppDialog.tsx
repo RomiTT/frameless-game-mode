@@ -4,7 +4,7 @@ import SetPositionPage from './SetPositionPage';
 import SetSizePage from './SetSizePage';
 import Tasks from '../redux/Tasks';
 import { Button, Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
-import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from './FGM';
+import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
 
@@ -194,6 +194,7 @@ class AddAppDialog extends React.PureComponent<
         onClose={this.handleClose}
         title={title}
         icon={icon}
+        lazy={false}
         {...this.state}
       >
         {page}

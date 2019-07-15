@@ -9,7 +9,7 @@ import {
   RadioGroup,
   Switch
 } from '@blueprintjs/core';
-import { FGM_WATCH_MODE } from './FGM';
+import { FGM_WATCH_MODE } from '../lib/FGM';
 import styles from './SettingsDialog.module.scss';
 
 interface ISettingsDialogProps {}
@@ -61,6 +61,7 @@ class SettingsDialog extends React.PureComponent<
         onClose={this.handleClose}
         title='Settings'
         icon='cog'
+        lazy={false}
         {...this.state}
       >
         <div className={Classes.DIALOG_BODY}>
