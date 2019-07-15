@@ -138,6 +138,7 @@ if (!gotTheLock) {
       {
         label: 'Quit Frameless Game Mode',
         click: () => {
+          mainWindow.send('quit');
           app.quit();
         }
       }
