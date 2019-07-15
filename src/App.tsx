@@ -79,6 +79,7 @@ class App extends React.PureComponent<AppProps, AppState> {
 
     ipcRenderer.on('close', this.handleCloseApp);
     ipcRenderer.on('quit', this.handleQuitApp);
+    mainWindow.on('hide', this.handleHide);
   }
 
   private handleResize = () => {
@@ -96,13 +97,19 @@ class App extends React.PureComponent<AppProps, AppState> {
 
   private handleQuitApp = () => {
     const mainWindow = remote.getCurrentWindow();
-    if (mainWindow.isVisible() == false) mainWindow.show();
+    if (mainWindow.isVisible()) {
+      this.taskFGM.setWindowBound(mainWindow.getBounds());
+    }
 
-    this.taskFGM.setWindowBound(mainWindow.getBounds());
     this.taskFGM.save();
     this.taskFGM.stop();
     window.removeEventListener('resize', this.handleResize);
     ipcRenderer.send('closed');
+  };
+
+  private handleHide = () => {
+    const mainWindow = remote.getCurrentWindow();
+    this.taskFGM.setWindowBound(mainWindow.getBounds());
   };
 
   private handleStart = () => {
