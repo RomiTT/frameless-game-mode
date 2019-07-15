@@ -1,8 +1,9 @@
 import { createStore } from 'redux';
-import { appState, AppState } from './AppState';
-import { ReduxAction, Actions } from './Actions';
+import { appState, IAppState } from './AppState';
+import { IReduxAction, Actions } from './Actions';
+const isDev = require('electron-is-dev');
 
-const createReduxStore = new Function(
+const createStoreWithDevTools = new Function(
   'createStore',
   'reducer',
   `
@@ -13,7 +14,7 @@ const createReduxStore = new Function(
 `
 );
 
-const reducer = (state = appState, action: ReduxAction) => {
+const reducer = (state = appState, action: IReduxAction) => {
   if (action.reducer) {
     return action.reducer(state);
   }
@@ -35,7 +36,10 @@ function initActions(store: any) {
 }
 
 function initialize() {
-  const store = createReduxStore(createStore, reducer);
+  let store: object | null = null;
+  if (isDev) store = createStoreWithDevTools(createStore, reducer);
+  else store = createStore(reducer);
+
   initActions(store);
   return store;
 }

@@ -1,50 +1,40 @@
-import { AppState, WindowBound } from './AppState';
+import { IAppState, WindowBound } from './AppState';
 import produce from 'immer';
-import {
-  FGM_STATE,
-  FGM_WATCH_MODE,
-  FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE
-} from '../components/FGM';
+import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
 
-export interface ReduxAction {
+export interface IReduxAction {
   type: string;
-  reducer: (state: AppState) => AppState;
+  reducer: (state: IAppState) => IAppState;
 }
 
 export const Actions = {
-  setAppListToMonitor: (val: Array<object>) => ({
-    type: 'ACTION_SET_APP_LIST_TO_MONITOR',
-    reducer: (state: AppState) => {
-      if (state.listAppToMonitor === val) return state;
+  loadAppState: (val: object) => ({
+    type: 'ACTION_LOAD_APP_STATE',
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
-        draft.listAppToMonitor = val;
+        for (let [key, value] of Object.entries(val as object)) {
+          if (key in draft) {
+            const destObj = draft as any;
+            if (destObj[key].constructor === value.constructor)
+              destObj[key] = value;
+          }
+        }
       });
     }
   }),
-  addAppToList: (
-    item: any,
-    pos: FGM_WINDOW_POSITION,
-    size: FGM_WINDOW_SIZE,
-    width: number,
-    height: number
-  ) => ({
+
+  addAppToList: (item: any) => ({
     type: 'ACTION_ADD_APP_TO_LIST',
-    reducer: (state: AppState) => {
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
-        draft.listAppToMonitor.push({
-          ...item,
-          wpos: pos,
-          wsize: size,
-          width: width,
-          height: height
-        });
+        draft.listAppToMonitor.push(item);
       });
     }
   }),
+
   removeAppFromList: (key: string) => ({
     type: 'ACTION_REMOVE_APP_FROM_LIST',
-    reducer: (state: AppState) => {
+    reducer: (state: IAppState) => {
       const index = state.listAppToMonitor.findIndex(item => {
         return (item as any).key === key;
       });
@@ -60,35 +50,34 @@ export const Actions = {
 
   setFGMState: (val: FGM_STATE) => ({
     type: 'ACTION_SET_FGM_STATE',
-    reducer: (state: AppState) => {
-      if (state.state === val) return state;
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.state = val;
       });
     }
   }),
+
   setWatchMode: (val: FGM_WATCH_MODE) => ({
     TYPE: 'ACTION_SET_WATCH_MODE',
-    reducer: (state: AppState) => {
-      if (state.mode === val) return state;
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.mode = val;
       });
     }
   }),
+
   setLaunchAtLogon: (val: boolean) => ({
     type: 'ACTION_SET_LAUNCH_AT_LOGON',
-    reducer: (state: AppState) => {
-      if (state.launchAtLogon === val) return state;
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.launchAtLogon = val;
       });
     }
   }),
+
   setWindowBound: (val: WindowBound) => ({
     type: 'ACTION_SET_WINDOW_BOUND',
-    reducer: (state: AppState) => {
-      if (state.windowBound === val) return state;
+    reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.windowBound = val;
       });

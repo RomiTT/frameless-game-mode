@@ -1,4 +1,5 @@
 import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
+import { serialize } from './SerializeObject';
 
 export interface WindowBound {
   readonly x: number;
@@ -7,18 +8,20 @@ export interface WindowBound {
   readonly height: number;
 }
 
-export interface AppState {
-  readonly listAppToMonitor: Array<object>;
+export interface IAppState {
+  readonly listAppToMonitor: ReadonlyArray<object>;
   readonly state: FGM_STATE;
   readonly mode: FGM_WATCH_MODE;
   readonly launchAtLogon: boolean;
   readonly windowBound: WindowBound;
 }
 
-export const appState: AppState = {
-  listAppToMonitor: new Array<object>(),
-  state: FGM_STATE.STOPPED,
-  mode: FGM_WATCH_MODE.ALL_WINDOWS,
-  launchAtLogon: false,
-  windowBound: { x: 0, y: 0, width: 0, height: 0 }
-};
+class AppState implements IAppState {
+  @serialize listAppToMonitor = new Array<object>();
+  state = FGM_STATE.STOPPED;
+  @serialize mode = FGM_WATCH_MODE.ALL_WINDOWS;
+  @serialize launchAtLogon = false;
+  @serialize windowBound = { x: 0, y: 0, width: 0, height: 0 };
+}
+
+export const appState = new AppState() as IAppState;
