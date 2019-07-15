@@ -189,8 +189,7 @@ class AddAppDialog extends React.PureComponent<
 
     return (
       <Dialog
-        className={`${styles.dialog} bp3-dark`}
-        style={{ width: 450 }}
+        className={`bp3-dark ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title={title}

@@ -57,7 +57,6 @@ class SettingsDialog extends React.PureComponent<
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
-        style={{ width: 430 }}
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title='Settings'
