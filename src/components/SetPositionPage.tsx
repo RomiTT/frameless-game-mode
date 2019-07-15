@@ -1,6 +1,6 @@
 import React from 'react';
 import { Classes, Divider } from '@blueprintjs/core';
-import { FGM_WINDOW_POSITION } from './FGM';
+import { FGM_WINDOW_POSITION } from '../lib/FGM';
 import styles from './SetPositionPage.module.scss';
 
 interface ISetPositionPageProps {

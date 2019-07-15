@@ -6,7 +6,7 @@ import {
   Radio,
   RadioGroup
 } from '@blueprintjs/core/lib/esm/components';
-import { FGM_WINDOW_SIZE } from './FGM';
+import { FGM_WINDOW_SIZE } from '../lib/FGM';
 import styles from './SetSizePage.module.scss';
 
 interface ISetSizePageProps {
