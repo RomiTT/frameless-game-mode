@@ -1,12 +1,12 @@
 import store from './Store';
 import { Actions } from './Actions';
+import { deserializeObject, serializeObject } from './SerializeObject';
 import {
   FGM,
+  FGM_WATCH_MODE,
   FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE,
-  FGM_WATCH_MODE
+  FGM_WINDOW_SIZE
 } from '../components/FGM';
-import { deserializeObject, serializeObject } from './SerializeObject';
 import { IWindowBound } from './Types';
 
 class FGMTask {

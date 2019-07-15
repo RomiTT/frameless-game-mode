@@ -1,8 +1,8 @@
-import { createStore, Store } from 'redux';
 import { Actions } from './Actions';
+import { createStore, Store } from 'redux';
 import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
-import { serialize } from './SerializeObject';
 import { IAppState, IReduxAction } from './Types';
+import { serialize } from './SerializeObject';
 const isDev = require('electron-is-dev');
 
 class AppState implements IAppState {
