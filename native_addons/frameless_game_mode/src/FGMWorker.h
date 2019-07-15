@@ -24,6 +24,7 @@ namespace FGM {
 
   private:
     void ChangeState(FGM_STATE newState);
+		void ForceApplyGameModeInfo(const WCHAR* key);
   };
 };
 

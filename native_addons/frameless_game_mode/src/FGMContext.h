@@ -70,6 +70,7 @@ namespace FGM {
     FGM_WATCH_MODE mode = FGM_WATCH_MODE::ALL_WINDOWS;   
     FGM_MATCH_OPTION matchOption = FGM_MATCH_OPTION::PROCESS_NAME_AND_TITLE;
     DWORD interval = 500;
+		std::wstring keyToForceApply;
   };	
 };
 

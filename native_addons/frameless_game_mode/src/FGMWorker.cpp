@@ -1,5 +1,6 @@
 #include "FGMWorker.h"
 #include <assert.h>
+#include <algorithm>
 
 
 using namespace FGM;
@@ -7,6 +8,9 @@ const DWORD WINDOW_STYLE_TO_CHECK  = (WS_VISIBLE | WS_CAPTION | WS_OVERLAPPED);
 
 BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam);
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list);
+
+void MakeKeyFromWindowHandle(HWND hWnd, std::wstring& out);
+void MadeWindowFrameless(HWND hwnd, GameModeInfo& item);
 
 
 class JsArgumentString : public ThreadSafeFunction::JsArgument {
@@ -66,16 +70,24 @@ void FGMWorker::Execute() {
       if ((currentTick-oldTick) >= _spContext->interval) {
         oldTick = currentTick;
 
-        _spContext->mtx.lock();
-        switch (_spContext->mode) {
-          case FGM_WATCH_MODE::ONLY_FOR_FOREGROUND_WINDOW:
-            ProcessOnlyForForegroundWindow(_spContext->listGameModeInfo);
-            break;
-          case FGM_WATCH_MODE::ALL_WINDOWS:
-            EnumWindows(EnumWindowProcForFGM, reinterpret_cast<LPARAM>(&_spContext->listGameModeInfo));
-            break;
-        }
-        _spContext->mtx.unlock();
+				if (_spContext->state == FGM_STATE::STARTED) {
+					_spContext->mtx.lock();
+
+					if (lstrlen(_spContext->keyToForceApply.c_str()) > 0) {
+						this->ForceApplyGameModeInfo(_spContext->keyToForceApply.c_str());
+						_spContext->keyToForceApply = L"";
+					}
+
+					switch (_spContext->mode) {
+					case FGM_WATCH_MODE::ONLY_FOR_FOREGROUND_WINDOW:
+						ProcessOnlyForForegroundWindow(_spContext->listGameModeInfo);
+						break;
+					case FGM_WATCH_MODE::ALL_WINDOWS:
+						EnumWindows(EnumWindowProcForFGM, reinterpret_cast<LPARAM>(&_spContext->listGameModeInfo));
+						break;
+					}
+					_spContext->mtx.unlock();
+				}
       }
     }
 
@@ -101,6 +113,34 @@ void FGMWorker::ChangeState(FGM_STATE newState) {
   _spContext->mtx.unlock();
 }
 
+
+void FGMWorker::ForceApplyGameModeInfo(const WCHAR* keyToApply) {
+	_spContext->mtx.lock();
+
+	auto iter = std::find_if(_spContext->listGameModeInfo.begin(), _spContext->listGameModeInfo.end(), [&keyToApply](GameModeInfo& item) {
+		return lstrcmpi(keyToApply, item.key.c_str()) == 0;
+		});
+
+	if (iter != _spContext->listGameModeInfo.end()) {
+		_spContext->listGameModeInfo.erase(iter);
+
+		HWND hWnd = GetForegroundWindow();
+		hWnd = GetWindow(hWnd, GW_HWNDFIRST);
+
+		while (hWnd != NULL) {
+			std::wstring key;
+			MakeKeyFromWindowHandle(hWnd, key);
+
+			if ((key.size() > 0) && (lstrcmpi(key.c_str(), keyToApply) == 0)) {
+				MadeWindowFrameless(hWnd, *iter);
+			}
+
+			hWnd = GetWindow(hWnd, GW_HWNDNEXT);
+		}
+	}
+
+	_spContext->mtx.lock();
+}
 
 
 
