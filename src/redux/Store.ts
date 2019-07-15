@@ -1,7 +1,19 @@
-import { createStore } from 'redux';
-import { appState, IAppState } from './AppState';
-import { IReduxAction, Actions } from './Actions';
+import { createStore, Store } from 'redux';
+import { Actions } from './Actions';
+import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
+import { serialize } from './SerializeObject';
+import { IAppState, IReduxAction } from './Types';
 const isDev = require('electron-is-dev');
+
+class AppState implements IAppState {
+  @serialize listAppToMonitor = new Array<object>();
+  state = FGM_STATE.STOPPED;
+  @serialize mode = FGM_WATCH_MODE.ALL_WINDOWS;
+  @serialize launchAtLogon = false;
+  @serialize windowBound = { x: 0, y: 0, width: 0, height: 0 };
+}
+
+const appState = new AppState() as IAppState;
 
 const createStoreWithDevTools = new Function(
   'createStore',
@@ -36,7 +48,7 @@ function initActions(store: any) {
 }
 
 function initialize() {
-  let store: object | null = null;
+  let store: Store<IAppState, IReduxAction> | null = null;
   if (isDev) store = createStoreWithDevTools(createStore, reducer);
   else store = createStore(reducer);
 
@@ -44,4 +56,5 @@ function initialize() {
   return store;
 }
 
-export default initialize();
+const store = initialize()!;
+export default store;

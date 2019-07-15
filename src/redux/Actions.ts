@@ -1,11 +1,6 @@
-import { IAppState, WindowBound } from './AppState';
 import produce from 'immer';
 import { FGM_STATE, FGM_WATCH_MODE } from '../components/FGM';
-
-export interface IReduxAction {
-  type: string;
-  reducer: (state: IAppState) => IAppState;
-}
+import { IAppState, IWindowBound } from './Types';
 
 export const Actions = {
   loadAppState: (val: object) => ({
@@ -75,7 +70,7 @@ export const Actions = {
     }
   }),
 
-  setWindowBound: (val: WindowBound) => ({
+  setWindowBound: (val: IWindowBound) => ({
     type: 'ACTION_SET_WINDOW_BOUND',
     reducer: (state: IAppState) => {
       return produce(state, draft => {

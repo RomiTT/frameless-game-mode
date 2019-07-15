@@ -1,4 +1,4 @@
-import { WindowBound, appState } from './AppState';
+import store from './Store';
 import { Actions } from './Actions';
 import {
   FGM,
@@ -7,6 +7,7 @@ import {
   FGM_WATCH_MODE
 } from '../components/FGM';
 import { deserializeObject, serializeObject } from './SerializeObject';
+import { IWindowBound } from './Types';
 
 class FGMTask {
   constructor() {
@@ -31,11 +32,11 @@ class FGMTask {
   };
 
   load = () => {
-    Actions.loadAppState(deserializeObject(appState));
+    Actions.loadAppState(deserializeObject(store.getState()));
   };
 
   save = () => {
-    serializeObject(appState);
+    serializeObject(store.getState());
   };
 
   addApp = (
@@ -45,6 +46,7 @@ class FGMTask {
     width: number,
     height: number
   ) => {
+    const appState = store.getState();
     const index = appState.listAppToMonitor.findIndex(obj => {
       return (obj as any).key === item.key;
     });
@@ -79,7 +81,7 @@ class FGMTask {
     Actions.setLaunchAtLogon(val);
   };
 
-  setWindowBound = (bound: WindowBound) => {
+  setWindowBound = (bound: IWindowBound) => {
     Actions.setWindowBound(bound);
   };
 
