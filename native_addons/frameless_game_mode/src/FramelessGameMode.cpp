@@ -299,7 +299,7 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 
 
 Napi::Value FGM::removeGameModeInfo(const Napi::CallbackInfo &info) {
-		Napi::Env env = info.Env();
+	Napi::Env env = info.Env();
 	if (g_FGM == NULL) {
 		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
 		return env.Undefined();
