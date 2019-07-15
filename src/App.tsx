@@ -86,11 +86,15 @@ class App extends React.PureComponent<AppProps, AppState> {
 
   private handleCloseApp = () => {
     const mainWindow = remote.getCurrentWindow();
-    this.taskFGM.setWindowBound(mainWindow.getBounds());
-    this.taskFGM.save();
-    this.taskFGM.stop();
-    window.removeEventListener('resize', this.handleResize);
-    ipcRenderer.send('closed');
+    if (store.getState().closeToTray && mainWindow.isVisible()) {
+      mainWindow.hide();
+    } else {
+      this.taskFGM.setWindowBound(mainWindow.getBounds());
+      this.taskFGM.save();
+      this.taskFGM.stop();
+      window.removeEventListener('resize', this.handleResize);
+      ipcRenderer.send('closed');
+    }
   };
 
   private handleStart = () => {
@@ -107,9 +111,14 @@ class App extends React.PureComponent<AppProps, AppState> {
 
   private handleOpenSettings = () => {
     this.settingsDialogRef.current!.open(
-      (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE) => {
+      (
+        launchAtLogon: boolean,
+        watchMode: FGM_WATCH_MODE,
+        closeToTray: boolean
+      ) => {
         this.taskFGM.setLaunchAtLogon(launchAtLogon);
         this.taskFGM.setWatchMode(watchMode);
+        this.taskFGM.setCloseToTray(closeToTray);
         this.taskFGM.save();
       }
     );

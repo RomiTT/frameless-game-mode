@@ -75,6 +75,15 @@ const Actions = {
     }
   }),
 
+  setCloseToTray: (val: boolean) => ({
+    type: 'ACTION_SET_CLOSE_TO_TRAY',
+    reducer: (state: IAppState) => {
+      return produce(state, draft => {
+        draft.closeToTray = val;
+      });
+    }
+  }),
+
   setWindowBound: (val: IWindowBound) => ({
     type: 'ACTION_SET_WINDOW_BOUND',
     reducer: (state: IAppState) => {

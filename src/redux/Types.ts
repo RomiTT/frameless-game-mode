@@ -12,6 +12,7 @@ export interface IAppState {
   readonly stateFGM: FGM_STATE;
   readonly watchMode: FGM_WATCH_MODE;
   readonly launchAtLogon: boolean;
+  readonly closeToTray: boolean;
   readonly windowBound: IWindowBound;
 }
 

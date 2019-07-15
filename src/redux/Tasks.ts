@@ -110,6 +110,10 @@ class FGMTask {
     Actions.setLaunchAtLogon(val);
   };
 
+  setCloseToTray = (val: boolean) => {
+    Actions.setCloseToTray(val);
+  };
+
   setWindowBound = (bound: IWindowBound) => {
     Actions.setWindowBound(bound);
   };

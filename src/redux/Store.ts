@@ -10,6 +10,7 @@ const appState: IAppState = {
   stateFGM: FGM_STATE.STOPPED,
   watchMode: FGM_WATCH_MODE.ALL_WINDOWS,
   launchAtLogon: false,
+  closeToTray: false,
   windowBound: { x: 0, y: 0, width: 0, height: 0 }
 };
 

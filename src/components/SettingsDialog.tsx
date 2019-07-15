@@ -18,9 +18,14 @@ interface ISettingsDialogState {
   isOpen: boolean;
   autoLaunch: boolean;
   watchMode: FGM_WATCH_MODE;
+  closeToTray: boolean;
 }
 
-type OnOKCallback = (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE) => void;
+type OnOKCallback = (
+  launchAtLogon: boolean,
+  watchMode: FGM_WATCH_MODE,
+  closeToTray: boolean
+) => void;
 
 class SettingsDialog extends React.PureComponent<
   ISettingsDialogProps,
@@ -31,7 +36,8 @@ class SettingsDialog extends React.PureComponent<
   state = {
     isOpen: false,
     autoLaunch: false,
-    watchMode: FGM_WATCH_MODE.ALL_WINDOWS
+    watchMode: FGM_WATCH_MODE.ALL_WINDOWS,
+    closeToTray: false
   };
 
   open = (onOK: OnOKCallback) => {
@@ -40,7 +46,8 @@ class SettingsDialog extends React.PureComponent<
     this.setState({
       isOpen: true,
       autoLaunch: appState.launchAtLogon,
-      watchMode: appState.watchMode
+      watchMode: appState.watchMode,
+      closeToTray: appState.closeToTray
     });
   };
 
@@ -49,7 +56,12 @@ class SettingsDialog extends React.PureComponent<
   };
 
   private handleOK = () => {
-    if (this.onOK) this.onOK(this.state.autoLaunch, this.state.watchMode);
+    if (this.onOK)
+      this.onOK(
+        this.state.autoLaunch,
+        this.state.watchMode,
+        this.state.closeToTray
+      );
     this.setState({ isOpen: false });
   };
 
@@ -71,6 +83,14 @@ class SettingsDialog extends React.PureComponent<
             onChange={e => {
               let newVal = !this.state.autoLaunch;
               this.setState({ autoLaunch: newVal });
+            }}
+          />
+          <Switch
+            checked={this.state.closeToTray}
+            label='Close to tray'
+            onChange={e => {
+              let newVal = !this.state.closeToTray;
+              this.setState({ closeToTray: newVal });
             }}
           />
           <br />
