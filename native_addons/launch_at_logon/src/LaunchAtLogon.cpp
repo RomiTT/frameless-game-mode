@@ -1,19 +1,39 @@
 #include "LaunchAtLogon.h"
 
-Napi::Value LAL::setLaunchAtLogon(const Napi::CallbackInfo &info) {
+
+void SetLaunchAtLogon(bool val) {
+
+}
+
+
+bool GetLaunchAtLogon() {
+  return true;
+}
+
+
+
+Napi::Value LAL::set(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
+  	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+  auto val = info[0].As<Napi::Boolean>();
+  SetLaunchAtLogon(val);
+
   return env.Undefined();	
 }
 
 
-Napi::Value LAL::getLaunchAtLogon(const Napi::CallbackInfo &info) {
+Napi::Value LAL::get(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
-  return Napi::Boolean::New(env, true);
+  return Napi::Boolean::New(env, GetLaunchAtLogon());
 }
 
 
 Napi::Object LAL::Init(Napi::Env env, Napi::Object exports) {
-  exports.Set("setLaunchAtLogon", Napi::Function::New(env, LAL::setLaunchAtLogon));
-  exports.Set("getLaunchAtLogon", Napi::Function::New(env, LAL::getLaunchAtLogon));
+  exports.Set("set", Napi::Function::New(env, LAL::set));
+  exports.Set("get", Napi::Function::New(env, LAL::get));
   return exports;
 }

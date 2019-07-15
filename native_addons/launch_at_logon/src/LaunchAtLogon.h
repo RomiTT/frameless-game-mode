@@ -6,8 +6,8 @@
 #include <napi.h>
 
 namespace LAL {
-  Napi::Value setLaunchAtLogon(const Napi::CallbackInfo &info);
-  Napi::Value getLaunchAtLogon(const Napi::CallbackInfo &info);
+  Napi::Value set(const Napi::CallbackInfo &info);
+  Napi::Value get(const Napi::CallbackInfo &info);
   Napi::Object Init(Napi::Env env, Napi::Object exports);
 }
 
