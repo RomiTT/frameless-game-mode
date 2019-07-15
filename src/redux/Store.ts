@@ -5,16 +5,6 @@ import { IAppState, IReduxAction } from './Types';
 import { serialize } from './SerializeObject';
 const isDev = require('electron-is-dev');
 
-// class AppState implements IAppState {
-//   @serialize listAppToMonitor = new Array<object>();
-//   stateFGM = FGM_STATE.STOPPED;
-//   @serialize watchMode = FGM_WATCH_MODE.ALL_WINDOWS;
-//   @serialize launchAtLogon = false;
-//   @serialize windowBound = { x: 0, y: 0, width: 0, height: 0 };
-// }
-//
-// const appState = new AppState() as IAppState;
-
 const appState: IAppState = {
   listAppToMonitor: new Array<object>(),
   stateFGM: FGM_STATE.STOPPED,
