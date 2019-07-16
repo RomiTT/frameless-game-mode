@@ -1,6 +1,5 @@
 import store, { isSerializable } from './Store';
 import Actions from './Actions';
-import { deserializeObject, serializeObject } from './SerializeObject';
 import {
   FGM,
   FGM_WATCH_MODE,
