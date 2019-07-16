@@ -6,15 +6,6 @@
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsupp.lib")
 
-class CoInitializer {
-	HRESULT hr;
-public:
-	CoInitializer() {	hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);}
-	~CoInitializer() { CoUninitialize();}
-	HRESULT GetResult() { return hr;  }
-};
-
-
 template <typename T>
 class ComPtr
 {
@@ -35,35 +26,9 @@ public:
 
 
 HRESULT SetLaunchAtLogon(bool launchAtLogon, const WCHAR* taskName, const WCHAR* appPath, const WCHAR* appArgs) {
-	CoInitializer initializer;
-	HRESULT hr = initializer.GetResult();
-
-	if (FAILED(hr)) {
-		printf("CoInitializeEx failed: %x\n", hr);
-		return hr;
-	}
-
-	//  Set general COM security levels.
-	hr = CoInitializeSecurity(
-		NULL,
-		-1,
-		NULL,
-		NULL,
-		RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-		RPC_C_IMP_LEVEL_IMPERSONATE,
-		NULL,
-		0,
-		NULL);
-
-	if (FAILED(hr)) {
-		printf("CoInitializeSecurity failed: %x\n", hr);
-		return hr;
-	}
-
-	//  ------------------------------------------------------
 	//  Create an instance of the Task Service. 
 	ComPtr<ITaskService> taskService;
-	hr = CoCreateInstance(CLSID_TaskScheduler,
+	HRESULT hr = CoCreateInstance(CLSID_TaskScheduler,
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_ITaskService,
@@ -236,56 +201,31 @@ HRESULT SetLaunchAtLogon(bool launchAtLogon, const WCHAR* taskName, const WCHAR*
 		return hr;
 	}
 
-	printf("\n Success! Task successfully registered. ");
+	printf("Success! Task successfully registered. \n");
 	return S_OK;
 }
 
 
-bool GetLaunchAtLogon(const WCHAR* taskNameToFind) {
-	CoInitializer initializer;
-	HRESULT hr = initializer.GetResult();
-
-	if (FAILED(hr)) {
-		printf("\nCoInitializeEx failed: %x", hr);
-		return false;
-	}
-
-	//  Set general COM security levels.
-	hr = CoInitializeSecurity(
-		NULL,
-		-1,
-		NULL,
-		NULL,
-		RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-		RPC_C_IMP_LEVEL_IMPERSONATE,
-		NULL,
-		0,
-		NULL);
-
-	if (FAILED(hr)) {
-		printf("\nCoInitializeSecurity failed: %x", hr);
-		CoUninitialize();
-		return false;
-	}
-
-	//  ------------------------------------------------------
+HRESULT GetLaunchAtLogon(const WCHAR* taskNameToFind, bool& result) {
 	//  Create an instance of the Task Service. 
 	ComPtr<ITaskService> pService;
-	hr = CoCreateInstance(CLSID_TaskScheduler,
+	HRESULT hr = CoCreateInstance(CLSID_TaskScheduler,
 		NULL,
 		CLSCTX_INPROC_SERVER,
 		IID_ITaskService,
 		(void**)& pService);
 	if (FAILED(hr)) {
-		printf("Failed to CoCreate an instance of the TaskService class: %x", hr);
-		return false;
+		printf("Failed to CoCreate an instance of the TaskService class: %x\n", hr);
+		result = false;
+		return hr;
 	}
 
 	//  Connect to the task service.
 	hr = pService->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
 	if (FAILED(hr)) {
-		printf("ITaskService::Connect failed: %x", hr);
-		return false;
+		printf("ITaskService::Connect failed: %x\n", hr);
+		result = false;
+		return hr;
 	}
 
 	//  ------------------------------------------------------
@@ -293,8 +233,9 @@ bool GetLaunchAtLogon(const WCHAR* taskNameToFind) {
 	ComPtr<ITaskFolder> pRootFolder;
 	hr = pService->GetFolder(_bstr_t(L"\\"), &pRootFolder);
 	if (FAILED(hr)) {
-		printf("Cannot get Root Folder pointer: %x", hr);
-		return false;
+		printf("Cannot get Root Folder pointer: %x\n", hr);
+		result = false;
+		return hr;
 	}
 
 	//  -------------------------------------------------------
@@ -302,19 +243,21 @@ bool GetLaunchAtLogon(const WCHAR* taskNameToFind) {
 	ComPtr<IRegisteredTaskCollection> pTaskCollection;
 	hr = pRootFolder->GetTasks(NULL, &pTaskCollection);
 	if (FAILED(hr)) {
-		printf("Cannot get the registered tasks.: %x", hr);
-		return false;
+		printf("Cannot get the registered tasks.: %x\n", hr);
+		result = false;
+		return hr;
 	}
 
 	LONG numTasks = 0;
 	hr = pTaskCollection->get_Count(&numTasks);
 
 	if (numTasks == 0) {
-		printf("\nNo Tasks are currently running");
-		return false;
+		printf("No Tasks are currently running\n");
+		result = false;
+		return hr;
 	}
 
-	printf("\nNumber of Tasks : %d", numTasks);
+	printf("Number of Tasks : %d\n", numTasks);
 
 	TASK_STATE taskState;
 
@@ -330,7 +273,11 @@ bool GetLaunchAtLogon(const WCHAR* taskNameToFind) {
 					printf("Task Name: %S\n", taskName.GetBSTR());
 					hr = pRegisteredTask->get_State(&taskState);
 					if (SUCCEEDED(hr)) {
-						return true;
+						result = true;
+						return hr;
+					}
+					else {
+						printf("Cannot get the state of the task: %x\n", hr);
 					}
 				}
 			}
@@ -343,14 +290,87 @@ bool GetLaunchAtLogon(const WCHAR* taskNameToFind) {
 		}
 	}
 
-	return false;
+	return hr;
 }
+
+
+class SetLaunchAtLogonWorker : public Napi::AsyncWorker {
+	bool _launchAtLogon;
+	std::wstring _taskName;
+	std::wstring _appPath;
+	std::wstring _appArgs;
+	
+
+public:
+	SetLaunchAtLogonWorker(bool launchAtLogon, 
+	                       const wchar_t* taskName, 
+												 const wchar_t* appPath, 
+												 const wchar_t* appArgs, 
+												 Napi::Function& callback)
+		: AsyncWorker(callback)		
+		, _launchAtLogon(launchAtLogon)
+		, _taskName(taskName)
+		, _appPath(appPath)
+		, _appArgs(appArgs)
+ {}
+
+	~SetLaunchAtLogonWorker() {}
+
+	// This code will be executed on the worker thread
+	void Execute() {
+		HRESULT hr = SetLaunchAtLogon(_launchAtLogon, _taskName.c_str(), _appPath.c_str(), _appArgs.c_str());
+		if (FAILED(hr)) {
+			char msg[256];
+			sprintf_s(msg, "Failed to call SetLaunchAtLogon: %x", hr);
+			printf("%s\n", msg);
+			MessageBoxA(NULL, msg, "Error", MB_OK|MB_ICONERROR);			
+		}
+	}
+
+	void OnOK() {
+		Napi::HandleScope scope(Env());
+		Callback().Call({ Env().Undefined() });
+	}
+};
+
+
+
+class GetLaunchAtLogonWorker : public Napi::AsyncWorker {
+	std::wstring _taskName;
+	bool _result;
+
+public:
+	GetLaunchAtLogonWorker(const wchar_t* taskName, Napi::Function& callback)
+		: AsyncWorker(callback)
+		, _taskName(taskName)
+		, _result(false)
+ {}
+
+	~GetLaunchAtLogonWorker() {}
+
+	// This code will be executed on the worker thread
+	void Execute() {
+		HRESULT hr = GetLaunchAtLogon(_taskName.c_str(), _result);
+		printf("Worker result = %d\n", _result);
+		if (FAILED(hr)) {
+			char msg[256];
+			sprintf_s(msg, "Failed to call GetLaunchAtLogon: %x", hr);
+			printf("%s\n", msg);
+			MessageBoxA(NULL, msg, "Error", MB_OK|MB_ICONERROR);			
+		}
+	}
+
+	void OnOK() {
+		Napi::HandleScope scope(Env());
+		Callback().Call({ Napi::Boolean::New(Env(), _result) });
+	}
+};
 
 
 
 Napi::Value LAL::set(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
-  	if (info.Length() < 4) {
+  	if (info.Length() < 5) {
 		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
 		return env.Undefined();
 	}	
@@ -363,20 +383,25 @@ Napi::Value LAL::set(const Napi::CallbackInfo &info) {
 	auto taskName = converter.from_bytes(utf8TaskName);
 
 	auto utf8AppPath = info[2].As<Napi::String>();
-	auto appPath = converter.from_bytes(utf8TaskName);
+	auto appPath = converter.from_bytes(utf8AppPath);
 
 	auto utf8AppArgs = info[3].As<Napi::String>();
-	auto appArgs = converter.from_bytes(utf8TaskName);
+	auto appArgs = converter.from_bytes(utf8AppArgs);
 
-  SetLaunchAtLogon(launchAtLogon, taskName.c_str(), appPath.c_str(), appArgs.c_str());
-
-  return env.Undefined();	
+	Napi::Function cb = info[4].As<Napi::Function>();
+	auto wk = new SetLaunchAtLogonWorker(launchAtLogon, 
+																			 taskName.c_str(), 
+																			 appPath.c_str(), 
+																			 appArgs.c_str(), 
+																			 cb);
+	wk->Queue();
+	return env.Undefined();
 }
 
 
 Napi::Value LAL::get(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	if (info.Length() < 1) {
+	if (info.Length() < 2) {
 		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
 		return env.Undefined();
 	}
@@ -385,11 +410,59 @@ Napi::Value LAL::get(const Napi::CallbackInfo &info) {
 	auto utf8TaskName = info[0].As<Napi::String>();
 	auto taskName = converter.from_bytes(utf8TaskName);
 
-  return Napi::Boolean::New(env, GetLaunchAtLogon(taskName.c_str()));
+	Napi::Function cb = info[1].As<Napi::Function>();
+	auto wk = new GetLaunchAtLogonWorker(taskName.c_str(), cb);
+	wk->Queue();
+	return env.Undefined();
 }
 
 
+Napi::Value LAL::initialize(const Napi::CallbackInfo& info) {
+	Napi::Env env = info.Env();
+
+	HRESULT hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	if (FAILED(hr)) {
+		char msg[256];
+		sprintf_s(msg, "Failed to call CoInitialize: %x", hr);
+		Napi::TypeError::New(env, msg).ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	hr = CoInitializeSecurity(
+		NULL,
+		-1,
+		NULL,
+		NULL,
+		RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
+		RPC_C_IMP_LEVEL_IMPERSONATE,
+		NULL,
+		0,
+		NULL);
+
+	if (FAILED(hr)) {
+		char msg[256];
+		sprintf_s(msg, "Failed to call CoInitializeSecurity: %x", hr);
+		Napi::TypeError::New(env, msg).ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	return env.Undefined();
+}
+
+
+Napi::Value LAL::uninitialize(const Napi::CallbackInfo& info) {
+	Napi::Env env = info.Env();
+
+	CoUninitialize();
+
+	return env.Undefined();
+}
+
+
+
 Napi::Object LAL::Init(Napi::Env env, Napi::Object exports) {
+	exports.Set("initialize", Napi::Function::New(env, LAL::initialize));
+	exports.Set("uninitialize", Napi::Function::New(env, LAL::uninitialize));
   exports.Set("set", Napi::Function::New(env, LAL::set));
   exports.Set("get", Napi::Function::New(env, LAL::get));
   return exports;
