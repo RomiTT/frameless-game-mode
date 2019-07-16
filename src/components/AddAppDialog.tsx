@@ -48,7 +48,12 @@ class AddAppDialog extends React.PureComponent<
   open = (onOK: onOKCallback) => {
     this.onOK = onOK;
     this.taskFGM.getWindowAppList((list: Array<object>) => {
-      this.setState({ isOpen: true, stage: 1, listApp: list });
+      this.setState({
+        isOpen: true,
+        stage: 1,
+        listApp: list,
+        selectedIndex: -1
+      });
     });
   };
 
