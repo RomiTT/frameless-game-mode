@@ -7,7 +7,7 @@ import {
   FGM_WINDOW_SIZE
 } from '../lib/FGM';
 import { IWindowBound } from './Types';
-import { LaunchAtLogon } from '../lib/LaunchAtLogon';
+import { LaunchAtLogon, schedulerName, appArgs } from '../lib/LaunchAtLogon';
 
 class FGMTask {
   constructor() {
@@ -45,7 +45,10 @@ class FGMTask {
       }
     }
 
-    newState['launchAtLogon'] = LaunchAtLogon.get();
+    LaunchAtLogon.get(schedulerName, (result: boolean) => {
+      console.log('LaunchAtLogon.get() => ', result);
+      Actions.setLaunchAtLogon(result);
+    });
 
     Actions.loadAppState(newState);
     state = store.getState();
@@ -101,12 +104,17 @@ class FGMTask {
   };
 
   setLaunchAtLogon = (val: boolean) => {
-    LaunchAtLogon.set(val);
-    if (LaunchAtLogon.get() !== val) {
-      console.log(`Failed to call LaunchAtLogon.set(${val})`);
-      return;
-    }
-    Actions.setLaunchAtLogon(val);
+    console.log(
+      `val=${val}, taskName=${schedulerName}, appPath=${
+        process.execPath
+      }, appArg=${appArgs}`
+    );
+    LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs, () => {
+      LaunchAtLogon.get(schedulerName, (result: boolean) => {
+        console.log('LaunchAtLogon.get() => ', result);
+        Actions.setLaunchAtLogon(result);
+      });
+    });
   };
 
   setCloseToTray = (val: boolean) => {

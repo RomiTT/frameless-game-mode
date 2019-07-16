@@ -6,14 +6,14 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 
 let mainWindow = null;
+let tray = null;
 
 electron.app.FGM = require('./fgm.node');
 console.log('electron.app.FGM', electron.app.FGM);
+electron.app.FGM.initialize();
 
 electron.app.LaunchAtLogon = require('./launchAtLogon.node');
 console.log('electron.app.LaunchAtLogon', electron.app.LaunchAtLogon);
-
-electron.app.FGM.initialize();
 
 const width = 500;
 const height = 600;
@@ -94,6 +94,7 @@ function createWindow() {
       mainWindow.send('close');
     } else {
       app.FGM.unInitialize();
+      tray.destroy();
     }
   });
 
@@ -122,7 +123,6 @@ if (!gotTheLock) {
     }
   });
 
-  let tray = null;
   app.on('ready', () => {
     createWindow();
 
