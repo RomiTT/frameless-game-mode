@@ -35,7 +35,6 @@ export default class SetPositionPage extends React.PureComponent<
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.dialogPage}`}>
-          <p>Set position</p>
           <br />
           <div className={styles.row}>
             <div
