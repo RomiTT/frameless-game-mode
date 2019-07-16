@@ -3,7 +3,7 @@ import AppLayout from './components/AppLayout';
 import FloatingButton from './components/FloatingButton';
 import React from 'react';
 import SettingsDialog from './components/SettingsDialog';
-import Tasks from './redux/Tasks';
+import Tasks from './store/Tasks';
 import WindowAppList from './components/WindowAppList';
 import YesNoDialog from './components/YesNoDialog';
 import {
@@ -27,9 +27,9 @@ import {
   FGM_WINDOW_SIZE,
   FGM_WATCH_MODE
 } from './lib/FGM';
-import { IAppState } from './redux/Types';
+import { IAppState } from './store/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
-import store from './redux/Store';
+import store from './store/Store';
 import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');

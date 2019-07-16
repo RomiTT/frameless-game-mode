@@ -2,7 +2,7 @@ import React from 'react';
 import SelectAppPage from './SelectAppPage';
 import SetPositionPage from './SetPositionPage';
 import SetSizePage from './SetSizePage';
-import Tasks from '../redux/Tasks';
+import Tasks from '../store/Tasks';
 import { Button, Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';

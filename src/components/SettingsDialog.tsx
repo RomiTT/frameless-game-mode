@@ -1,5 +1,5 @@
 import React from 'react';
-import store from '../redux/Store';
+import store from '../store/Store';
 import {
   Button,
   Classes,
