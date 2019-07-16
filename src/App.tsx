@@ -27,23 +27,23 @@ import {
   FGM_WINDOW_SIZE,
   FGM_WATCH_MODE
 } from './lib/FGM';
-import { IAppState, IWindowBound } from './redux/Types';
+import { IAppState } from './redux/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './redux/Store';
 import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');
 
-interface AppProps {
+interface IProps {
   listAppToMonitor: ReadonlyArray<object>;
   stateFGM: FGM_STATE;
 }
 
-interface AppState {
+interface IState {
   addBtnLeftPos: number;
 }
 
-class App extends React.PureComponent<AppProps, AppState> {
+class App extends React.PureComponent<IProps, IState> {
   private taskFGM = Tasks.FGM;
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
