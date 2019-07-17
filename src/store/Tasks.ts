@@ -46,9 +46,13 @@ class FGMTask {
         }
       }
 
-      const result = await LaunchAtLogon.get(schedulerName);
-      newState['launchAtLogon'] = result;
-      console.log('LaunchAtLogon.get() => ', result);
+      try {
+        const result = await LaunchAtLogon.get(schedulerName);
+        newState['launchAtLogon'] = result;
+        console.log('LaunchAtLogon.get: ', result);
+      } catch (err) {
+        console.log(err);
+      }
 
       Actions.loadAppState(newState);
       state = store.getState();
@@ -111,7 +115,7 @@ class FGMTask {
       await LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs);
       const result = await LaunchAtLogon.get(schedulerName);
       Actions.setLaunchAtLogon(result);
-      console.log('LaunchAtLogon.get() => ', result);
+      console.log('LaunchAtLogon.get: ', result);
     } catch (err) {
       console.log(err);
     }
