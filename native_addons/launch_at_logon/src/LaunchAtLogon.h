@@ -8,8 +8,8 @@
 namespace LAL {
 	Napi::Value initialize(const Napi::CallbackInfo& info);
 	Napi::Value uninitialize(const Napi::CallbackInfo& info);
-  Napi::Value set(const Napi::CallbackInfo &info);
-  Napi::Value get(const Napi::CallbackInfo &info);
+  Napi::Promise set(const Napi::CallbackInfo &info);
+  Napi::Promise get(const Napi::CallbackInfo &info);
   Napi::Object Init(Napi::Env env, Napi::Object exports);
 }
 

@@ -9,16 +9,15 @@ const appArgs = '--silent';
 
 LaunchAtLogon.initialize();
 
-LaunchAtLogon.set(false, taskName, appPath, appArgs, () => {
-  LaunchAtLogon.get(taskName, result => {
+LaunchAtLogon.set(false, taskName, appPath, appArgs).then(() => {
+  LaunchAtLogon.get(taskName).then(result => {
     console.log('FALSE, LaunchAtLogon.get() => ', result);
   });
 });
 
-LaunchAtLogon.set(true, taskName, appPath, appArgs, () => {
-  LaunchAtLogon.get(taskName, result => {
-    console.log('FALSE, LaunchAtLogon.get() => ', result);
-    LaunchAtLogon.uninitialize();
+LaunchAtLogon.set(true, taskName, appPath, appArgs).then(() => {
+  LaunchAtLogon.get(taskName).then(result => {
+    console.log('TRUE, LaunchAtLogon.get() => ', result);
   });
 });
 

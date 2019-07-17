@@ -1,8 +1,10 @@
-#include "LaunchAtLogon.h"
 #include <comutil.h >
 #include <taskschd.h>
 #include <locale>
 #include <codecvt>
+#include "LaunchAtLogon.h"
+#include "lib/AsyncPromiseWorker.h"
+
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsupp.lib")
 
@@ -294,88 +296,16 @@ HRESULT GetLaunchAtLogon(const WCHAR* taskNameToFind, bool& result) {
 }
 
 
-class SetLaunchAtLogonWorker : public Napi::AsyncWorker {
-	bool _launchAtLogon;
-	std::wstring _taskName;
-	std::wstring _appPath;
-	std::wstring _appArgs;
-	
 
-public:
-	SetLaunchAtLogonWorker(bool launchAtLogon, 
-	                       const wchar_t* taskName, 
-												 const wchar_t* appPath, 
-												 const wchar_t* appArgs, 
-												 Napi::Function& callback)
-		: AsyncWorker(callback)		
-		, _launchAtLogon(launchAtLogon)
-		, _taskName(taskName)
-		, _appPath(appPath)
-		, _appArgs(appArgs)
- {}
-
-	~SetLaunchAtLogonWorker() {}
-
-	// This code will be executed on the worker thread
-	void Execute() {
-		HRESULT hr = SetLaunchAtLogon(_launchAtLogon, _taskName.c_str(), _appPath.c_str(), _appArgs.c_str());
-		if (FAILED(hr)) {
-			char msg[256];
-			sprintf_s(msg, "Failed to call SetLaunchAtLogon: %x", hr);
-			printf("%s\n", msg);
-			MessageBoxA(NULL, msg, "Error", MB_OK|MB_ICONERROR);			
-		}
-	}
-
-	void OnOK() {
-		Napi::HandleScope scope(Env());
-		Callback().Call({ Env().Undefined() });
-	}
-};
-
-
-
-class GetLaunchAtLogonWorker : public Napi::AsyncWorker {
-	std::wstring _taskName;
-	bool _result;
-
-public:
-	GetLaunchAtLogonWorker(const wchar_t* taskName, Napi::Function& callback)
-		: AsyncWorker(callback)
-		, _taskName(taskName)
-		, _result(false)
- {}
-
-	~GetLaunchAtLogonWorker() {}
-
-	// This code will be executed on the worker thread
-	void Execute() {
-		HRESULT hr = GetLaunchAtLogon(_taskName.c_str(), _result);
-		printf("Worker result = %d\n", _result);
-		if (FAILED(hr)) {
-			char msg[256];
-			sprintf_s(msg, "Failed to call GetLaunchAtLogon: %x", hr);
-			printf("%s\n", msg);
-			MessageBoxA(NULL, msg, "Error", MB_OK|MB_ICONERROR);			
-		}
-	}
-
-	void OnOK() {
-		Napi::HandleScope scope(Env());
-		Callback().Call({ Napi::Boolean::New(Env(), _result) });
-	}
-};
-
-
-
-Napi::Value LAL::set(const Napi::CallbackInfo &info) {
+Napi::Promise LAL::set(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
-  	if (info.Length() < 5) {
-		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-		return env.Undefined();
+
+  if (info.Length() < 4) {
+		auto deferred = Napi::Promise::Deferred::New(env);
+		deferred.Reject(Napi::TypeError::New(env, "Wrong number of arguments").Value());
+		return deferred.Promise();
 	}	
 
-  
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	auto launchAtLogon = info[0].As<Napi::Boolean>();
 
@@ -388,32 +318,55 @@ Napi::Value LAL::set(const Napi::CallbackInfo &info) {
 	auto utf8AppArgs = info[3].As<Napi::String>();
 	auto appArgs = converter.from_bytes(utf8AppArgs);
 
-	Napi::Function cb = info[4].As<Napi::Function>();
-	auto wk = new SetLaunchAtLogonWorker(launchAtLogon, 
-																			 taskName.c_str(), 
-																			 appPath.c_str(), 
-																			 appArgs.c_str(), 
-																			 cb);
-	wk->Queue();
-	return env.Undefined();
+
+	auto promise = AsyncPromiseWorker::Run(env, [=](AsyncPromiseWorkerPtr worker) {
+		HRESULT hr = SetLaunchAtLogon(launchAtLogon, taskName.c_str(), appPath.c_str(), appArgs.c_str());
+		if (FAILED(hr)) {
+			char msg[256];
+			sprintf_s(msg, "Failed to call SetLaunchAtLogon: %x", hr);
+			printf("%s\n", msg);
+			MessageBoxA(NULL, msg, "Error", MB_OK | MB_ICONERROR);
+		}
+
+		worker->Resolve([](napi_env env) {
+			return Napi::Env(env).Undefined();
+		});
+	}); 
+
+	return promise;
 }
 
 
-Napi::Value LAL::get(const Napi::CallbackInfo &info) {
+Napi::Promise LAL::get(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	if (info.Length() < 2) {
-		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-		return env.Undefined();
+
+	if (info.Length() < 1) {
+		auto deferred = Napi::Promise::Deferred::New(env);
+		deferred.Reject(Napi::TypeError::New(env, "Wrong number of arguments").Value());
+		return deferred.Promise();
 	}
 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	auto utf8TaskName = info[0].As<Napi::String>();
 	auto taskName = converter.from_bytes(utf8TaskName);
 
-	Napi::Function cb = info[1].As<Napi::Function>();
-	auto wk = new GetLaunchAtLogonWorker(taskName.c_str(), cb);
-	wk->Queue();
-	return env.Undefined();
+	auto promise = AsyncPromiseWorker::Run(env, [=](AsyncPromiseWorkerPtr worker) {
+		bool result = false;
+		HRESULT hr = GetLaunchAtLogon(taskName.c_str(), result);
+		printf("Worker result = %d\n", result);
+		if (FAILED(hr)) {
+			char msg[256];
+			sprintf_s(msg, "Failed to call GetLaunchAtLogon: %x", hr);
+			printf("%s\n", msg);
+			MessageBoxA(NULL, msg, "Error", MB_OK | MB_ICONERROR);
+		}
+
+		worker->Resolve([result](napi_env env) {
+			return Napi::Boolean::New(env, result);
+		});
+	});
+
+	return promise;
 }
 
 

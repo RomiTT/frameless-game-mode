@@ -31,7 +31,7 @@ class FGMTask {
     Actions.setFGMState(FGM.state());
   };
 
-  load = () => {
+  load = async () => {
     const localStorage = window.localStorage;
     let state = store.getState();
     const newState: any = {};
@@ -45,10 +45,9 @@ class FGMTask {
       }
     }
 
-    LaunchAtLogon.get(schedulerName, (result: boolean) => {
-      console.log('LaunchAtLogon.get() => ', result);
-      Actions.setLaunchAtLogon(result);
-    });
+    const result = await LaunchAtLogon.get(schedulerName);
+    newState['launchAtLogon'] = result;
+    console.log('LaunchAtLogon.get() => ', result);
 
     Actions.loadAppState(newState);
     state = store.getState();
@@ -103,18 +102,11 @@ class FGMTask {
     Actions.setWatchMode(mode);
   };
 
-  setLaunchAtLogon = (val: boolean) => {
-    console.log(
-      `val=${val}, taskName=${schedulerName}, appPath=${
-        process.execPath
-      }, appArg=${appArgs}`
-    );
-    LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs, () => {
-      LaunchAtLogon.get(schedulerName, (result: boolean) => {
-        console.log('LaunchAtLogon.get() => ', result);
-        Actions.setLaunchAtLogon(result);
-      });
-    });
+  setLaunchAtLogon = async (val: boolean) => {
+    await LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs);
+    const result = await LaunchAtLogon.get(schedulerName);
+    Actions.setLaunchAtLogon(result);
+    console.log('LaunchAtLogon.get() => ', result);
   };
 
   setCloseToTray = (val: boolean) => {
