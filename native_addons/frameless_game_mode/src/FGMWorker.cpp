@@ -51,12 +51,18 @@ void FGMWorker::Execute() {
     switch (_spContext->state) {
       case FGM_STATE::REQUESTED_STARTING:
         ChangeState(FGM_STATE::STARTED);
-				_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
+				//_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
+				_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+					return Napi::String::New(env, "FGM Started");
+				});
         break;
 
       case FGM_STATE::REQUESTED_PAUSING:
         ChangeState(FGM_STATE::PAUSED);
-				_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
+				//_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
+				_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+					return Napi::String::New(env, "FGM Paused");
+				});				
         break;
 
       case FGM_STATE::REQUESTED_STOPPING:
@@ -94,7 +100,10 @@ void FGMWorker::Execute() {
     Sleep(5);
   }
 
-	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
+//	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
+		_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+			return Napi::String::New(env, "FGM Stopped");
+		});
 
 	_callbackStarted->Release();
 	_callbackPaused->Release();

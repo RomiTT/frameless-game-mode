@@ -33,6 +33,10 @@ void AsyncPromiseWorker::Resolve(ThreadSafeFunction::JsArgument* arg) {
 	_threadSafeCallback->Invoke(arg);
 }
 
+void AsyncPromiseWorker::Resolve2(ThreadSafeFunction::GetValueFunction f) {
+	_threadSafeCallback->Call(_threadSafeCallback, f);
+}
+
 
 void AsyncPromiseWorker::Reject(const char* error) {
 	napi_reject_deferred(_env, _deferred, Napi::String::New(_env, error));

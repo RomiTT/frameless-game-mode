@@ -10,6 +10,8 @@
 
 class ThreadSafeFunction {
 public:
+	typedef std::function<Napi::Value(const Napi::Env&)> GetValueFunction;
+
 	class JsArgument {	
 		std::shared_ptr<ThreadSafeFunction> _owner;		
 
@@ -36,6 +38,7 @@ public:
 	void Release();
 
 	void Invoke(JsArgument* arg);
+	void Call(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction f);
 	static std::shared_ptr<ThreadSafeFunction> Create(const Napi::Function& callback);
 
 private:

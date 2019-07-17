@@ -46,6 +46,25 @@ void ThreadSafeFunction::Invoke(JsArgument* arg) {
 }
 
 
+void ThreadSafeFunction::Call(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction f) {
+	class JsArgument2 : public JsArgument {
+		GetValueFunction _fGetValue;
+	public:
+		JsArgument2(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction fGetValue)
+		: JsArgument(owner)
+		, _fGetValue(std::move(fGetValue)) {
+
+		}
+
+		virtual Napi::Value GetArgument(const Napi::Env& env) {
+			return _fGetValue(env);
+		}
+	};
+
+	assert(napi_call_threadsafe_function(_func, new JsArgument2{owner, f}, napi_tsfn_blocking) == napi_ok);
+}
+
+
 std::shared_ptr<ThreadSafeFunction> ThreadSafeFunction::Create(const Napi::Function& callback) {
 	return std::shared_ptr<ThreadSafeFunction>(new ThreadSafeFunction(callback));
 }

@@ -29,6 +29,7 @@ public:
 	virtual bool Execute() = 0;	
 
 	void Resolve(ThreadSafeFunction::JsArgument* arg);
+	void Resolve2(ThreadSafeFunction::GetValueFunction f);
 	void Reject(const char* error);
 	static Napi::Promise Run(std::shared_ptr<AsyncPromiseWorker> worker);
 
