@@ -32,26 +32,30 @@ class FGMTask {
   };
 
   load = async () => {
-    const localStorage = window.localStorage;
-    let state = store.getState();
-    const newState: any = {};
-    for (let [key, value] of Object.entries(state)) {
-      let itemVal = localStorage.getItem(key);
-      if (itemVal) {
-        Object.defineProperty(newState, key, {
-          value: JSON.parse(itemVal),
-          writable: true
-        });
+    try {
+      const localStorage = window.localStorage;
+      let state = store.getState();
+      const newState: any = {};
+      for (let [key, value] of Object.entries(state)) {
+        let itemVal = localStorage.getItem(key);
+        if (itemVal) {
+          Object.defineProperty(newState, key, {
+            value: JSON.parse(itemVal),
+            writable: true
+          });
+        }
       }
+
+      const result = await LaunchAtLogon.get(schedulerName);
+      newState['launchAtLogon'] = result;
+      console.log('LaunchAtLogon.get() => ', result);
+
+      Actions.loadAppState(newState);
+      state = store.getState();
+      FGM.setDataList(state.listAppToMonitor);
+    } catch (err) {
+      console.log(err);
     }
-
-    const result = await LaunchAtLogon.get(schedulerName);
-    newState['launchAtLogon'] = result;
-    console.log('LaunchAtLogon.get() => ', result);
-
-    Actions.loadAppState(newState);
-    state = store.getState();
-    FGM.setDataList(state.listAppToMonitor);
   };
 
   save = () => {
@@ -103,10 +107,14 @@ class FGMTask {
   };
 
   setLaunchAtLogon = async (val: boolean) => {
-    await LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs);
-    const result = await LaunchAtLogon.get(schedulerName);
-    Actions.setLaunchAtLogon(result);
-    console.log('LaunchAtLogon.get() => ', result);
+    try {
+      await LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs);
+      const result = await LaunchAtLogon.get(schedulerName);
+      Actions.setLaunchAtLogon(result);
+      console.log('LaunchAtLogon.get() => ', result);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   setCloseToTray = (val: boolean) => {

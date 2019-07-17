@@ -21,7 +21,8 @@ protected:
 	napi_env _env;
 	napi_deferred _deferred;
 	napi_value _promise;
-	std::shared_ptr<ThreadSafeFunction> _threadSafeCallback;
+	std::shared_ptr<ThreadSafeFunction> _resolveCallback;
+	std::shared_ptr<ThreadSafeFunction> _rejectCallback;
 	RunFunction _fRun;
 
 protected:
@@ -31,12 +32,13 @@ public:
 	virtual ~AsyncPromiseWorker();	
 	
 	void Resolve(ThreadSafeFunction::GetValueFunction f);
-	void Reject(const char* error);
+	void Reject(ThreadSafeFunction::GetValueFunction f);
 
 	static Napi::Promise Run(napi_env env, RunFunction f);
 
 private:
-	static Napi::Value Callback(const Napi::CallbackInfo& info);
+	static Napi::Value CallbackResolve(const Napi::CallbackInfo& info);
+	static Napi::Value CallbackReject(const Napi::CallbackInfo& info);
 };
 
 typedef std::shared_ptr<AsyncPromiseWorker> AsyncPromiseWorkerPtr;
