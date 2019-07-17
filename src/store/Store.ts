@@ -24,17 +24,6 @@ export function isSerializable(key: string) {
   return true;
 }
 
-const createStoreWithDevTools = new Function(
-  'createStore',
-  'reducer',
-  `
-  return createStore(
-    reducer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-  );
-`
-);
-
 const reducer = (state = appState, action: IReduxAction) => {
   if (action.reducer) {
     return action.reducer(state);
@@ -58,8 +47,13 @@ function initActions(store: any) {
 
 function initialize() {
   let store: Store<IAppState, IReduxAction> | null = null;
-  if (isDev) store = createStoreWithDevTools(createStore, reducer);
-  else store = createStore(reducer);
+  if (isDev) {
+    const win: any = window;
+    const ext = win.__REDUX_DEVTOOLS_EXTENSION__ && win.__REDUX_DEVTOOLS_EXTENSION__();
+    store = createStore(reducer, ext);
+  } else {
+    store = createStore(reducer);
+  }
 
   initActions(store);
   return store;

@@ -1,11 +1,6 @@
 import store, { isSerializable } from './Store';
 import Actions from './Actions';
-import {
-  FGM,
-  FGM_WATCH_MODE,
-  FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE
-} from '../lib/FGM';
+import { FGM, FGM_WATCH_MODE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { IWindowBound } from './Types';
 import { LaunchAtLogon, schedulerName, appArgs } from '../lib/LaunchAtLogon';
 

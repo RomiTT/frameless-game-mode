@@ -26,10 +26,7 @@ type onOKCallback = (
   height: number
 ) => void;
 
-class AddAppDialog extends React.PureComponent<
-  IAddAppDialogProps,
-  IAddAppDialogState
-> {
+class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialogState> {
   private taskFGM = Tasks.FGM;
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
@@ -63,13 +60,7 @@ class AddAppDialog extends React.PureComponent<
   private handleOK = () => {
     this.setState({ isOpen: false });
     if (this.onOK) {
-      this.onOK(
-        this.selectedItem,
-        this.wpos,
-        this.wsize,
-        this.width,
-        this.height
-      );
+      this.onOK(this.selectedItem, this.wpos, this.wsize, this.width, this.height);
     }
   };
 
@@ -138,10 +129,7 @@ class AddAppDialog extends React.PureComponent<
               >
                 Next
               </Button>
-              <Button
-                onClick={this.handleClose}
-                className={styles.buttonPadding}
-              >
+              <Button onClick={this.handleClose} className={styles.buttonPadding}>
                 Cancel
               </Button>
             </>
@@ -163,10 +151,7 @@ class AddAppDialog extends React.PureComponent<
               >
                 Prev
               </Button>
-              <Button
-                onClick={this.handleClose}
-                className={styles.buttonPadding}
-              >
+              <Button onClick={this.handleClose} className={styles.buttonPadding}>
                 Cancel
               </Button>
               <Button

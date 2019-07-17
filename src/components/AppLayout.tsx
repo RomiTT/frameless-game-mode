@@ -14,10 +14,7 @@ interface IAppLayoutState {
   bodyHeight: number;
 }
 
-export default class AppLayout extends React.PureComponent<
-  IAppLayoutProps,
-  IAppLayoutState
-> {
+export default class AppLayout extends React.PureComponent<IAppLayoutProps, IAppLayoutState> {
   private headerId: string = 'romitt_applayout_header';
   private bodyId: string = 'romitt_applayout_body';
   private footerId: string = 'romitt_applayout_footer';
@@ -45,9 +42,7 @@ export default class AppLayout extends React.PureComponent<
     if (this.header && this.footer) {
       let newHeight =
         window.innerHeight -
-        (this.header.offsetTop +
-          this.header.offsetHeight +
-          this.footer.offsetHeight);
+        (this.header.offsetTop + this.header.offsetHeight + this.footer.offsetHeight);
 
       this.setState({ bodyHeight: newHeight });
     }
@@ -84,18 +79,11 @@ export default class AppLayout extends React.PureComponent<
     }
 
     return (
-      <div
-        className={`${this.props.className} ${styles.container}`}
-        style={this.props.style}
-      >
+      <div className={`${this.props.className} ${styles.container}`} style={this.props.style}>
         <div className={styles.header} id={this.headerId}>
           {header}
         </div>
-        <div
-          className={styles.body}
-          style={{ height: this.state.bodyHeight }}
-          id={this.bodyId}
-        >
+        <div className={styles.body} style={{ height: this.state.bodyHeight }} id={this.bodyId}>
           {body}
         </div>
         <div className={styles.footer} id={this.footerId}>

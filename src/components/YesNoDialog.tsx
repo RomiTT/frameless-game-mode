@@ -11,10 +11,7 @@ interface YesNoDialogState {
 
 type DialogCallback = () => void;
 
-export default class YesNoDialog extends React.PureComponent<
-  any,
-  YesNoDialogState
-> {
+export default class YesNoDialog extends React.PureComponent<any, YesNoDialogState> {
   state = {
     isOpen: false,
     title: '',
@@ -23,12 +20,7 @@ export default class YesNoDialog extends React.PureComponent<
   private onYes?: DialogCallback;
   private onNo?: DialogCallback;
 
-  open = (
-    title: string,
-    message: string,
-    onYes?: DialogCallback,
-    onNo?: DialogCallback
-  ) => {
+  open = (title: string, message: string, onYes?: DialogCallback, onNo?: DialogCallback) => {
     this.onYes = onYes;
     this.onNo = onNo;
     this.setState({ isOpen: true, title: title, message: message });
@@ -60,18 +52,10 @@ export default class YesNoDialog extends React.PureComponent<
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button
-              className={styles.buttonPadding}
-              onClick={this.handleYes}
-              intent='primary'
-            >
+            <Button className={styles.buttonPadding} onClick={this.handleYes} intent='primary'>
               Yes
             </Button>
-            <Button
-              className={styles.buttonPadding}
-              onClick={this.handleClose}
-              autoFocus={true}
-            >
+            <Button className={styles.buttonPadding} onClick={this.handleClose} autoFocus={true}>
               No
             </Button>
           </div>

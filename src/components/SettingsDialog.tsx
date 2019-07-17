@@ -1,14 +1,6 @@
 import React from 'react';
 import store from '../store/Store';
-import {
-  Button,
-  Classes,
-  Dialog,
-  Divider,
-  Radio,
-  RadioGroup,
-  Switch
-} from '@blueprintjs/core';
+import { Button, Classes, Dialog, Divider, Radio, RadioGroup, Switch } from '@blueprintjs/core';
 import { FGM_WATCH_MODE } from '../lib/FGM';
 import styles from './SettingsDialog.module.scss';
 
@@ -27,10 +19,7 @@ type OnOKCallback = (
   closeToTray: boolean
 ) => void;
 
-class SettingsDialog extends React.PureComponent<
-  ISettingsDialogProps,
-  ISettingsDialogState
-> {
+class SettingsDialog extends React.PureComponent<ISettingsDialogProps, ISettingsDialogState> {
   private onOK?: OnOKCallback;
 
   state = {
@@ -56,12 +45,7 @@ class SettingsDialog extends React.PureComponent<
   };
 
   private handleOK = () => {
-    if (this.onOK)
-      this.onOK(
-        this.state.autoLaunch,
-        this.state.watchMode,
-        this.state.closeToTray
-      );
+    if (this.onOK) this.onOK(this.state.autoLaunch, this.state.watchMode, this.state.closeToTray);
     this.setState({ isOpen: false });
   };
 
@@ -94,11 +78,7 @@ class SettingsDialog extends React.PureComponent<
             }}
           />
           <br />
-          <RadioGroup
-            label='Watch mode'
-            onChange={() => {}}
-            selectedValue={this.state.watchMode}
-          >
+          <RadioGroup label='Watch mode' onChange={() => {}} selectedValue={this.state.watchMode}>
             <Radio
               label='All windows'
               value={FGM_WATCH_MODE.ALL_WINDOWS}
@@ -120,18 +100,10 @@ class SettingsDialog extends React.PureComponent<
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button
-              className={styles.buttonPadding}
-              onClick={this.handleOK}
-              intent='primary'
-            >
+            <Button className={styles.buttonPadding} onClick={this.handleOK} intent='primary'>
               OK
             </Button>
-            <Button
-              className={styles.buttonPadding}
-              onClick={this.handleClose}
-              autoFocus={true}
-            >
+            <Button className={styles.buttonPadding} onClick={this.handleClose} autoFocus={true}>
               Cancel
             </Button>
           </div>

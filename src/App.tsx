@@ -21,12 +21,7 @@ import {
   NavbarHeading
 } from '@blueprintjs/core';
 import { connect } from 'react-redux';
-import {
-  FGM_STATE,
-  FGM_WINDOW_POSITION,
-  FGM_WINDOW_SIZE,
-  FGM_WATCH_MODE
-} from './lib/FGM';
+import { FGM_STATE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE, FGM_WATCH_MODE } from './lib/FGM';
 import { IAppState } from './store/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './store/Store';
@@ -48,9 +43,7 @@ class App extends React.PureComponent<IProps, IState> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
-  private settingsDialogRef: React.RefObject<
-    SettingsDialog
-  > = React.createRef();
+  private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
   state = {
     addBtnLeftPos: 0
   };
@@ -126,11 +119,7 @@ class App extends React.PureComponent<IProps, IState> {
 
   private handleOpenSettings = () => {
     this.settingsDialogRef.current!.open(
-      (
-        launchAtLogon: boolean,
-        watchMode: FGM_WATCH_MODE,
-        closeToTray: boolean
-      ) => {
+      (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE, closeToTray: boolean) => {
         this.taskFGM.setLaunchAtLogon(launchAtLogon);
         this.taskFGM.setWatchMode(watchMode);
         this.taskFGM.setCloseToTray(closeToTray);
@@ -149,16 +138,12 @@ class App extends React.PureComponent<IProps, IState> {
         text: 'Delete',
         icon: 'delete',
         onClick: () => {
-          this.yesNoDialogRef.current!.open(
-            'Delete item',
-            'Are you sure to delete?',
-            () => {
-              // onOk
-              this.taskFGM.removeApp(item.key);
-              this.taskFGM.save();
-              this.listRef.current!.forceUpdate();
-            }
-          );
+          this.yesNoDialogRef.current!.open('Delete item', 'Are you sure to delete?', () => {
+            // onOk
+            this.taskFGM.removeApp(item.key);
+            this.taskFGM.save();
+            this.listRef.current!.forceUpdate();
+          });
         }
       }),
       React.createElement(MenuItem, {
@@ -219,11 +204,7 @@ class App extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        <TitleBar
-          app='Frameless Game Mode'
-          icon={`./appIcon.png`}
-          theme={TitleBarTheme}
-        />
+        <TitleBar app='Frameless Game Mode' icon={`./appIcon.png`} theme={TitleBarTheme} />
         <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
           <header>
             <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
@@ -253,11 +234,7 @@ class App extends React.PureComponent<IProps, IState> {
                   icon='stop'
                   onClick={this.handleStop}
                 />
-                <Button
-                  className={Classes.MINIMAL}
-                  icon='cog'
-                  onClick={this.handleOpenSettings}
-                />
+                <Button className={Classes.MINIMAL} icon='cog' onClick={this.handleOpenSettings} />
               </NavbarGroup>
             </Navbar>
           </header>
@@ -282,12 +259,7 @@ class App extends React.PureComponent<IProps, IState> {
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
-            <Icon
-              className={styles.stateIcon}
-              icon='record'
-              iconSize={18}
-              color={stateColor}
-            />
+            <Icon className={styles.stateIcon} icon='record' iconSize={18} color={stateColor} />
             <p className={styles.stateText}>{stateText}</p>
           </footer>
         </AppLayout>

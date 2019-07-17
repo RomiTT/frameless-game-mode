@@ -11,8 +11,7 @@ const Actions = {
           if (key in val) {
             const destObj = draft as any;
             const srcObj = val as any;
-            if (destObj[key].constructor === value.constructor)
-              destObj[key] = srcObj[key];
+            if (destObj[key].constructor === value.constructor) destObj[key] = srcObj[key];
           }
         }
       });

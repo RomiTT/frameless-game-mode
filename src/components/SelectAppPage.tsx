@@ -13,9 +13,7 @@ interface ISelectAppPageProps {
   renderButtons: (pageInstance: SelectAppPage) => JSX.Element;
 }
 
-export default class SelectAppPage extends React.Component<
-  ISelectAppPageProps
-> {
+export default class SelectAppPage extends React.Component<ISelectAppPageProps> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
 
   private handleRefreshList = () => {
@@ -57,9 +55,7 @@ export default class SelectAppPage extends React.Component<
         </div>
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            {this.props.renderButtons(this)}
-          </div>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons(this)}</div>
         </div>
       </>
     );

@@ -1,11 +1,6 @@
 import React from 'react';
 import { Classes } from '@blueprintjs/core';
-import {
-  Divider,
-  NumericInput,
-  Radio,
-  RadioGroup
-} from '@blueprintjs/core/lib/esm/components';
+import { Divider, NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
 import styles from './SetSizePage.module.scss';
 
@@ -19,10 +14,7 @@ interface ISetSizePageState {
   height: number;
 }
 
-export default class SetSizePage extends React.PureComponent<
-  ISetSizePageProps,
-  ISetSizePageState
-> {
+export default class SetSizePage extends React.PureComponent<ISetSizePageProps, ISetSizePageState> {
   state = {
     wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
     width: window.screen.width,
@@ -33,20 +25,14 @@ export default class SetSizePage extends React.PureComponent<
     this.setState({ wsize: val });
   };
 
-  private handleWidthChange = (
-    valueAsNumber: number,
-    valueAsString: string
-  ) => {
+  private handleWidthChange = (valueAsNumber: number, valueAsString: string) => {
     if (valueAsNumber > window.screen.width) {
       valueAsNumber = window.screen.width;
     }
     this.setState({ width: valueAsNumber });
   };
 
-  private handleHeightChange = (
-    valueAsNumber: number,
-    valueAsString: string
-  ) => {
+  private handleHeightChange = (valueAsNumber: number, valueAsString: string) => {
     if (valueAsNumber > window.screen.height) {
       valueAsNumber = window.screen.height;
     }
@@ -70,33 +56,25 @@ export default class SetSizePage extends React.PureComponent<
               className={styles.radioItem}
               label='Window-Client size (excluded frame area)'
               value={FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA}
-              onClick={() =>
-                this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA)
-              }
+              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA)}
             />
             <Radio
               className={styles.radioItem}
               label='Window size (included frame area)'
               value={FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA}
-              onClick={() =>
-                this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA)
-              }
+              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA)}
             />
             <Radio
               className={styles.radioItem}
               label='Full-Screen size'
               value={FGM_WINDOW_SIZE.FULL_SCREEN_SIZE}
-              onClick={() =>
-                this.handleWSizeChange(FGM_WINDOW_SIZE.FULL_SCREEN_SIZE)
-              }
+              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.FULL_SCREEN_SIZE)}
             />
             <Radio
               className={styles.radioItem}
               label='Custom size'
               value={FGM_WINDOW_SIZE.CUSTOM_SIZE}
-              onClick={() =>
-                this.handleWSizeChange(FGM_WINDOW_SIZE.CUSTOM_SIZE)
-              }
+              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.CUSTOM_SIZE)}
             />
           </RadioGroup>
           <br />
@@ -119,9 +97,7 @@ export default class SetSizePage extends React.PureComponent<
         </div>
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            {this.props.renderButtons(this)}
-          </div>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons(this)}</div>
         </div>
       </>
     );

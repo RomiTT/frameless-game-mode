@@ -9,10 +9,7 @@ interface IWindowAppListRowItemProps {
   onContextMenu: (e: any, index: number, item: any) => void;
 }
 
-class WindowAppListRowItem extends React.PureComponent<
-  IWindowAppListRowItemProps,
-  any
-> {
+class WindowAppListRowItem extends React.PureComponent<IWindowAppListRowItemProps, any> {
   private handleContextMenu = (e: any) => {
     if (this.props.onContextMenu) {
       this.props.onContextMenu(e, this.props.index, this.props.item);
@@ -33,9 +30,7 @@ class WindowAppListRowItem extends React.PureComponent<
         onClick={this.handleClick}
       >
         <div className={styles.innerContainer}>
-          <p className={styles.processName}>
-            Process: {this.props.item.processName}
-          </p>
+          <p className={styles.processName}>Process: {this.props.item.processName}</p>
           <p className={styles.title}>Title: {this.props.item.title}</p>
         </div>
       </div>
@@ -79,10 +74,7 @@ export default class WindowAppList extends React.PureComponent<
   }
 
   getSelectedItem() {
-    if (
-      this.state.selectedIndex < 0 ||
-      this.state.selectedIndex >= this.props.listApp.length
-    ) {
+    if (this.state.selectedIndex < 0 || this.state.selectedIndex >= this.props.listApp.length) {
       return null;
     }
 
@@ -136,10 +128,7 @@ export default class WindowAppList extends React.PureComponent<
 
   private renderItem = (index: number) => {
     const item: any = this.props.listApp[index];
-    const classes =
-      this.state.selectedIndex === index
-        ? styles.listItemSelected
-        : styles.listItem;
+    const classes = this.state.selectedIndex === index ? styles.listItemSelected : styles.listItem;
     return (
       <WindowAppListRowItem
         key={index}

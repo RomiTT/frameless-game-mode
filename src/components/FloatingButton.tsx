@@ -12,9 +12,7 @@ interface IFloatingButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export default class FloatingButton extends React.PureComponent<
-  IFloatingButtonProps
-> {
+export default class FloatingButton extends React.PureComponent<IFloatingButtonProps> {
   static defaultProps = {
     position: 'absolute',
     left: 0,
