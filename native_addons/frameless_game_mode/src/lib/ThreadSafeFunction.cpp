@@ -2,6 +2,23 @@
 #include <assert.h>
 
 
+class JsArgument {	
+	std::shared_ptr<ThreadSafeFunction> _owner;		
+	ThreadSafeFunction::GetValueFunction _fGetValue;
+
+public:		
+	JsArgument(std::shared_ptr<ThreadSafeFunction> owner, ThreadSafeFunction::GetValueFunction fGetValue)
+	: _owner(owner)
+	, _fGetValue(std::move(fGetValue)) {}
+
+	Napi::Value GetArgument(napi_env env) {
+		return _fGetValue(env);
+	}
+
+	void Destory() { delete this; };		
+};
+
+
 ThreadSafeFunction::ThreadSafeFunction(const Napi::Function& callback) {
 	_env = callback.Env();
 	_callback = static_cast<napi_value>(callback);
@@ -41,27 +58,8 @@ void ThreadSafeFunction::Release() {
 }
 
 
-void ThreadSafeFunction::Invoke(JsArgument* arg) {
-	assert(napi_call_threadsafe_function(_func,	arg, napi_tsfn_blocking) == napi_ok);
-}
-
-
 void ThreadSafeFunction::Call(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction f) {
-	class JsArgument2 : public JsArgument {
-		GetValueFunction _fGetValue;
-	public:
-		JsArgument2(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction fGetValue)
-		: JsArgument(owner)
-		, _fGetValue(std::move(fGetValue)) {
-
-		}
-
-		virtual Napi::Value GetArgument(napi_env env) {
-			return _fGetValue(env);
-		}
-	};
-
-	assert(napi_call_threadsafe_function(_func, new JsArgument2{owner, f}, napi_tsfn_blocking) == napi_ok);
+	assert(napi_call_threadsafe_function(_func, new JsArgument{owner, f}, napi_tsfn_blocking) == napi_ok);
 }
 
 

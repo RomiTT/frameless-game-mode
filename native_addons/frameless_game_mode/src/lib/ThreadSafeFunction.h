@@ -11,17 +11,7 @@
 class ThreadSafeFunction {
 public:
 	typedef std::function<Napi::Value(napi_env)> GetValueFunction;
-
-	class JsArgument {	
-		std::shared_ptr<ThreadSafeFunction> _owner;		
-
-	public:		
-		JsArgument(std::shared_ptr<ThreadSafeFunction> owner) : _owner(owner) {}
-
-		virtual Napi::Value GetArgument(napi_env env) = 0;
-		virtual void Destory() { delete this; };		
-	};
-
+	
 private:
 	napi_threadsafe_function _func;
 	napi_env _env;
@@ -37,7 +27,6 @@ public:
 	void Acquire();
 	void Release();
 
-	void Invoke(JsArgument* arg);
 	void Call(std::shared_ptr<ThreadSafeFunction> owner, GetValueFunction f);
 	static std::shared_ptr<ThreadSafeFunction> Create(const Napi::Function& callback);
 

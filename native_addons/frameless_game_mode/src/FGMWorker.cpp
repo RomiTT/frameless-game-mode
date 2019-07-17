@@ -13,21 +13,6 @@ void MakeKeyFromWindowHandle(HWND hWnd, std::wstring& out);
 void MadeWindowFrameless(HWND hwnd, GameModeInfo& item);
 
 
-class JsArgumentString : public ThreadSafeFunction::JsArgument {
-	std::string msg;
-
-public:
-	JsArgumentString(std::shared_ptr<ThreadSafeFunction> owner, const char* str) 
-	: JsArgument(owner)
-	, msg(str) {}
-
-	virtual Napi::Value GetArgument(napi_env env) {
-		return Napi::String::New(env, msg.c_str());
-	}
-};
-
-
-
 FGMWorker::FGMWorker(std::shared_ptr< FGMContext> spContext)
 : AsyncWorker(spContext->callbackStopped.Value())
 , _spContext(spContext) {
@@ -51,7 +36,6 @@ void FGMWorker::Execute() {
     switch (_spContext->state) {
       case FGM_STATE::REQUESTED_STARTING:
         ChangeState(FGM_STATE::STARTED);
-				//_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
 				_callbackStarted->Call(_callbackStarted, [](napi_env env) {
 					return Napi::String::New(env, "FGM Started");
 				});
@@ -59,7 +43,6 @@ void FGMWorker::Execute() {
 
       case FGM_STATE::REQUESTED_PAUSING:
         ChangeState(FGM_STATE::PAUSED);
-				//_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
 				_callbackStarted->Call(_callbackStarted, [](napi_env env) {
 					return Napi::String::New(env, "FGM Paused");
 				});				
@@ -100,10 +83,9 @@ void FGMWorker::Execute() {
     Sleep(5);
   }
 
-//	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
-		_callbackStarted->Call(_callbackStarted, [](napi_env env) {
-			return Napi::String::New(env, "FGM Stopped");
-		});
+	_callbackStarted->Call(_callbackStarted, [](napi_env env) {
+		return Napi::String::New(env, "FGM Stopped");
+	});
 
 	_callbackStarted->Release();
 	_callbackPaused->Release();
