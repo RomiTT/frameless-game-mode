@@ -14,24 +14,26 @@
 
 
 class AsyncPromiseWorker {
+public:
+	typedef std::function<void(std::shared_ptr<AsyncPromiseWorker>)> RunFunction;
+
 protected:
 	napi_env _env;
 	napi_deferred _deferred;
 	napi_value _promise;
 	std::shared_ptr<ThreadSafeFunction> _threadSafeCallback;
+	RunFunction _fRun;
 
 protected:
-	AsyncPromiseWorker(const Napi::Env& env);	
+	AsyncPromiseWorker(napi_env _env, RunFunction f);
 
 public:
 	virtual ~AsyncPromiseWorker();	
-
-	virtual bool Execute() = 0;	
-
-	void Resolve(ThreadSafeFunction::JsArgument* arg);
-	void Resolve2(ThreadSafeFunction::GetValueFunction f);
+	
+	void Resolve(ThreadSafeFunction::GetValueFunction f);
 	void Reject(const char* error);
-	static Napi::Promise Run(std::shared_ptr<AsyncPromiseWorker> worker);
+
+	static Napi::Promise Run(napi_env env, RunFunction f);
 
 private:
 	static Napi::Value Callback(const Napi::CallbackInfo& info);

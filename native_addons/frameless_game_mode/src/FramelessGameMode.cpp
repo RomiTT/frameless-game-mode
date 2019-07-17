@@ -378,105 +378,49 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 
-	class Worker : public AsyncPromiseWorker {
-		class Arguments : public ThreadSafeFunction::JsArgument {			
-			std::vector<WindowApp> _list;
+	auto promise = AsyncPromiseWorker::Run(env, [](AsyncPromiseWorkerPtr worker) {
+		auto listPtr = new std::vector<WindowApp>();;
+		GetWindowAppList(*listPtr);
 
-		public:
-			Arguments(std::shared_ptr<ThreadSafeFunction> owner, const std::vector<WindowApp>& list)
-				: JsArgument(owner)
-				, _list(std::move(list)) {}
-
-			virtual Napi::Value GetArgument(const Napi::Env& env) {
-				auto array = Napi::Array::New(env, _list.size());
-				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
-				// napi_value array_value;
-				// napi_create_array_with_length(env, _list.size(), &array_value);
-
-				for (size_t i = 0; i < _list.size(); i++) {
-					auto item = Napi::Object::New(env);
-					auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
-					auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
-					auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
-					auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
-
-					item.Set("processPath", processPath);
-					item.Set("processName", processName);
-					item.Set("title", title);
-					item.Set("key", key);
-					array[i] = item;
-
-					//napi_set_element(env, array_value, i, item);
-				}
-
-				//return Napi::Value(env, array_value);
-				return array;
+		std::sort(listPtr->begin(), listPtr->end(), [](const WindowApp& a, const WindowApp& b) {
+			auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
+			if (ret == 0) {
+				ret = lstrcmpi(a.title.c_str(), b.title.c_str());
 			}
-		};		
-
-	public:
-		Worker(const Napi::Env& env) : AsyncPromiseWorker(env) {}
-
-		virtual bool Execute() {
-			//std::vector<WindowApp> list;
-			//GetWindowAppList(list);
-
-			//std::sort(list.begin(), list.end(), [](const WindowApp& a, const WindowApp& b) {
-			//	auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
-			//	if (ret == 0) {
-			//		ret = lstrcmpi(a.title.c_str(), b.title.c_str());
-			//	}
-			//	return (ret < 0);
-			//});
-
-			//Resolve(new Arguments{ _threadSafeCallback, list });
-
-			auto listPtr = new std::vector<WindowApp>();;
-			GetWindowAppList(*listPtr);
-
-			std::sort(listPtr->begin(), listPtr->end(), [](const WindowApp& a, const WindowApp& b) {
-				auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
-				if (ret == 0) {
-					ret = lstrcmpi(a.title.c_str(), b.title.c_str());
-				}
-				return (ret < 0);
+			return (ret < 0);
 			});
 
-			Resolve2([listPtr](const Napi::Env& env) {
-				auto array = Napi::Array::New(env, listPtr->size());
-				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		worker->Resolve([listPtr](napi_env env) {
+			auto array = Napi::Array::New(env, listPtr->size());
+			std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 
-				// napi_value array_value;
-				// napi_create_array_with_length(env, _list.size(), &array_value);
+			// napi_value array_value;
+			// napi_create_array_with_length(env, _list.size(), &array_value);
 
-				for (size_t i = 0; i < listPtr->size(); i++) {
-					auto item = Napi::Object::New(env);
-					auto processPath = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processPath));
-					auto processName = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processName));
-					auto title = Napi::String::New(env, converter.to_bytes(listPtr->at(i).title));
-					auto key = Napi::String::New(env, converter.to_bytes(listPtr->at(i).key));
+			for (size_t i = 0; i < listPtr->size(); i++) {
+				auto item = Napi::Object::New(env);
+				auto processPath = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processPath));
+				auto processName = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processName));
+				auto title = Napi::String::New(env, converter.to_bytes(listPtr->at(i).title));
+				auto key = Napi::String::New(env, converter.to_bytes(listPtr->at(i).key));
 
-					item.Set("processPath", processPath);
-					item.Set("processName", processName);
-					item.Set("title", title);
-					item.Set("key", key);
-					array[i] = item;
+				item.Set("processPath", processPath);
+				item.Set("processName", processName);
+				item.Set("title", title);
+				item.Set("key", key);
+				array[i] = item;
 
-					//napi_set_element(env, array_value, i, item);
-				}
+				//napi_set_element(env, array_value, i, item);
+			}
 
-				delete listPtr;
+			delete listPtr;
 
-				//return Napi::Value(env, array_value);
-				return array;
-			});
+			//return Napi::Value(env, array_value);
+			return array;
+		});
+	});
 
-			return true;
-		}
-	};
-
-	return AsyncPromiseWorker::Run(std::shared_ptr<Worker>(new Worker(env)));
+	return promise;
 }
 
 

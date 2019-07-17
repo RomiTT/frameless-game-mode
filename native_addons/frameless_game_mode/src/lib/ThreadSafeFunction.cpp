@@ -56,7 +56,7 @@ void ThreadSafeFunction::Call(std::shared_ptr<ThreadSafeFunction> owner, GetValu
 
 		}
 
-		virtual Napi::Value GetArgument(const Napi::Env& env) {
+		virtual Napi::Value GetArgument(napi_env env) {
 			return _fGetValue(env);
 		}
 	};

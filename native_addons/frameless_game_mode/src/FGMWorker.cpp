@@ -21,7 +21,7 @@ public:
 	: JsArgument(owner)
 	, msg(str) {}
 
-	virtual Napi::Value GetArgument(const Napi::Env& env) {
+	virtual Napi::Value GetArgument(napi_env env) {
 		return Napi::String::New(env, msg.c_str());
 	}
 };
@@ -52,7 +52,7 @@ void FGMWorker::Execute() {
       case FGM_STATE::REQUESTED_STARTING:
         ChangeState(FGM_STATE::STARTED);
 				//_callbackStarted->Invoke(new JsArgumentString{ _callbackStarted, "FGM Started" });
-				_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+				_callbackStarted->Call(_callbackStarted, [](napi_env env) {
 					return Napi::String::New(env, "FGM Started");
 				});
         break;
@@ -60,7 +60,7 @@ void FGMWorker::Execute() {
       case FGM_STATE::REQUESTED_PAUSING:
         ChangeState(FGM_STATE::PAUSED);
 				//_callbackPaused->Invoke(new JsArgumentString{ _callbackPaused, "FGM Paused" });
-				_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+				_callbackStarted->Call(_callbackStarted, [](napi_env env) {
 					return Napi::String::New(env, "FGM Paused");
 				});				
         break;
@@ -101,7 +101,7 @@ void FGMWorker::Execute() {
   }
 
 //	_callbackStopped->Invoke(new JsArgumentString{ _callbackStopped, "FGM Stopped" });
-		_callbackStarted->Call(_callbackStarted, [](const Napi::Env& env) {
+		_callbackStarted->Call(_callbackStarted, [](napi_env env) {
 			return Napi::String::New(env, "FGM Stopped");
 		});
 
