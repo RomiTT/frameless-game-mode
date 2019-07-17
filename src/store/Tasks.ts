@@ -141,16 +141,14 @@ class FGMTask {
     FGM.stop();
   };
 
-  getWindowAppList = (callback: Function) => {
-    // FGM.getWindowAppList((list: Array<object>) => {
-    //   //callback(list);
-    //   console.log('GetWindowAppList: ', list);
-    // });
+  getWindowAppList = async () => {
+    try {
+      return await FGM.getWindowAppList();
+    } catch (err) {
+      console.log(err);
+    }
 
-    FGM.getWindowAppList().then((list: any) => {
-      console.log('GetWindowAppList: ', list);
-      callback(list);
-    });
+    return null;
   };
 }
 

@@ -45,16 +45,17 @@ class AddAppDialog extends React.PureComponent<
     selectedIndex: -1
   };
 
-  open = (onOK: onOKCallback) => {
+  open = async (onOK: onOKCallback) => {
     this.onOK = onOK;
-    this.taskFGM.getWindowAppList((list: Array<object>) => {
+    const list = await this.taskFGM.getWindowAppList();
+    if (list) {
       this.setState({
         isOpen: true,
         stage: 1,
         listApp: list,
         selectedIndex: -1
       });
-    });
+    }
   };
 
   private handleClose = () => this.setState({ isOpen: false });
@@ -72,10 +73,11 @@ class AddAppDialog extends React.PureComponent<
     }
   };
 
-  private handleRefreshList = () => {
-    this.taskFGM.getWindowAppList((list: Array<object>) => {
+  private handleRefreshList = async () => {
+    const list = await this.taskFGM.getWindowAppList();
+    if (list) {
       this.setState({ listApp: list, selectedIndex: -1 });
-    });
+    }
   };
 
   render() {
