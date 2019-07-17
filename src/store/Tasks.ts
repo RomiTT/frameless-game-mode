@@ -46,17 +46,12 @@ class FGMTask {
         }
       }
 
-      try {
-        const result = await LaunchAtLogon.get(schedulerName);
-        newState['launchAtLogon'] = result;
-        console.log('LaunchAtLogon.get: ', result);
-      } catch (err) {
-        console.log(err);
-      }
-
       Actions.loadAppState(newState);
       state = store.getState();
       FGM.setDataList(state.listAppToMonitor);
+
+      const result = await LaunchAtLogon.get(schedulerName);
+      Actions.setLaunchAtLogon(result);
     } catch (err) {
       console.log(err);
     }
