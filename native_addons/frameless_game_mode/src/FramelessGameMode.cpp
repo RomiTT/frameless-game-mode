@@ -427,19 +427,81 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 } 
 
 
-Napi::Value FGM::getWindowAppList(const Napi::CallbackInfo &info) {
+Napi::Value CallbackGetWindowList(const Napi::CallbackInfo& info) {
 	Napi::Env env = info.Env();
-
-	if (info.Length() < 1) {
-		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-		return env.Undefined();
-	}	
-
-	auto callback = info[0].As<Napi::Function>();
-	auto worker = new GetWindowAppListWorker(callback);
-	worker->Queue();
-
+	napi_deferred deferred = (napi_deferred)info.Data();
+	napi_resolve_deferred(env, deferred, info[0]);
 	return env.Undefined();
+}
+
+class JsArgumentAppList : public ThreadSafeFunction::JsArgument {
+	std::vector<WindowApp> _list;
+
+public:
+	JsArgumentAppList(std::shared_ptr<ThreadSafeFunction> owner, const std::vector<WindowApp>& list)
+		: JsArgument(owner)
+		, _list(std::move(list)) {}
+
+	virtual Napi::Value GetArgument(const Napi::Env& env) {
+		auto array = Napi::Array::New(env, _list.size());
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+		// napi_value array_value;
+		// napi_create_array_with_length(env, _list.size(), &array_value);
+
+		for (size_t i = 0; i < _list.size(); i++) {
+			auto item = Napi::Object::New(env);
+			auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
+			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
+			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
+			auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
+
+			item.Set("processPath", processPath);
+			item.Set("processName", processName);
+			item.Set("title", title);
+			item.Set("key", key);
+			array[i] = item;
+
+			//napi_set_element(env, array_value, i, item);
+		}
+
+
+		//return Napi::Value(env, array_value);
+		return array;
+	}
+};
+
+Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	
+	napi_deferred deferred;
+	napi_value promise;
+	napi_status status;
+	status = napi_create_promise(env, &deferred, &promise);
+
+	auto threadSafeCallback = ThreadSafeFunction::Create(
+		Napi::Function::New(env, CallbackGetWindowList, nullptr, deferred)
+	);
+
+	std::thread t([](std::shared_ptr<ThreadSafeFunction> callback) {
+		std::vector<WindowApp> list;
+		GetWindowAppList(list);
+
+		std::sort(list.begin(), list.end(), [](const WindowApp& a, const WindowApp& b) {
+			auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
+			if (ret == 0) {
+				ret = lstrcmpi(a.title.c_str(), b.title.c_str());
+			}
+			return (ret < 0);
+			});
+
+		callback->Invoke(new JsArgumentAppList{ callback, list });
+
+	}, threadSafeCallback);
+
+	t.detach();
+
+	return Napi::Promise(env, promise);
 }
 
 
