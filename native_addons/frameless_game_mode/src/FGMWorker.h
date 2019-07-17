@@ -3,7 +3,7 @@
 #define __FGM_WORKER_H__
 
 #include "FGMContext.h"
-#include "lib/ThreadSafeFunction.h"
+#include "../../common/ThreadSafeFunction.h"
 
 namespace FGM {
   class FGMWorker : public Napi::AsyncWorker {

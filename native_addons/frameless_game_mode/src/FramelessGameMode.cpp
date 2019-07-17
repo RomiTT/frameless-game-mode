@@ -6,7 +6,7 @@
 #include "FGMContext.h"
 #include "FramelessGameMode.h"
 #include "FGMWorker.h"
-#include "lib/AsyncPromiseWorker.h"
+#include "../../common/AsyncPromiseWorker.h"
 
 using namespace FGM;
 

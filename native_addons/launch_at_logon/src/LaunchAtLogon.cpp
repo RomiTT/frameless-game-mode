@@ -3,7 +3,7 @@
 #include <locale>
 #include <codecvt>
 #include "LaunchAtLogon.h"
-#include "lib/AsyncPromiseWorker.h"
+#include "../../common/AsyncPromiseWorker.h"
 
 #pragma comment(lib, "taskschd.lib")
 #pragma comment(lib, "comsupp.lib")
