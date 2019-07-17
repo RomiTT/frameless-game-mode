@@ -6,6 +6,7 @@
 #include "FGMContext.h"
 #include "FramelessGameMode.h"
 #include "FGMWorker.h"
+#include "lib/AsyncPromiseWorker.h"
 
 using namespace FGM;
 
@@ -125,59 +126,6 @@ public:
 };
 
 
-
-class GetWindowAppListWorker : public Napi::AsyncWorker {
-	std::vector<WindowApp> _list;
-
-public:
-  GetWindowAppListWorker(Napi::Function& callback)
-  : AsyncWorker(callback) {}
-
-  ~GetWindowAppListWorker() {}
-
-	// This code will be executed on the worker thread
-  void Execute() {
-
-		GetWindowAppList(_list);
-
-		std::sort(_list.begin(), _list.end(), [](const WindowApp& a, const WindowApp& b) {
-			auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
-			if (ret == 0) {
-				ret = lstrcmpi(a.title.c_str(), b.title.c_str());
-			}
-			return (ret < 0);
-		});
-  }
-
-  void OnOK() {
-		auto env = Env();
-		Napi::HandleScope scope(env);
-
-		auto array = Napi::Array::New(env, _list.size());
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
-		for (size_t i = 0; i < _list.size(); i++) {
-			auto item = Napi::Object::New(env);
-			auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
-			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));			
-			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
-			auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
-
-			item.Set("processPath", processPath);
-			item.Set("processName",  processName);				
-			item.Set("title", title);
-			item.Set("key", key);
-			array[i] = item;
-		}
-		
-		Callback().Call({array});
-	}
-};
-
-
-
-
-
 FramelessGameMode* g_FGM = NULL;
 std::vector<std::wstring> g_excluded_apps;
 
@@ -187,7 +135,7 @@ Napi::Value FGM::initialize(const Napi::CallbackInfo &info) {
 		g_FGM = new FramelessGameMode();
 	}
 
-	g_excluded_apps.push_back(L"fgm.exe");
+	g_excluded_apps.push_back(L"Frameless Game Mode.exe");
 	g_excluded_apps.push_back(L"explorer.exe");
 	// g_excluded_apps.push_back(L"iexplorer.exe");
 	// g_excluded_apps.push_back(L"chrome.exe");
@@ -427,81 +375,68 @@ Napi::Number FGM::state(const Napi::CallbackInfo &info) {
 } 
 
 
-Napi::Value CallbackGetWindowList(const Napi::CallbackInfo& info) {
-	Napi::Env env = info.Env();
-	napi_deferred deferred = (napi_deferred)info.Data();
-	napi_resolve_deferred(env, deferred, info[0]);
-	return env.Undefined();
-}
-
-class JsArgumentAppList : public ThreadSafeFunction::JsArgument {
-	std::vector<WindowApp> _list;
-
-public:
-	JsArgumentAppList(std::shared_ptr<ThreadSafeFunction> owner, const std::vector<WindowApp>& list)
-		: JsArgument(owner)
-		, _list(std::move(list)) {}
-
-	virtual Napi::Value GetArgument(const Napi::Env& env) {
-		auto array = Napi::Array::New(env, _list.size());
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
-		// napi_value array_value;
-		// napi_create_array_with_length(env, _list.size(), &array_value);
-
-		for (size_t i = 0; i < _list.size(); i++) {
-			auto item = Napi::Object::New(env);
-			auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
-			auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
-			auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
-			auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
-
-			item.Set("processPath", processPath);
-			item.Set("processName", processName);
-			item.Set("title", title);
-			item.Set("key", key);
-			array[i] = item;
-
-			//napi_set_element(env, array_value, i, item);
-		}
-
-
-		//return Napi::Value(env, array_value);
-		return array;
-	}
-};
-
 Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
-	
-	napi_deferred deferred;
-	napi_value promise;
-	napi_status status;
-	status = napi_create_promise(env, &deferred, &promise);
 
-	auto threadSafeCallback = ThreadSafeFunction::Create(
-		Napi::Function::New(env, CallbackGetWindowList, nullptr, deferred)
-	);
+	class Worker : public AsyncPromiseWorker {
+		class Arguments : public ThreadSafeFunction::JsArgument {			
+			std::vector<WindowApp> _list;
 
-	std::thread t([](std::shared_ptr<ThreadSafeFunction> callback) {
-		std::vector<WindowApp> list;
-		GetWindowAppList(list);
+		public:
+			Arguments(std::shared_ptr<ThreadSafeFunction> owner, const std::vector<WindowApp>& list)
+				: JsArgument(owner)
+				, _list(std::move(list)) {}
 
-		std::sort(list.begin(), list.end(), [](const WindowApp& a, const WindowApp& b) {
-			auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
-			if (ret == 0) {
-				ret = lstrcmpi(a.title.c_str(), b.title.c_str());
+			virtual Napi::Value GetArgument(const Napi::Env& env) {
+				auto array = Napi::Array::New(env, _list.size());
+				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+				// napi_value array_value;
+				// napi_create_array_with_length(env, _list.size(), &array_value);
+
+				for (size_t i = 0; i < _list.size(); i++) {
+					auto item = Napi::Object::New(env);
+					auto processPath = Napi::String::New(env, converter.to_bytes(_list[i].processPath));
+					auto processName = Napi::String::New(env, converter.to_bytes(_list[i].processName));
+					auto title = Napi::String::New(env, converter.to_bytes(_list[i].title));
+					auto key = Napi::String::New(env, converter.to_bytes(_list[i].key));
+
+					item.Set("processPath", processPath);
+					item.Set("processName", processName);
+					item.Set("title", title);
+					item.Set("key", key);
+					array[i] = item;
+
+					//napi_set_element(env, array_value, i, item);
+				}
+
+				//return Napi::Value(env, array_value);
+				return array;
 			}
-			return (ret < 0);
+		};		
+
+	public:
+		Worker(const Napi::Env& env) : AsyncPromiseWorker(env) {}
+
+		virtual bool Execute() {
+			std::vector<WindowApp> list;
+			GetWindowAppList(list);
+
+			std::sort(list.begin(), list.end(), [](const WindowApp& a, const WindowApp& b) {
+				auto ret = lstrcmpi(a.processName.c_str(), b.processName.c_str());
+				if (ret == 0) {
+					ret = lstrcmpi(a.title.c_str(), b.title.c_str());
+				}
+				return (ret < 0);
 			});
 
-		callback->Invoke(new JsArgumentAppList{ callback, list });
+			Resolve(new Arguments{ _threadSafeCallback, list });
 
-	}, threadSafeCallback);
+			return true;
+		}
+	};
 
-	t.detach();
-
-	return Napi::Promise(env, promise);
+	return AsyncPromiseWorker::Run(std::shared_ptr<Worker>(new Worker(env)));
 }
 
 

@@ -7,7 +7,8 @@
             "src/main.cpp",
             "src/FramelessGameMode.cpp",
             "src/FGMWorker.cpp",
-            "src/ThreadSafeFunction.cpp"
+            "src/lib/ThreadSafeFunction.cpp",
+            "src/lib/AsyncPromiseWorker.cpp"
         ],
         'include_dirs': [
             "<!@(node -p \"require('node-addon-api').include\")"
