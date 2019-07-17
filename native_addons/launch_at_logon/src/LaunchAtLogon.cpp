@@ -321,6 +321,10 @@ Napi::Promise LAL::set(const Napi::CallbackInfo &info) {
 	auto promise = AsyncPromiseWorker::Run(env, 
 		[launchAtLogon, taskName, appPath, appArgs](AsyncPromiseWorkerPtr worker) {
 		HRESULT hr = SetLaunchAtLogon(launchAtLogon, taskName->c_str(), appPath->c_str(), appArgs->c_str());
+		delete taskName;
+		delete appPath;
+		delete appArgs;
+
 		if (FAILED(hr)) {
 			auto msg = new std::string();
 			msg->reserve(256);
@@ -330,11 +334,9 @@ Napi::Promise LAL::set(const Napi::CallbackInfo &info) {
 				delete msg;
 				return ret;
 			});
-		}
 
-		delete taskName;
-		delete appPath;
-		delete appArgs;
+			return;
+		}
 
 		worker->Resolve([](napi_env env) {
 			return Napi::Env(env).Undefined();
@@ -356,12 +358,13 @@ Napi::Promise LAL::get(const Napi::CallbackInfo &info) {
 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	auto utf8TaskName = info[0].As<Napi::String>();
-	auto taskName = converter.from_bytes(utf8TaskName);
+	auto taskName = new std::wstring(std::move(converter.from_bytes(utf8TaskName)));
 
-	auto promise = AsyncPromiseWorker::Run(env, [=](AsyncPromiseWorkerPtr worker) {
+	auto promise = AsyncPromiseWorker::Run(env, [taskName](AsyncPromiseWorkerPtr worker) {
 		bool result = false;
-		HRESULT hr = GetLaunchAtLogon(taskName.c_str(), result);
-		printf("Worker result = %d\n", result);
+		HRESULT hr = GetLaunchAtLogon(taskName->c_str(), result);
+		delete taskName;
+		
 		if (FAILED(hr)) {
 			auto msg = new std::string();
 			msg->reserve(256);
@@ -370,7 +373,9 @@ Napi::Promise LAL::get(const Napi::CallbackInfo &info) {
 				auto ret = Napi::String::New(env, msg->c_str());
 				delete msg;
 				return ret;
-				});
+			});
+
+			return;
 		}
 
 		worker->Resolve([result](napi_env env) {
