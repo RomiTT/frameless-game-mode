@@ -205,7 +205,6 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
   }
 
   render() {
-    console.log('AddAppDialog - ', new Date().getMilliseconds());
     this.updatePage(this.state.pageIndex);
     return (
       <Dialog

@@ -154,7 +154,6 @@ export default class WindowAppList extends React.Component<
   };
 
   render() {
-    console.log('WindowAppList - ', new Date().getMilliseconds());
     const list = new Array<any>();
     const length = this.props.listApp.length;
     for (let i = 0; i < length; i++) {
