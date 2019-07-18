@@ -32,13 +32,13 @@ void AsyncPromiseWorker::Reject(ThreadSafeFunction::GetValueFunction f) {
 
 
 Napi::Promise AsyncPromiseWorker::Run(napi_env env, RunFunction f) {
-	auto w = std::shared_ptr<AsyncPromiseWorker>(new AsyncPromiseWorker(env, f));
-	std::thread t([](std::shared_ptr<AsyncPromiseWorker> worker) {
+	auto worker = std::shared_ptr<AsyncPromiseWorker>(new AsyncPromiseWorker(env, f));
+	std::thread t([worker]() {
 		worker->_fRun(worker);
-	}, w);
+	});
 
 	t.detach();
-	return Napi::Promise(w->_env, w->_promise);
+	return Napi::Promise(worker->_env, worker->_promise);
 }
 
 
