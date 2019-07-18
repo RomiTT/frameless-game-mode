@@ -17,7 +17,7 @@ export default class SelectAppPage extends React.PureComponent<ISelectAppPagePro
   private listRef: React.RefObject<WindowAppList> = React.createRef();
 
   private handleRefreshList = () => {
-    this.listRef.current!.unselect();
+    this.listRef.current!.init();
     this.props.onRefreshList();
   };
 

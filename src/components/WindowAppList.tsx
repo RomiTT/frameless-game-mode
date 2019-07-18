@@ -63,7 +63,7 @@ export default class WindowAppList extends React.Component<
     super(props);
 
     this.state = {
-      selectedIndex: this.props.selectedIndex ? this.props.selectedIndex! : -1
+      selectedIndex: -1
     };
 
     this.listRef = React.createRef();
@@ -71,6 +71,14 @@ export default class WindowAppList extends React.Component<
 
   componentDidMount = () => {
     this.setState({ selectedIndex: this.props.selectedIndex ? this.props.selectedIndex! : -1 });
+  };
+
+  init = () => {
+    if (this.listRef.current) {
+      this.listRef.current!.scrollTop = 0;
+    }
+
+    this.setState({ selectedIndex: -1 });
   };
 
   getSelectedIndex() {
@@ -146,6 +154,7 @@ export default class WindowAppList extends React.Component<
   };
 
   render() {
+    console.log('WindowAppList - ', new Date().getMilliseconds());
     const list = new Array<any>();
     const length = this.props.listApp.length;
     for (let i = 0; i < length; i++) {
