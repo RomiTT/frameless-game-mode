@@ -310,28 +310,23 @@ Napi::Promise LAL::set(const Napi::CallbackInfo &info) {
 	auto launchAtLogon = info[0].As<Napi::Boolean>();
 
 	auto utf8TaskName = info[1].As<Napi::String>();
-	auto taskName = new std::wstring(std::move(converter.from_bytes(utf8TaskName)));
+	auto taskName = std::shared_ptr<std::wstring>(new std::wstring(std::move(converter.from_bytes(utf8TaskName))));
 
 	auto utf8AppPath = info[2].As<Napi::String>();
-	auto appPath = new std::wstring(std::move(converter.from_bytes(utf8AppPath)));
+	auto appPath = std::shared_ptr<std::wstring>(new std::wstring(std::move(converter.from_bytes(utf8AppPath))));
 
 	auto utf8AppArgs = info[3].As<Napi::String>();
-	auto appArgs = new std::wstring(std::move(converter.from_bytes(utf8AppArgs)));
+	auto appArgs = std::shared_ptr<std::wstring>(new std::wstring(std::move(converter.from_bytes(utf8AppArgs))));
 
 	auto promise = AsyncPromiseWorker::Run(env, 
 		[launchAtLogon, taskName, appPath, appArgs](AsyncPromiseWorkerPtr worker) {
 		HRESULT hr = SetLaunchAtLogon(launchAtLogon, taskName->c_str(), appPath->c_str(), appArgs->c_str());
-		delete taskName;
-		delete appPath;
-		delete appArgs;
-
 		if (FAILED(hr)) {
-			auto msg = new std::string();
+			auto msg = std::shared_ptr<std::string>(new std::string());
 			msg->reserve(256);
 			sprintf((char*)msg->data(), "Failed to call LaunchAtLogon.set: %x", hr);
 			worker->Reject([msg](napi_env env) {
-				auto ret = Napi::String::New(env, msg->c_str());
-				delete msg;
+				auto ret = Napi::String::New(env, msg->c_str());				
 				return ret;
 			});
 
@@ -358,20 +353,17 @@ Napi::Promise LAL::get(const Napi::CallbackInfo &info) {
 
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 	auto utf8TaskName = info[0].As<Napi::String>();
-	auto taskName = new std::wstring(std::move(converter.from_bytes(utf8TaskName)));
+	auto taskName = std::shared_ptr<std::wstring>(new std::wstring(std::move(converter.from_bytes(utf8TaskName))));
 
 	auto promise = AsyncPromiseWorker::Run(env, [taskName](AsyncPromiseWorkerPtr worker) {
 		bool result = false;
-		HRESULT hr = GetLaunchAtLogon(taskName->c_str(), result);
-		delete taskName;
-		
+		HRESULT hr = GetLaunchAtLogon(taskName->c_str(), result);		
 		if (FAILED(hr)) {
-			auto msg = new std::string();
+			auto msg = std::shared_ptr<std::string>(new std::string());
 			msg->reserve(256);
 			sprintf((char*)msg->data(), "Failed to call LaunchAtLogon.get: %x", hr);
 			worker->Reject([msg](napi_env env) {
 				auto ret = Napi::String::New(env, msg->c_str());
-				delete msg;
 				return ret;
 			});
 

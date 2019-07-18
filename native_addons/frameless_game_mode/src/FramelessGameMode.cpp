@@ -379,7 +379,7 @@ Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 	Napi::Env env = info.Env();
 
 	auto promise = AsyncPromiseWorker::Run(env, [](AsyncPromiseWorkerPtr worker) {
-		auto listPtr = new std::vector<WindowApp>();;
+		auto listPtr = std::shared_ptr<std::vector<WindowApp>>(new std::vector<WindowApp>());
 		GetWindowAppList(*listPtr);
 
 		std::sort(listPtr->begin(), listPtr->end(), [](const WindowApp& a, const WindowApp& b) {
@@ -412,8 +412,6 @@ Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 
 				//napi_set_element(env, array_value, i, item);
 			}
-
-			delete listPtr;
 
 			//return Napi::Value(env, array_value);
 			return array;
