@@ -1,7 +1,7 @@
 import store, { isSerializable } from './Store';
 import Actions from './Actions';
 import { FGM, FGM_WATCH_MODE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
-import { IWindowBound } from './Types';
+import { IWindowBound, IWindowApp } from './Types';
 import { LaunchAtLogon, schedulerName, appArgs } from '../lib/LaunchAtLogon';
 
 class FGMTask {
@@ -80,7 +80,10 @@ class FGMTask {
     }
 
     const newAppInfo = {
-      ...item,
+      processPath: item.processPath,
+      processName: item.processName,
+      title: item.title,
+      key: item.key,
       wpos: pos,
       wsize: size,
       width: width,
@@ -132,7 +135,9 @@ class FGMTask {
 
   getWindowAppList = async () => {
     try {
-      return await FGM.getWindowAppList();
+      const list = await FGM.getWindowAppList();
+      console.log(list);
+      return list;
     } catch (err) {
       console.log(err);
     }

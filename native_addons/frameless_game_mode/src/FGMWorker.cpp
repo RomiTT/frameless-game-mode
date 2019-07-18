@@ -391,6 +391,10 @@ void GetWindowAppList(std::vector<WindowApp>& out) {
 					app.processName = std::move(processName);
 					app.title = std::move(title);
 					app.key = std::move(key);
+					GetWindowRect(hWnd, &app.windowArea);
+					GetClientRect(hWnd, &app.clientArea);
+					app.style = GetWindowLong(hWnd, GWL_STYLE);
+					app.exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
 
 					out.push_back(app);
 				}

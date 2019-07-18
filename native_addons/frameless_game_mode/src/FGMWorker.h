@@ -36,6 +36,10 @@ struct WindowApp {
   std::wstring processName;
   std::wstring title;
   std::wstring key;
+  RECT windowArea;
+  RECT clientArea;
+  DWORD style;
+  DWORD exStyle;
 };
 
 void MakeKey(const WCHAR* processName, const WCHAR* title, std::wstring& out);

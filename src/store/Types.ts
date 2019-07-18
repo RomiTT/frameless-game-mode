@@ -20,3 +20,14 @@ export interface IReduxAction {
   type: string;
   reducer: (state: IAppState) => IAppState;
 }
+
+export interface IWindowApp {
+  processPath: string;
+  processName: string;
+  title: string;
+  key: string;
+  windowArea: IWindowBound;
+  clientArea: IWindowBound;
+  style: number;
+  exStyle: number;
+}

@@ -398,16 +398,35 @@ Napi::Promise FGM::getWindowAppList(const Napi::CallbackInfo &info) {
 			// napi_create_array_with_length(env, _list.size(), &array_value);
 
 			for (size_t i = 0; i < listPtr->size(); i++) {
+				auto windowApp = listPtr->at(i);
 				auto item = Napi::Object::New(env);
-				auto processPath = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processPath));
-				auto processName = Napi::String::New(env, converter.to_bytes(listPtr->at(i).processName));
-				auto title = Napi::String::New(env, converter.to_bytes(listPtr->at(i).title));
-				auto key = Napi::String::New(env, converter.to_bytes(listPtr->at(i).key));
+				auto processPath = Napi::String::New(env, converter.to_bytes(windowApp.processPath));
+				auto processName = Napi::String::New(env, converter.to_bytes(windowApp.processName));
+				auto title = Napi::String::New(env, converter.to_bytes(windowApp.title));
+				auto key = Napi::String::New(env, converter.to_bytes(windowApp.key));
 
 				item.Set("processPath", processPath);
 				item.Set("processName", processName);
 				item.Set("title", title);
 				item.Set("key", key);
+				
+				auto windowArea = Napi::Object::New(env);
+				item.Set("windowArea", windowArea);
+				windowArea.Set("x", windowApp.windowArea.left);
+				windowArea.Set("y", windowApp.windowArea.top);
+				windowArea.Set("width", (windowApp.windowArea.right-windowApp.windowArea.left));
+				windowArea.Set("height", (windowApp.windowArea.bottom-windowApp.windowArea.bottom));
+
+				auto clientArea = Napi::Object::New(env);
+				item.Set("clientArea", clientArea);
+				clientArea.Set("x", windowApp.clientArea.left);
+				clientArea.Set("y", windowApp.clientArea.top);
+				clientArea.Set("width", (windowApp.clientArea.right-windowApp.clientArea.left));
+				clientArea.Set("height", (windowApp.clientArea.bottom-windowApp.clientArea.bottom));
+
+				item.Set("style", windowApp.style);
+				item.Set("exStyle", windowApp.exStyle);
+
 				array[i] = item;
 
 				//napi_set_element(env, array_value, i, item);
