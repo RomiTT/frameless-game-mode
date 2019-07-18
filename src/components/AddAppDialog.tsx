@@ -12,10 +12,7 @@ interface IAddAppDialogProps {}
 
 interface IAddAppDialogState {
   isOpen: boolean;
-  listApp: Array<object>;
-  stage: number;
   disabledNextButton1: boolean;
-  selectedIndex: number;
 }
 
 type onOKCallback = (
@@ -29,28 +26,32 @@ type onOKCallback = (
 class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialogState> {
   private taskFGM = Tasks.FGM;
   private selectedItem: any;
+  private selectedIndex: number = -1;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
   private width = 0;
   private height = 0;
+  private listApp: any;
+  private pageIndex = 1;
+  private page: any;
+  private title: any;
+  private icon: MaybeElement | IconName;
   private onOK?: onOKCallback;
+
   state = {
     isOpen: false,
-    listApp: new Array<object>(),
-    stage: 1,
-    disabledNextButton1: true,
-    selectedIndex: -1
+    disabledNextButton1: true
   };
 
   open = async (onOK: onOKCallback) => {
     this.onOK = onOK;
     const list = await this.taskFGM.getWindowAppList();
     if (list) {
+      this.listApp = list;
+      this.selectedIndex = -1;
+      this.handlePageChanged(1);
       this.setState({
-        isOpen: true,
-        stage: 1,
-        listApp: list,
-        selectedIndex: -1
+        isOpen: true
       });
     }
   };
@@ -67,129 +68,156 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
   private handleRefreshList = async () => {
     const list = await this.taskFGM.getWindowAppList();
     if (list) {
-      this.setState({ listApp: list, selectedIndex: -1 });
+      this.selectedIndex = -1;
+      this.listApp = list;
+      this.handlePageChanged(this.pageIndex);
+      this.forceUpdate();
     }
   };
 
-  render() {
-    let title = 'Select a application';
-    let icon: IconName | MaybeElement = 'list';
-    let page = (
-      <SelectAppPage
-        listApp={this.state.listApp}
-        selectedIndex={this.state.selectedIndex}
-        onRefreshList={this.handleRefreshList}
-        onSelectionChange={(item: any) => {
-          this.setState({ disabledNextButton1: item == null });
-        }}
-        renderButtons={pageInstance => (
-          <>
-            <Button
-              onClick={() => {
-                const data = pageInstance.getData()!;
-                this.selectedItem = data.selectedItemData;
-                this.setState({ stage: 2, selectedIndex: data.selectedIndex });
-              }}
-              intent='primary'
-              disabled={this.state.disabledNextButton1}
-              className={styles.buttonPadding}
-            >
-              Next
-            </Button>
-            <Button onClick={this.handleClose} className={styles.buttonPadding}>
-              Cancel
-            </Button>
-          </>
-        )}
-      />
-    );
+  private selectAppPage = () => (
+    <SelectAppPage
+      listApp={this.listApp}
+      selectedIndex={this.selectedIndex}
+      onRefreshList={this.handleRefreshList}
+      onSelectionChange={(item: any) => {
+        this.setState({ disabledNextButton1: item == null });
+      }}
+      renderButtons={pageInstance => (
+        <>
+          <Button
+            onClick={() => {
+              const data = pageInstance.getData()!;
+              this.selectedItem = data.selectedItemData;
+              this.selectedIndex = data.selectedIndex;
+              this.handlePageChanged(2);
+              this.forceUpdate();
+            }}
+            intent='primary'
+            disabled={this.state.disabledNextButton1}
+            className={styles.buttonPadding}
+          >
+            Next
+          </Button>
+          <Button onClick={this.handleClose} className={styles.buttonPadding}>
+            Cancel
+          </Button>
+        </>
+      )}
+    />
+  );
 
-    if (this.state.stage === 2) {
-      title = 'Set position';
-      icon = 'page-layout';
-      page = (
-        <SetPositionPage
-          renderButtons={pageInstance => (
-            <>
-              <Button
-                onClick={() => {
-                  this.setState({ stage: 1 });
-                }}
-                className={styles.buttonPadding}
-              >
-                Prev
-              </Button>
-              <Button
-                onClick={() => {
-                  this.wpos = pageInstance.getData();
-                  this.setState({ stage: 3 });
-                }}
-                intent='primary'
-                className={styles.buttonPadding}
-              >
-                Next
-              </Button>
-              <Button onClick={this.handleClose} className={styles.buttonPadding}>
-                Cancel
-              </Button>
-            </>
-          )}
-        />
-      );
-    } else if (this.state.stage === 3) {
-      title = 'Set size';
-      icon = 'page-layout';
-      page = (
-        <SetSizePage
-          renderButtons={pageInstance => (
-            <>
-              <Button
-                onClick={() => {
-                  this.setState({ stage: 2 });
-                }}
-                className={styles.buttonPadding}
-              >
-                Prev
-              </Button>
-              <Button onClick={this.handleClose} className={styles.buttonPadding}>
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  const data = pageInstance.getData();
-                  this.wsize = data.wsize;
-                  if (data.wsize === FGM_WINDOW_SIZE.CUSTOM_SIZE) {
-                    this.width = data.width;
-                    this.height = data.height;
-                  } else {
-                    this.width = 0;
-                    this.height = 0;
-                  }
+  private setPositionPage = () => (
+    <SetPositionPage
+      renderButtons={pageInstance => (
+        <>
+          <Button
+            onClick={() => {
+              this.handlePageChanged(1);
+              this.forceUpdate();
+            }}
+            className={styles.buttonPadding}
+          >
+            Prev
+          </Button>
+          <Button
+            onClick={() => {
+              this.wpos = pageInstance.getData();
+              this.handlePageChanged(3);
+              this.forceUpdate();
+            }}
+            intent='primary'
+            className={styles.buttonPadding}
+          >
+            Next
+          </Button>
+          <Button onClick={this.handleClose} className={styles.buttonPadding}>
+            Cancel
+          </Button>
+        </>
+      )}
+    />
+  );
 
-                  this.handleOK();
-                }}
-                intent='primary'
-                className={styles.buttonPadding}
-              >
-                OK
-              </Button>
-            </>
-          )}
-        />
-      );
+  private setSizePage = () => (
+    <SetSizePage
+      renderButtons={pageInstance => (
+        <>
+          <Button
+            onClick={() => {
+              this.handlePageChanged(2);
+              this.forceUpdate();
+            }}
+            className={styles.buttonPadding}
+          >
+            Prev
+          </Button>
+          <Button onClick={this.handleClose} className={styles.buttonPadding}>
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              const data = pageInstance.getData();
+              this.wsize = data.wsize;
+              if (data.wsize === FGM_WINDOW_SIZE.CUSTOM_SIZE) {
+                this.width = data.width;
+                this.height = data.height;
+              } else {
+                this.width = 0;
+                this.height = 0;
+              }
+
+              this.handleOK();
+            }}
+            intent='primary'
+            className={styles.buttonPadding}
+          >
+            OK
+          </Button>
+        </>
+      )}
+    />
+  );
+
+  private handlePageChanged(index: number) {
+    this.pageIndex = index;
+    switch (index) {
+      case 1: {
+        this.page = this.selectAppPage();
+        this.title = 'Select a application';
+        this.icon = 'list';
+        break;
+      }
+
+      case 2: {
+        this.page = this.setPositionPage();
+        this.title = 'Set position';
+        this.icon = 'page-layout';
+        break;
+      }
+
+      case 3: {
+        this.page = this.setSizePage();
+        this.title = 'Set size';
+        this.icon = 'page-layout';
+        break;
+      }
     }
+  }
 
+  render() {
+    console.log('AddAppDialog - ', new Date().getMilliseconds());
     return (
       <Dialog
         className={`bp3-dark ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
-        title={title}
-        icon={icon}
+        title={this.title}
+        icon={this.icon}
         lazy={false}
         {...this.state}
       >
-        {page}
+        {this.page}
       </Dialog>
     );
   }
