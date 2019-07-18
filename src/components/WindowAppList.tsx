@@ -43,7 +43,7 @@ interface IWindowAppListProps {
   selectedIndex?: number;
   style?: React.CSSProperties;
   className?: string;
-  onSelectionChange?: (item: any) => void;
+  onSelectionChange?: (index: number, item: any) => void;
   onContextMenu?: (e: any, item: any) => void;
 }
 
@@ -51,7 +51,7 @@ interface IWindowsAppListState {
   selectedIndex: number;
 }
 
-export default class WindowAppList extends React.PureComponent<
+export default class WindowAppList extends React.Component<
   IWindowAppListProps,
   IWindowsAppListState
 > {
@@ -68,6 +68,10 @@ export default class WindowAppList extends React.PureComponent<
 
     this.listRef = React.createRef();
   }
+
+  componentDidMount = () => {
+    this.setState({ selectedIndex: this.props.selectedIndex ? this.props.selectedIndex! : -1 });
+  };
 
   getSelectedIndex() {
     return this.state.selectedIndex;
@@ -87,7 +91,7 @@ export default class WindowAppList extends React.PureComponent<
     if (this.state.selectedIndex != index) {
       this.setState({ selectedIndex: index });
       if (this.props.onSelectionChange) {
-        this.props.onSelectionChange(this.props.listApp[index]);
+        this.props.onSelectionChange(index, this.props.listApp[index]);
       }
     }
   }
@@ -95,7 +99,7 @@ export default class WindowAppList extends React.PureComponent<
   unselect() {
     this.setState({ selectedIndex: -1 });
     if (this.props.onSelectionChange) {
-      this.props.onSelectionChange(null);
+      this.props.onSelectionChange(-1, null);
     }
   }
 

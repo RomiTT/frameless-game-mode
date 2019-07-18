@@ -7,12 +7,16 @@ import { Button, Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
+import { DISABLE } from '@blueprintjs/icons/lib/esm/generated/iconContents';
 
 interface IAddAppDialogProps {}
 
 interface IAddAppDialogState {
   isOpen: boolean;
   disabledNextButton1: boolean;
+  pageIndex: number;
+  selectedIndex: number;
+  listApp: Array<object>;
 }
 
 type onOKCallback = (
@@ -26,13 +30,10 @@ type onOKCallback = (
 class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialogState> {
   private taskFGM = Tasks.FGM;
   private selectedItem: any;
-  private selectedIndex: number = -1;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
   private width = 0;
   private height = 0;
-  private listApp: any;
-  private pageIndex = 1;
   private page: any;
   private title: any;
   private icon: MaybeElement | IconName;
@@ -40,18 +41,23 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
 
   state = {
     isOpen: false,
-    disabledNextButton1: true
+    disabledNextButton1: true,
+    pageIndex: 1,
+    selectedIndex: -1,
+    listApp: new Array<object>()
   };
 
   open = async (onOK: onOKCallback) => {
     this.onOK = onOK;
     const list = await this.taskFGM.getWindowAppList();
     if (list) {
-      this.listApp = list;
-      this.selectedIndex = -1;
-      this.handlePageChanged(1);
+      this.updatePage(1);
       this.setState({
-        isOpen: true
+        isOpen: true,
+        disabledNextButton1: true,
+        pageIndex: 1,
+        selectedIndex: -1,
+        listApp: list
       });
     }
   };
@@ -68,20 +74,19 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
   private handleRefreshList = async () => {
     const list = await this.taskFGM.getWindowAppList();
     if (list) {
-      this.selectedIndex = -1;
-      this.listApp = list;
-      this.handlePageChanged(this.pageIndex);
-      this.forceUpdate();
+      this.setState({ selectedIndex: -1, disabledNextButton1: true, listApp: list });
     }
   };
 
   private selectAppPage = () => (
     <SelectAppPage
-      listApp={this.listApp}
-      selectedIndex={this.selectedIndex}
+      listApp={this.state.listApp}
+      selectedIndex={this.state.selectedIndex}
       onRefreshList={this.handleRefreshList}
-      onSelectionChange={(item: any) => {
-        this.setState({ disabledNextButton1: item == null });
+      onSelectionChange={(index: number, item: any) => {
+        if (index >= 0) {
+          this.setState({ disabledNextButton1: item == null });
+        }
       }}
       renderButtons={pageInstance => (
         <>
@@ -89,9 +94,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
             onClick={() => {
               const data = pageInstance.getData()!;
               this.selectedItem = data.selectedItemData;
-              this.selectedIndex = data.selectedIndex;
-              this.handlePageChanged(2);
-              this.forceUpdate();
+              this.setState({ pageIndex: 2, selectedIndex: data.selectedIndex });
             }}
             intent='primary'
             disabled={this.state.disabledNextButton1}
@@ -113,8 +116,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
         <>
           <Button
             onClick={() => {
-              this.handlePageChanged(1);
-              this.forceUpdate();
+              this.setState({ pageIndex: 1 });
             }}
             className={styles.buttonPadding}
           >
@@ -123,8 +125,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
           <Button
             onClick={() => {
               this.wpos = pageInstance.getData();
-              this.handlePageChanged(3);
-              this.forceUpdate();
+              this.setState({ pageIndex: 3 });
             }}
             intent='primary'
             className={styles.buttonPadding}
@@ -145,8 +146,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
         <>
           <Button
             onClick={() => {
-              this.handlePageChanged(2);
-              this.forceUpdate();
+              this.setState({ pageIndex: 2 });
             }}
             className={styles.buttonPadding}
           >
@@ -179,8 +179,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
     />
   );
 
-  private handlePageChanged(index: number) {
-    this.pageIndex = index;
+  private updatePage(index: number) {
     switch (index) {
       case 1: {
         this.page = this.selectAppPage();
@@ -207,6 +206,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
 
   render() {
     console.log('AddAppDialog - ', new Date().getMilliseconds());
+    this.updatePage(this.state.pageIndex);
     return (
       <Dialog
         className={`bp3-dark ${styles.dialog}`}
@@ -214,7 +214,7 @@ class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialog
         onClose={this.handleClose}
         title={this.title}
         icon={this.icon}
-        lazy={false}
+        lazy={true}
         {...this.state}
       >
         {this.page}

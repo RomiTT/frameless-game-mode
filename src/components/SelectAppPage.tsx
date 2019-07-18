@@ -9,11 +9,11 @@ interface ISelectAppPageProps {
   listApp: Array<object>;
   selectedIndex: number;
   onRefreshList: () => void;
-  onSelectionChange?: (item: any) => void;
+  onSelectionChange?: (index: number, item: any) => void;
   renderButtons: (pageInstance: SelectAppPage) => JSX.Element;
 }
 
-export default class SelectAppPage extends React.Component<ISelectAppPageProps> {
+export default class SelectAppPage extends React.PureComponent<ISelectAppPageProps> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
 
   private handleRefreshList = () => {
