@@ -6,6 +6,7 @@ import { Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
+import produce from 'immer';
 
 interface DialogPageInfo {
   page: any;
@@ -67,12 +68,16 @@ class AddAppDialog extends React.PureComponent<IProps, IState> {
   };
 
   private pushPage(pageInfo: DialogPageInfo) {
-    this.dialogPages.push(pageInfo);
+    this.dialogPages = produce(this.dialogPages, draft => {
+      draft.push(pageInfo);
+    });
     this.setState({ curPageInfo: pageInfo });
   }
 
   private popPage() {
-    this.dialogPages.pop();
+    this.dialogPages = produce(this.dialogPages, draft => {
+      draft.pop();
+    });
     const len = this.dialogPages.length;
     this.setState({ curPageInfo: this.dialogPages[len - 1] });
   }
