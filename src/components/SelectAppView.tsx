@@ -25,7 +25,6 @@ class SelectAppView extends React.PureComponent<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    console.log('constructor of SelectAppView');
   }
 
   private handleRefreshList = () => {

@@ -21,7 +21,6 @@ export default class SelectAppPage extends React.PureComponent<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    console.log('constructor of SelectAppPage');
   }
 
   componentDidMount = async () => {
