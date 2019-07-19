@@ -1,32 +1,5 @@
-@import '~@blueprintjs/core/lib/scss/variables';
-
-.dialogPage {
-  display: flex;
-  flex-direction: column;
-  height: 300px;
-
-  .row {
-    display: flex;
-    flex-grow: 1;
-
-    .item {
-      box-sizing: content-box;
-      flex-grow: 1;
-      background-color: $dark-gray1;
-      border: solid 1px $dark-gray5;
-
-      &:hover {
-        border: solid 1px $light-gray4;
-      }
-    }
-
-    .itemSelected {
-      @extend .item;
-      background-color: $gold5;
-    }
-  }
-}
-
-.divider {
-  margin-bottom: 10px;
+$button-padding: 25px;
+.buttonPadding {
+  padding-left: $button-padding;
+  padding-right: $button-padding;
 }

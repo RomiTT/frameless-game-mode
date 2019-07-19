@@ -2,21 +2,22 @@ import React from 'react';
 import SelectAppPage from './SelectAppPage';
 import SetPositionPage from './SetPositionPage';
 import SetSizePage from './SetSizePage';
-import Tasks from '../store/Tasks';
-import { Button, Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
+import { Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
-import { DISABLE } from '@blueprintjs/icons/lib/esm/generated/iconContents';
 
-interface IAddAppDialogProps {}
+interface DialogPageInfo {
+  page: any;
+  title: string;
+  icon: IconName | MaybeElement;
+}
 
-interface IAddAppDialogState {
+interface IProps {}
+
+interface IState {
   isOpen: boolean;
-  disabledNextButton1: boolean;
-  pageIndex: number;
-  selectedIndex: number;
-  listApp: Array<object>;
+  curPageInfo: DialogPageInfo;
 }
 
 type onOKCallback = (
@@ -27,196 +28,136 @@ type onOKCallback = (
   height: number
 ) => void;
 
-class AddAppDialog extends React.PureComponent<IAddAppDialogProps, IAddAppDialogState> {
-  private taskFGM = Tasks.FGM;
+class AddAppDialog extends React.PureComponent<IProps, IState> {
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
   private width = 0;
   private height = 0;
-  private page: any;
-  private title: any;
-  private icon: MaybeElement | IconName;
+  private dialogPages: DialogPageInfo[] = [];
   private onOK?: onOKCallback;
 
-  state = {
-    isOpen: false,
-    disabledNextButton1: true,
-    pageIndex: 1,
-    selectedIndex: -1,
-    listApp: new Array<object>()
-  };
+  constructor(props: IProps) {
+    super(props);
+    console.log('constructor of AddAppDialog');
+    this.reset();
+    this.state = {
+      isOpen: false,
+      curPageInfo: this.dialogPages[0]
+    };
+  }
 
   open = async (onOK: onOKCallback) => {
     this.onOK = onOK;
-    const list = await this.taskFGM.getWindowAppList();
-    if (list) {
-      this.updatePage(1);
-      this.setState({
-        isOpen: true,
-        disabledNextButton1: true,
-        pageIndex: 1,
-        selectedIndex: -1,
-        listApp: list
-      });
-    }
+    this.reset();
+    this.setState({
+      isOpen: true,
+      curPageInfo: this.dialogPages[0]
+    });
   };
 
-  private handleClose = () => this.setState({ isOpen: false });
+  private reset = () => {
+    console.log('reset');
+    this.selectedItem = null;
+    this.wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
+    this.wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
+    this.width = 0;
+    this.height = 0;
+    this.dialogPages = [this.selectAppPageInfo()];
+  };
 
-  private handleOK = () => {
+  private pushPage(pageInfo: DialogPageInfo) {
+    this.dialogPages.push(pageInfo);
+    this.setState({ curPageInfo: pageInfo });
+  }
+
+  private popPage() {
+    this.dialogPages.pop();
+    const len = this.dialogPages.length;
+    this.setState({ curPageInfo: this.dialogPages[len - 1] });
+  }
+
+  private selectAppPageInfo = (): DialogPageInfo => ({
+    page: (
+      <SelectAppPage
+        onNext={(item: any) => {
+          this.selectedItem = item;
+          this.pushPage(this.setPositionPageInfo());
+        }}
+        onCancel={this.handleClose}
+      />
+    ),
+    title: 'Select app',
+    icon: 'list'
+  });
+
+  private setPositionPageInfo = (): DialogPageInfo => ({
+    page: (
+      <SetPositionPage
+        onPrev={() => {
+          this.popPage();
+        }}
+        onNext={(wpos: FGM_WINDOW_POSITION) => {
+          this.wpos = wpos;
+          this.pushPage(this.setSizePageInfo());
+        }}
+        onCancel={this.handleClose}
+      />
+    ),
+    title: 'Set position',
+    icon: 'page-layout'
+  });
+
+  private setSizePageInfo = (): DialogPageInfo => ({
+    page: (
+      <SetSizePage
+        onPrev={() => {
+          this.popPage();
+        }}
+        onCancel={this.handleClose}
+        onOK={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => {
+          this.wsize = wsize;
+          this.width = width;
+          this.height = height;
+          this.handleFinish();
+        }}
+      />
+    ),
+    title: 'Set size',
+    icon: 'page-layout'
+  });
+
+  private handleFinish() {
     this.setState({ isOpen: false });
     if (this.onOK) {
       this.onOK(this.selectedItem, this.wpos, this.wsize, this.width, this.height);
     }
-  };
+  }
 
-  private handleRefreshList = async () => {
-    const list = await this.taskFGM.getWindowAppList();
-    if (list) {
-      this.setState({ selectedIndex: -1, disabledNextButton1: true, listApp: list });
-    }
-  };
+  private handleClose = () => this.setState({ isOpen: false });
 
-  private selectAppPage = () => (
-    <SelectAppPage
-      listApp={this.state.listApp}
-      selectedIndex={this.state.selectedIndex}
-      onRefreshList={this.handleRefreshList}
-      onSelectionChange={(index: number, item: any) => {
-        if (index >= 0) {
-          this.setState({ disabledNextButton1: item == null });
-        }
-      }}
-      renderButtons={pageInstance => (
-        <>
-          <Button
-            onClick={() => {
-              const data = pageInstance.getData()!;
-              this.selectedItem = data.selectedItemData;
-              this.setState({ pageIndex: 2, selectedIndex: data.selectedIndex });
-            }}
-            intent='primary'
-            disabled={this.state.disabledNextButton1}
-            className={styles.buttonPadding}
-          >
-            Next
-          </Button>
-          <Button onClick={this.handleClose} className={styles.buttonPadding}>
-            Cancel
-          </Button>
-        </>
-      )}
-    />
-  );
-
-  private setPositionPage = () => (
-    <SetPositionPage
-      renderButtons={pageInstance => (
-        <>
-          <Button
-            onClick={() => {
-              this.setState({ pageIndex: 1 });
-            }}
-            className={styles.buttonPadding}
-          >
-            Prev
-          </Button>
-          <Button
-            onClick={() => {
-              this.wpos = pageInstance.getData();
-              this.setState({ pageIndex: 3 });
-            }}
-            intent='primary'
-            className={styles.buttonPadding}
-          >
-            Next
-          </Button>
-          <Button onClick={this.handleClose} className={styles.buttonPadding}>
-            Cancel
-          </Button>
-        </>
-      )}
-    />
-  );
-
-  private setSizePage = () => (
-    <SetSizePage
-      renderButtons={pageInstance => (
-        <>
-          <Button
-            onClick={() => {
-              this.setState({ pageIndex: 2 });
-            }}
-            className={styles.buttonPadding}
-          >
-            Prev
-          </Button>
-          <Button onClick={this.handleClose} className={styles.buttonPadding}>
-            Cancel
-          </Button>
-          <Button
-            onClick={() => {
-              const data = pageInstance.getData();
-              this.wsize = data.wsize;
-              if (data.wsize === FGM_WINDOW_SIZE.CUSTOM_SIZE) {
-                this.width = data.width;
-                this.height = data.height;
-              } else {
-                this.width = 0;
-                this.height = 0;
-              }
-
-              this.handleOK();
-            }}
-            intent='primary'
-            className={styles.buttonPadding}
-          >
-            OK
-          </Button>
-        </>
-      )}
-    />
-  );
-
-  private updatePage(index: number) {
-    switch (index) {
-      case 1: {
-        this.page = this.selectAppPage();
-        this.title = 'Select a application';
-        this.icon = 'list';
-        break;
-      }
-
-      case 2: {
-        this.page = this.setPositionPage();
-        this.title = 'Set position';
-        this.icon = 'page-layout';
-        break;
-      }
-
-      case 3: {
-        this.page = this.setSizePage();
-        this.title = 'Set size';
-        this.icon = 'page-layout';
-        break;
-      }
-    }
+  private getStyle(pageInfo: DialogPageInfo): React.CSSProperties {
+    return {
+      display: pageInfo === this.state.curPageInfo ? 'block' : 'none'
+    };
   }
 
   render() {
-    this.updatePage(this.state.pageIndex);
     return (
       <Dialog
         className={`bp3-dark ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
-        title={this.title}
-        icon={this.icon}
-        lazy={true}
+        title={this.state.curPageInfo.title}
+        icon={this.state.curPageInfo.icon}
+        lazy={false}
         {...this.state}
       >
-        {this.page}
+        {this.dialogPages.map(item => (
+          <div key={item.title} style={this.getStyle(item)}>
+            {item.page}
+          </div>
+        ))}
       </Dialog>
     );
   }

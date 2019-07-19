@@ -1,20 +1,5 @@
-.dialogPage {
-  .radioItem {
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  .inputContainer {
-    display: flex;
-    padding-left: 28px;
-    padding-bottom: 4px;
-
-    .label {
-      width: 65px;
-    }
-  }
-}
-
-.divider {
-  margin-bottom: 10px;
+$button-padding: 25px;
+.buttonPadding {
+  padding-left: $button-padding;
+  padding-right: $button-padding;
 }

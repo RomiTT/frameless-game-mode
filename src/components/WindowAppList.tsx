@@ -78,7 +78,7 @@ export default class WindowAppList extends React.Component<
       this.listRef.current!.scrollTop = 0;
     }
 
-    this.setState({ selectedIndex: -1 });
+    this.unselect();
   };
 
   getSelectedIndex() {

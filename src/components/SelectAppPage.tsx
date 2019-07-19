@@ -1,63 +1,58 @@
-import FloatingButton from './FloatingButton';
 import React from 'react';
-import WindowAppList from './WindowAppList';
-import { Classes } from '@blueprintjs/core/lib/esm/common';
-import { Divider } from '@blueprintjs/core';
+import SelectAppView from './SelectAppView';
+import Tasks from '../store/Tasks';
+import { Button } from '@blueprintjs/core';
 import styles from './SelectAppPage.module.scss';
 
-interface ISelectAppPageProps {
-  listApp: Array<object>;
-  selectedIndex: number;
-  onRefreshList: () => void;
-  onSelectionChange?: (index: number, item: any) => void;
-  renderButtons: (pageInstance: SelectAppPage) => JSX.Element;
+interface IProps {
+  onNext: (item: any) => void;
+  onCancel: () => void;
 }
 
-export default class SelectAppPage extends React.PureComponent<ISelectAppPageProps> {
-  private listRef: React.RefObject<WindowAppList> = React.createRef();
+interface IState {
+  listApp: object[];
+}
 
-  private handleRefreshList = () => {
-    this.listRef.current!.init();
-    this.props.onRefreshList();
+export default class SelectAppPage extends React.PureComponent<IProps, IState> {
+  private taskFGM = Tasks.FGM;
+  state = {
+    listApp: []
   };
 
-  getData = () => {
-    if (this.listRef.current) {
-      return {
-        selectedIndex: this.listRef.current.getSelectedIndex(),
-        selectedItemData: this.listRef.current.getSelectedItem()
-      };
-    }
+  constructor(props: IProps) {
+    super(props);
+    console.log('constructor of SelectAppPage');
+  }
 
-    return null;
+  componentDidMount = async () => {
+    this.updateList();
+  };
+
+  private updateList = async () => {
+    const list = await this.taskFGM.getWindowAppList();
+    this.setState({ listApp: list });
   };
 
   render() {
     return (
-      <>
-        <div className={`${Classes.DIALOG_BODY} ${styles.dialogPage}`}>
-          <WindowAppList
-            ref={this.listRef}
-            listApp={this.props.listApp}
-            selectedIndex={this.props.selectedIndex}
-            className={styles.appList}
-            onSelectionChange={this.props.onSelectionChange}
-          />
-          <FloatingButton
-            position='absolute'
-            left={361}
-            top={6}
-            icon='refresh'
-            intent='success'
-            scale={1.1}
-            onClick={this.handleRefreshList}
-          />
-        </div>
-        <Divider className={styles.divider} />
-        <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons(this)}</div>
-        </div>
-      </>
+      <SelectAppView
+        listApp={this.state.listApp}
+        onRefreshList={this.updateList}
+        renderButtons={(index: number, item: any) => (
+          <>
+            <Button
+              onClick={() => {
+                this.props.onNext(item);
+              }}
+              intent='primary'
+              disabled={item === null}
+              className={styles.buttonPadding}
+              text='Next'
+            />
+            <Button onClick={this.props.onCancel} className={styles.buttonPadding} text='Cancel' />
+          </>
+        )}
+      />
     );
   }
 }
