@@ -16,7 +16,7 @@ interface IState {
   selectedItem: any;
 }
 
-class SelectAppView extends React.PureComponent<IProps, IState> {
+class SelectAppView extends React.Component<IProps, IState> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   state = {
     selectedIndex: -1,

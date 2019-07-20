@@ -13,7 +13,7 @@ interface IState {
   listApp: object[];
 }
 
-export default class SelectAppPage extends React.PureComponent<IProps, IState> {
+export default class SelectAppPage extends React.Component<IProps, IState> {
   private taskFGM = Tasks.FGM;
   state = {
     listApp: []
@@ -32,25 +32,29 @@ export default class SelectAppPage extends React.PureComponent<IProps, IState> {
     this.setState({ listApp: list });
   };
 
+  private renderButtons = (index: number, item: any) => {
+    return (
+      <>
+        <Button
+          onClick={() => {
+            this.props.onNext(item);
+          }}
+          intent='primary'
+          disabled={item === null}
+          className={styles.buttonPadding}
+          text='Next'
+        />
+        <Button onClick={this.props.onCancel} className={styles.buttonPadding} text='Cancel' />
+      </>
+    );
+  };
+
   render() {
     return (
       <SelectAppView
         listApp={this.state.listApp}
         onRefreshList={this.updateList}
-        renderButtons={(index: number, item: any) => (
-          <>
-            <Button
-              onClick={() => {
-                this.props.onNext(item);
-              }}
-              intent='primary'
-              disabled={item === null}
-              className={styles.buttonPadding}
-              text='Next'
-            />
-            <Button onClick={this.props.onCancel} className={styles.buttonPadding} text='Cancel' />
-          </>
-        )}
+        renderButtons={this.renderButtons}
       />
     );
   }

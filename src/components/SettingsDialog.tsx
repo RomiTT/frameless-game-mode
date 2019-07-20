@@ -3,6 +3,7 @@ import store from '../store/Store';
 import { Button, Classes, Dialog, Divider, Radio, RadioGroup, Switch } from '@blueprintjs/core';
 import { FGM_WATCH_MODE } from '../lib/FGM';
 import styles from './SettingsDialog.module.scss';
+import { number } from 'prop-types';
 
 interface ISettingsDialogProps {}
 
@@ -49,7 +50,23 @@ class SettingsDialog extends React.PureComponent<ISettingsDialogProps, ISettings
     this.setState({ isOpen: false });
   };
 
+  private onChangeFromLaunchAtLogon = () => {
+    let newVal = !this.state.autoLaunch;
+    this.setState({ autoLaunch: newVal });
+  };
+
+  private onChangeFromCloseToTray = () => {
+    let newVal = !this.state.closeToTray;
+    this.setState({ closeToTray: newVal });
+  };
+
+  private onChangeFromWatchMoe = (e: React.FormEvent<HTMLInputElement>) => {
+    const event = e.nativeEvent as any;
+    this.setState({ watchMode: Number(event.target.value) });
+  };
+
   render() {
+    console.log('SettingsDialog - ', new Date().getMilliseconds());
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
@@ -64,36 +81,23 @@ class SettingsDialog extends React.PureComponent<ISettingsDialogProps, ISettings
           <Switch
             checked={this.state.autoLaunch}
             label='Launch at login'
-            onChange={e => {
-              let newVal = !this.state.autoLaunch;
-              this.setState({ autoLaunch: newVal });
-            }}
+            onChange={this.onChangeFromLaunchAtLogon}
           />
           <Switch
             checked={this.state.closeToTray}
             label='Close to tray'
-            onChange={e => {
-              let newVal = !this.state.closeToTray;
-              this.setState({ closeToTray: newVal });
-            }}
+            onChange={this.onChangeFromCloseToTray}
           />
           <br />
-          <RadioGroup label='Watch mode' onChange={() => {}} selectedValue={this.state.watchMode}>
-            <Radio
-              label='All windows'
-              value={FGM_WATCH_MODE.ALL_WINDOWS}
-              onClick={() => {
-                this.setState({ watchMode: FGM_WATCH_MODE.ALL_WINDOWS });
-              }}
-            />
+          <RadioGroup
+            label='Watch mode'
+            onChange={this.onChangeFromWatchMoe}
+            selectedValue={this.state.watchMode}
+          >
+            <Radio label='All windows' value={FGM_WATCH_MODE.ALL_WINDOWS} />
             <Radio
               label='Only the foreground window'
               value={FGM_WATCH_MODE.ONLY_FOR_FOREGROUND_WINDOW}
-              onClick={() => {
-                this.setState({
-                  watchMode: FGM_WATCH_MODE.ONLY_FOR_FOREGROUND_WINDOW
-                });
-              }}
             />
           </RadioGroup>
         </div>

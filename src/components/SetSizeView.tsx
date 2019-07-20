@@ -21,8 +21,9 @@ class SetSizeView extends React.PureComponent<IProps, IState> {
     height: window.screen.height
   };
 
-  private handleWSizeChange = (val: FGM_WINDOW_SIZE) => {
-    this.setState({ wsize: val });
+  private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
+    const event = e.nativeEvent as any;
+    this.setState({ wsize: Number(event.target.value) });
   };
 
   private handleWidthChange = (valueAsNumber: number, valueAsString: string) => {
@@ -48,33 +49,30 @@ class SetSizeView extends React.PureComponent<IProps, IState> {
   };
 
   render() {
+    console.log('SetSizeView - ', new Date().getMilliseconds());
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.rootView}`}>
-          <RadioGroup onChange={() => {}} selectedValue={this.state.wsize}>
+          <RadioGroup onChange={this.onWSizeChanged} selectedValue={this.state.wsize}>
             <Radio
               className={styles.radioItem}
               label='Window-Client size (excluded frame area)'
               value={FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA}
-              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA)}
             />
             <Radio
               className={styles.radioItem}
               label='Window size (included frame area)'
               value={FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA}
-              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA)}
             />
             <Radio
               className={styles.radioItem}
               label='Full-Screen size'
               value={FGM_WINDOW_SIZE.FULL_SCREEN_SIZE}
-              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.FULL_SCREEN_SIZE)}
             />
             <Radio
               className={styles.radioItem}
               label='Custom size'
               value={FGM_WINDOW_SIZE.CUSTOM_SIZE}
-              onClick={() => this.handleWSizeChange(FGM_WINDOW_SIZE.CUSTOM_SIZE)}
             />
           </RadioGroup>
           <br />

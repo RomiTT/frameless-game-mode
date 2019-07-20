@@ -29,7 +29,7 @@ type onOKCallback = (
   height: number
 ) => void;
 
-class AddAppDialog extends React.PureComponent<IProps, IState> {
+class AddAppDialog extends React.Component<IProps, IState> {
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;

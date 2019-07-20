@@ -12,7 +12,7 @@ interface IProps {
 
 interface IState {}
 
-export default class SetPositionPage extends React.PureComponent<IProps, IState> {
+export default class SetPositionPage extends React.Component<IProps, IState> {
   render() {
     return (
       <SetPositionView
