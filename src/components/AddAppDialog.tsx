@@ -67,31 +67,23 @@ class AddAppDialog extends React.PureComponent<IProps, IState> {
     this.dialogPages = [this.selectAppPageInfo()];
   };
 
-  private pushPage(pageInfo: DialogPageInfo) {
+  private pushPage = (pageInfo: DialogPageInfo) => {
     this.dialogPages = produce(this.dialogPages, draft => {
       draft.push(pageInfo);
     });
     this.setState({ curPageInfo: pageInfo });
-  }
+  };
 
-  private popPage() {
+  private popPage = () => {
     this.dialogPages = produce(this.dialogPages, draft => {
       draft.pop();
     });
     const len = this.dialogPages.length;
     this.setState({ curPageInfo: this.dialogPages[len - 1] });
-  }
+  };
 
   private selectAppPageInfo = (): DialogPageInfo => ({
-    page: (
-      <SelectAppPage
-        onNext={(item: any) => {
-          this.selectedItem = item;
-          this.pushPage(this.setPositionPageInfo());
-        }}
-        onCancel={this.handleClose}
-      />
-    ),
+    page: <SelectAppPage onNext={this.onNextFromSelectAppPage} onCancel={this.handleClose} />,
     title: 'Select app',
     icon: 'list'
   });
@@ -99,13 +91,8 @@ class AddAppDialog extends React.PureComponent<IProps, IState> {
   private setPositionPageInfo = (): DialogPageInfo => ({
     page: (
       <SetPositionPage
-        onPrev={() => {
-          this.popPage();
-        }}
-        onNext={(wpos: FGM_WINDOW_POSITION) => {
-          this.wpos = wpos;
-          this.pushPage(this.setSizePageInfo());
-        }}
+        onPrev={this.onPrev}
+        onNext={this.onNextFromSetPositionPage}
         onCancel={this.handleClose}
       />
     ),
@@ -114,38 +101,43 @@ class AddAppDialog extends React.PureComponent<IProps, IState> {
   });
 
   private setSizePageInfo = (): DialogPageInfo => ({
-    page: (
-      <SetSizePage
-        onPrev={() => {
-          this.popPage();
-        }}
-        onCancel={this.handleClose}
-        onOK={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => {
-          this.wsize = wsize;
-          this.width = width;
-          this.height = height;
-          this.handleFinish();
-        }}
-      />
-    ),
+    page: <SetSizePage onPrev={this.onPrev} onCancel={this.handleClose} onOK={this.handleFinish} />,
     title: 'Set size',
     icon: 'page-layout'
   });
 
-  private handleFinish() {
-    this.setState({ isOpen: false });
+  private onPrev = () => {
+    this.popPage();
+  };
+
+  private onNextFromSelectAppPage = (item: any) => {
+    this.selectedItem = item;
+    this.pushPage(this.setPositionPageInfo());
+  };
+
+  private onNextFromSetPositionPage = (wpos: FGM_WINDOW_POSITION) => {
+    this.wpos = wpos;
+    this.pushPage(this.setSizePageInfo());
+  };
+
+  private handleFinish = (wsize: FGM_WINDOW_SIZE, width: number, height: number) => {
+    this.wsize = wsize;
+    this.width = width;
+    this.height = height;
     if (this.onOK) {
       this.onOK(this.selectedItem, this.wpos, this.wsize, this.width, this.height);
     }
-  }
+
+    this.setState({ isOpen: false });
+  };
 
   private handleClose = () => this.setState({ isOpen: false });
 
-  private getStyle(pageInfo: DialogPageInfo): React.CSSProperties {
+  private getStyle = (pageInfo: DialogPageInfo): React.CSSProperties => {
     return {
       display: pageInfo === this.state.curPageInfo ? 'block' : 'none'
     };
-  }
+  };
 
   render() {
     return (

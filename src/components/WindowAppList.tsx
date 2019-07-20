@@ -81,19 +81,19 @@ export default class WindowAppList extends React.Component<
     this.unselect();
   };
 
-  getSelectedIndex() {
+  getSelectedIndex = () => {
     return this.state.selectedIndex;
-  }
+  };
 
-  getSelectedItem() {
+  getSelectedItem = () => {
     if (this.state.selectedIndex < 0 || this.state.selectedIndex >= this.props.listApp.length) {
       return null;
     }
 
     return this.props.listApp[this.state.selectedIndex];
-  }
+  };
 
-  select(index: number) {
+  select = (index: number) => {
     if (index < 0 || index >= this.props.listApp.length) return;
 
     if (this.state.selectedIndex != index) {
@@ -102,14 +102,14 @@ export default class WindowAppList extends React.Component<
         this.props.onSelectionChange(index, this.props.listApp[index]);
       }
     }
-  }
+  };
 
-  unselect() {
+  unselect = () => {
     this.setState({ selectedIndex: -1 });
     if (this.props.onSelectionChange) {
       this.props.onSelectionChange(-1, null);
     }
-  }
+  };
 
   private handleKeyDown = (e: any) => {
     // Arrow up
