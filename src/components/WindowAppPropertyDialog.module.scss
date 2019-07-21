@@ -1,0 +1,51 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+
+$button-padding: 25px;
+.buttonPadding {
+  padding-left: $button-padding;
+  padding-right: $button-padding;
+}
+
+.dialog {
+  max-width: 450px;
+  width: auto;
+
+  .container {
+    display: flex;
+
+    .name {
+      margin-bottom: 8px;
+    }
+
+    .desc {
+      margin-left: 8px;
+      font-size: 0.8em;
+      color: $gold5;
+    }
+  }
+}
+
+.wposView {
+  width: 80px;
+  height: 45px;
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+
+  .row {
+    display: flex;
+    flex-grow: 1;
+
+    .item {
+      box-sizing: content-box;
+      flex-grow: 1;
+      background-color: $dark-gray1;
+      border: solid 1px $dark-gray5;
+    }
+
+    .itemSelected {
+      @extend .item;
+      background-color: $gold5;
+    }
+  }
+}

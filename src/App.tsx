@@ -27,6 +27,7 @@ import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './store/Store';
 import styles from './App.module.scss';
 import Logger from './lib/Logger';
+import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
 
 const { remote, ipcRenderer } = require('electron');
 
@@ -45,6 +46,7 @@ class App extends React.PureComponent<IProps, IState> {
   private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
   private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
+  private windowAppPropertyDialog: React.RefObject<WindowAppPropertyDialog> = React.createRef();
   state = {
     addBtnLeftPos: 0
   };
@@ -150,7 +152,9 @@ class App extends React.PureComponent<IProps, IState> {
       React.createElement(MenuItem, {
         text: 'Properties...',
         icon: 'properties',
-        onClick: () => {}
+        onClick: () => {
+          this.windowAppPropertyDialog.current!.open(this.listRef.current!.getSelectedItem());
+        }
       })
     );
 
@@ -259,6 +263,7 @@ class App extends React.PureComponent<IProps, IState> {
             <AddAppDialog ref={this.addAppDialogRef} />
             <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
+            <WindowAppPropertyDialog ref={this.windowAppPropertyDialog} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
