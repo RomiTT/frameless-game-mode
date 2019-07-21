@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Dialog, Divider } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import styles from './YesNoDialog.module.scss';
+import Logger from '../lib/Logger';
 
 interface YesNoDialogState {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export default class YesNoDialog extends React.PureComponent<any, YesNoDialogSta
   };
 
   render() {
+    Logger.logRenderInfo(this);
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}

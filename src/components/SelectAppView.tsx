@@ -4,6 +4,7 @@ import WindowAppList from './WindowAppList';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import { Divider } from '@blueprintjs/core';
 import styles from './SelectAppView.module.scss';
+import Logger from '../lib/Logger';
 
 interface IProps {
   listApp: Array<object>;
@@ -16,7 +17,7 @@ interface IState {
   selectedItem: any;
 }
 
-class SelectAppView extends React.Component<IProps, IState> {
+class SelectAppView extends React.PureComponent<IProps, IState> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   state = {
     selectedIndex: -1,
@@ -39,6 +40,7 @@ class SelectAppView extends React.Component<IProps, IState> {
   };
 
   render() {
+    Logger.logRenderInfo(this);
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.rootView}`}>

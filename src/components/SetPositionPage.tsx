@@ -3,6 +3,7 @@ import { Button } from '@blueprintjs/core';
 import SetPositionView from './SetPositionView';
 import { FGM_WINDOW_POSITION } from '../lib/FGM';
 import styles from './SetPositionPage.module.scss';
+import Logger from '../lib/Logger';
 
 interface IProps {
   onPrev: () => void;
@@ -12,8 +13,9 @@ interface IProps {
 
 interface IState {}
 
-export default class SetPositionPage extends React.Component<IProps, IState> {
+export default class SetPositionPage extends React.PureComponent<IProps, IState> {
   render() {
+    Logger.logRenderInfo(this);
     return (
       <SetPositionView
         renderButtons={wpos => (

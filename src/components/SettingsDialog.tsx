@@ -4,6 +4,7 @@ import { Button, Classes, Dialog, Divider, Radio, RadioGroup, Switch } from '@bl
 import { FGM_WATCH_MODE } from '../lib/FGM';
 import styles from './SettingsDialog.module.scss';
 import { number } from 'prop-types';
+import Logger from '../lib/Logger';
 
 interface ISettingsDialogProps {}
 
@@ -66,7 +67,7 @@ class SettingsDialog extends React.PureComponent<ISettingsDialogProps, ISettings
   };
 
   render() {
-    console.log('SettingsDialog - ', new Date().getMilliseconds());
+    Logger.logRenderInfo(this);
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}

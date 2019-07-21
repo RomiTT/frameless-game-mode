@@ -7,6 +7,7 @@ import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import styles from './AddAppDialog.module.scss';
 import produce from 'immer';
+import Logger from '../lib/Logger';
 
 interface DialogPageInfo {
   page: any;
@@ -40,7 +41,7 @@ class AddAppDialog extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    console.log('constructor of AddAppDialog');
+    Logger.log('constructor of AddAppDialog');
     this.reset();
     this.state = {
       isOpen: false,
@@ -58,7 +59,7 @@ class AddAppDialog extends React.Component<IProps, IState> {
   };
 
   private reset = () => {
-    console.log('reset');
+    Logger.log('reset');
     this.selectedItem = null;
     this.wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
     this.wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
@@ -140,6 +141,7 @@ class AddAppDialog extends React.Component<IProps, IState> {
   };
 
   render() {
+    Logger.logRenderInfo(this);
     return (
       <Dialog
         className={`bp3-dark ${styles.dialog}`}

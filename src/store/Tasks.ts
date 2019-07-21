@@ -3,6 +3,7 @@ import Actions from './Actions';
 import { FGM, FGM_WATCH_MODE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { IWindowBound, IWindowApp } from './Types';
 import { LaunchAtLogon, schedulerName, appArgs } from '../lib/LaunchAtLogon';
+import Logger from '../lib/Logger';
 
 class FGMTask {
   constructor() {
@@ -12,17 +13,17 @@ class FGMTask {
   }
 
   private onStarted = (msg: string) => {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
+    Logger.log(`%c${msg}`, 'font-size:2em; color:red;');
     Actions.setFGMState(FGM.state());
   };
 
   private onPaused = (msg: string) => {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
+    Logger.log(`%c${msg}`, 'font-size:2em; color:red;');
     Actions.setFGMState(FGM.state());
   };
 
   private onStopped = (msg: string) => {
-    console.log(`%c${msg}`, 'font-size:2em; color:red;');
+    Logger.log(`%c${msg}`, 'font-size:2em; color:red;');
     Actions.setFGMState(FGM.state());
   };
 
@@ -48,7 +49,7 @@ class FGMTask {
       const result = await LaunchAtLogon.get(schedulerName);
       Actions.setLaunchAtLogon(result);
     } catch (err) {
-      console.log(err);
+      Logger.log(err);
     }
   };
 
@@ -109,7 +110,7 @@ class FGMTask {
       const result = await LaunchAtLogon.get(schedulerName);
       Actions.setLaunchAtLogon(result);
     } catch (err) {
-      console.log(err);
+      Logger.log(err);
     }
   };
 
@@ -136,10 +137,10 @@ class FGMTask {
   getWindowAppList = async () => {
     try {
       const list = await FGM.getWindowAppList();
-      console.log(list);
+      Logger.log(list);
       return list;
     } catch (err) {
-      console.log(err);
+      Logger.log(err);
     }
 
     return null;

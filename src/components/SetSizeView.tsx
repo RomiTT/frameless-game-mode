@@ -3,6 +3,7 @@ import { Classes } from '@blueprintjs/core';
 import { Divider, NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
 import styles from './SetSizeView.module.scss';
+import Logger from '../lib/Logger';
 
 interface IProps {
   renderButtons: (wsize: FGM_WINDOW_SIZE, width: number, height: number) => JSX.Element;
@@ -49,7 +50,7 @@ class SetSizeView extends React.PureComponent<IProps, IState> {
   };
 
   render() {
-    console.log('SetSizeView - ', new Date().getMilliseconds());
+    Logger.logRenderInfo(this);
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.rootView}`}>

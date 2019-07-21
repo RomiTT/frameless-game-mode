@@ -3,6 +3,7 @@ import { Button } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
 import SetSizeView from './SetSizeView';
 import styles from './SetSizePage.module.scss';
+import Logger from '../lib/Logger';
 
 interface IProps {
   onPrev: () => void;
@@ -12,8 +13,9 @@ interface IProps {
 
 interface IState {}
 
-export default class SetSizePage extends React.Component<IProps, IState> {
+export default class SetSizePage extends React.PureComponent<IProps, IState> {
   render() {
+    Logger.logRenderInfo(this);
     return (
       <SetSizeView
         renderButtons={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => (

@@ -3,6 +3,7 @@ import SelectAppView from './SelectAppView';
 import Tasks from '../store/Tasks';
 import { Button } from '@blueprintjs/core';
 import styles from './SelectAppPage.module.scss';
+import Logger from '../lib/Logger';
 
 interface IProps {
   onNext: (item: any) => void;
@@ -15,6 +16,7 @@ interface IState {
 
 export default class SelectAppPage extends React.Component<IProps, IState> {
   private taskFGM = Tasks.FGM;
+  private pendingUpdateList = false;
   state = {
     listApp: []
   };
@@ -27,8 +29,18 @@ export default class SelectAppPage extends React.Component<IProps, IState> {
     this.updateList();
   };
 
+  shouldComponentUpdate = (nextProps: IProps, nextState: IState) => {
+    if (this.pendingUpdateList || this.state.listApp === nextState.listApp) {
+      return false;
+    }
+
+    return true;
+  };
+
   private updateList = async () => {
+    this.pendingUpdateList = true;
     const list = await this.taskFGM.getWindowAppList();
+    this.pendingUpdateList = false;
     this.setState({ listApp: list });
   };
 
@@ -50,6 +62,7 @@ export default class SelectAppPage extends React.Component<IProps, IState> {
   };
 
   render() {
+    Logger.logRenderInfo(this);
     return (
       <SelectAppView
         listApp={this.state.listApp}

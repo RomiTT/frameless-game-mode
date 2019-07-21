@@ -26,6 +26,7 @@ import { IAppState } from './store/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './store/Store';
 import styles from './App.module.scss';
+import Logger from './lib/Logger';
 
 const { remote, ipcRenderer } = require('electron');
 
@@ -181,6 +182,8 @@ class App extends React.PureComponent<IProps, IState> {
   };
 
   render() {
+    Logger.logRenderInfo(this);
+
     const newState = this.props.stateFGM;
     let stateText: string = '';
     let stateColor: string = Colors.GRAY3;
@@ -269,7 +272,7 @@ class App extends React.PureComponent<IProps, IState> {
 }
 
 const mapStateToProps = (state: IAppState, ownProps?: any) => {
-  console.log('mapStateToProps, state=', state, ', ownProps=', ownProps);
+  Logger.log('mapStateToProps, state=', state, ', ownProps=', ownProps);
   return {
     listAppToMonitor: state.listAppToMonitor,
     stateFGM: state.stateFGM
