@@ -4,7 +4,9 @@ import { Classes } from '@blueprintjs/core/lib/esm/common';
 import styles from './YesNoDialog.module.scss';
 import Logger from '../lib/Logger';
 
-interface YesNoDialogState {
+interface IProps {}
+
+interface IState {
   isOpen: boolean;
   title: string;
   message: string;
@@ -12,7 +14,7 @@ interface YesNoDialogState {
 
 type DialogCallback = () => void;
 
-export default class YesNoDialog extends React.PureComponent<any, YesNoDialogState> {
+export default class YesNoDialog extends React.PureComponent<IProps, IState> {
   state = {
     isOpen: false,
     title: '',

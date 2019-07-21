@@ -2,7 +2,7 @@ import React from 'react';
 import { Colors } from '@blueprintjs/core';
 import styles from './AppLayout.module.scss';
 
-interface IAppLayoutProps {
+interface IProps {
   headerBackgroundColor?: string;
   bodyBackgroundColor?: string;
   footerBackgroundColor?: string;
@@ -10,11 +10,11 @@ interface IAppLayoutProps {
   style?: object;
 }
 
-interface IAppLayoutState {
+interface IState {
   bodyHeight: number;
 }
 
-export default class AppLayout extends React.PureComponent<IAppLayoutProps, IAppLayoutState> {
+export default class AppLayout extends React.PureComponent<IProps, IState> {
   private headerId: string = 'romitt_applayout_header';
   private bodyId: string = 'romitt_applayout_body';
   private footerId: string = 'romitt_applayout_footer';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, MaybeElement, IconName, Intent } from '@blueprintjs/core';
 
-interface IFloatingButtonProps {
+interface IProps {
   position?: 'fixed' | 'absolute';
   left?: number;
   top?: number;
@@ -12,7 +12,7 @@ interface IFloatingButtonProps {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export default class FloatingButton extends React.PureComponent<IFloatingButtonProps> {
+export default class FloatingButton extends React.PureComponent<IProps> {
   static defaultProps = {
     position: 'absolute',
     left: 0,

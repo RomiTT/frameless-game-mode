@@ -38,7 +38,7 @@ class WindowAppListRowItem extends React.PureComponent<IWindowAppListRowItemProp
   }
 }
 
-interface IWindowAppListProps {
+interface IProps {
   listApp: ReadonlyArray<object>;
   selectedIndex?: number;
   style?: React.CSSProperties;
@@ -47,19 +47,16 @@ interface IWindowAppListProps {
   onContextMenu?: (e: any, item: any) => void;
 }
 
-interface IWindowsAppListState {
+interface IState {
   selectedIndex: number;
 }
 
-export default class WindowAppList extends React.Component<
-  IWindowAppListProps,
-  IWindowsAppListState
-> {
+export default class WindowAppList extends React.Component<IProps, IState> {
   static defaultProps = {};
 
   listRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props: IWindowAppListProps) {
+  constructor(props: IProps) {
     super(props);
 
     this.state = {

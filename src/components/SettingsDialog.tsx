@@ -6,9 +6,9 @@ import styles from './SettingsDialog.module.scss';
 import { number } from 'prop-types';
 import Logger from '../lib/Logger';
 
-interface ISettingsDialogProps {}
+interface IProps {}
 
-interface ISettingsDialogState {
+interface IState {
   isOpen: boolean;
   autoLaunch: boolean;
   watchMode: FGM_WATCH_MODE;
@@ -21,7 +21,7 @@ type OnOKCallback = (
   closeToTray: boolean
 ) => void;
 
-class SettingsDialog extends React.PureComponent<ISettingsDialogProps, ISettingsDialogState> {
+class SettingsDialog extends React.PureComponent<IProps, IState> {
   private onOK?: OnOKCallback;
 
   state = {
