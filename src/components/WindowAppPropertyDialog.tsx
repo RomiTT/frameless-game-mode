@@ -100,6 +100,7 @@ class WindowAppPropertyDialog extends React.PureComponent<IProps, IState> {
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
         title='Properties'
+        icon='properties'
         {...this.state}
         onClose={this.handleClose}
       >
