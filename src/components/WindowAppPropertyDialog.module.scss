@@ -1,7 +1,11 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 
 .dialog {
-  max-width: 450px;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-app-region: no-drag;
+
+  max-width: 400px;
   width: auto;
 
   .container {
@@ -9,19 +13,21 @@
 
     .name {
       margin-bottom: 8px;
+      font-size: 0.9em;
     }
 
     .desc {
       margin-left: 8px;
-      font-size: 0.8em;
-      color: $gold5;
+      font-size: 0.7em;
+      align-self: center;
+      color: $gray4;
     }
   }
 }
 
 .wposView {
-  width: 80px;
-  height: 45px;
+  width: 290px;
+  height: 60px;
   margin-left: 8px;
   display: flex;
   flex-direction: column;
@@ -39,7 +45,7 @@
 
     .itemSelected {
       @extend .item;
-      background-color: $gold5;
+      background-color: $light-gray1;
     }
   }
 }
