@@ -30,8 +30,14 @@ class WindowAppListRowItem extends React.PureComponent<IWindowAppListRowItemProp
         onClick={this.handleClick}
       >
         <div className={styles.innerContainer}>
-          <p className={styles.processName}>Process: {this.props.item.processName}</p>
-          <p className={styles.title}>Title: {this.props.item.title}</p>
+          <div className={styles.labelContainer}>
+            <p className={styles.processNameLabel}>Process:</p>
+            <p className={styles.processName}>{this.props.item.processName}</p>
+          </div>
+          <div className={styles.labelContainer}>
+            <p className={styles.titleLabel}>Title:</p>
+            <p className={styles.title}>{this.props.item.title}</p>
+          </div>
         </div>
       </div>
     );

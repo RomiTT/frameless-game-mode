@@ -26,33 +26,53 @@
         background-color: rgba(20, 28, 34, 0.8);
       }
 
-      .processName {
-        font-size: 1em;
-        color: $gold5;
-        cursor: inherit;
-      }
+      .labelContainer {
+        display: flex;
+        align-items: center;
 
-      .processNameNoWrap {
-        @extend .processName;
-        white-space: nowrap;
-      }
+        .processNameLabel {
+          font-size: 1em;
+          color: $green5;
+          margin-bottom: 2px;
+          cursor: inherit;
+        }
 
-      .title {
-        font-size: 0.8em;
-        color: $light-gray3;
-        padding-left: 8px;
-        cursor: inherit;
-      }
+        .processName {
+          font-size: 0.9em;
+          color: $light-gray3;
+          padding-left: 4px;
+          cursor: inherit;
+        }
 
-      .titleNoWrap {
-        @extend .title;
-        white-space: nowrap;
+        .processNameNoWrap {
+          @extend .processName;
+          white-space: nowrap;
+        }
+
+        .titleLabel {
+          font-size: 0.8em;
+          color: $orange5;
+          padding-left: 8px;
+          cursor: inherit;
+        }
+
+        .title {
+          font-size: 0.7em;
+          color: $light-gray3;
+          padding-left: 4px;
+          cursor: inherit;
+        }
+
+        .titleNoWrap {
+          @extend .title;
+          white-space: nowrap;
+        }
       }
     }
   }
 
   .listItemSelected {
     @extend .listItem;
-    background-color: $green2;
+    background-color: $blue1;
   }
 }
