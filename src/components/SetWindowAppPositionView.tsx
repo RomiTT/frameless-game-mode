@@ -6,6 +6,7 @@ import Logger from '../lib/Logger';
 
 interface IProps {
   dialogButtons?: JSX.Element;
+  wpos?: FGM_WINDOW_POSITION;
   onWPosChange: (wpos: FGM_WINDOW_POSITION) => void;
 }
 
@@ -15,7 +16,7 @@ interface IState {
 
 class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
   state = {
-    selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
+    selectedItem: this.props.wpos ? this.props.wpos! : FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
 
   private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {

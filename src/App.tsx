@@ -28,6 +28,7 @@ import store from './store/Store';
 import styles from './App.module.scss';
 import Logger from './lib/Logger';
 import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
+import EditWindowAppDialog from './components/EditWindowAppDialog';
 
 const { remote, ipcRenderer } = require('electron');
 
@@ -47,6 +48,8 @@ class App extends React.PureComponent<IProps, IState> {
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
   private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
   private windowAppPropertyDialog: React.RefObject<WindowAppPropertyDialog> = React.createRef();
+  private editWindowAppDialog: React.RefObject<EditWindowAppDialog> = React.createRef();
+
   state = {
     addBtnLeftPos: 0
   };
@@ -137,6 +140,25 @@ class App extends React.PureComponent<IProps, IState> {
     const menu = React.createElement(
       Menu,
       { className: 'bp3-ui-text' }, // empty props
+      React.createElement(MenuItem, {
+        text: 'Edit...',
+        icon: 'page-layout',
+        onClick: () => {
+          const selectedItem: any = this.listRef.current!.getSelectedItem();
+          this.editWindowAppDialog.current!.open(selectedItem, (item: any) => {
+            Logger.log('onOK', item, selectedItem);
+            if (
+              selectedItem.wpos !== item.wpos ||
+              selectedItem.wsize !== item.wsize ||
+              (selectedItem.wsize == FGM_WINDOW_SIZE.CUSTOM_SIZE &&
+                (selectedItem.width != item.width || selectedItem.height !== item.height))
+            ) {
+              Logger.log('editApp');
+              this.taskFGM.editApp(selectedItem, item.wpos, item.wsize, item.width, item.height);
+            }
+          });
+        }
+      }),
       React.createElement(MenuItem, {
         text: 'Delete',
         icon: 'delete',
@@ -264,6 +286,7 @@ class App extends React.PureComponent<IProps, IState> {
             <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialog} />
+            <EditWindowAppDialog ref={this.editWindowAppDialog} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>

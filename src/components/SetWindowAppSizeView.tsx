@@ -7,6 +7,9 @@ import Logger from '../lib/Logger';
 
 interface IProps {
   dialogButtons?: JSX.Element;
+  wsize?: FGM_WINDOW_SIZE;
+  width?: number;
+  height?: number;
   onWSizeChange: (wsize: FGM_WINDOW_SIZE) => void;
   onWidthChange: (width: number) => void;
   onHeightChange: (height: number) => void;
@@ -20,9 +23,9 @@ interface IState {
 
 class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   state = {
-    wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
-    width: window.screen.width,
-    height: window.screen.height
+    wsize: this.props.wsize ? this.props.wsize! : FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
+    width: this.props.width ? this.props.width! : window.screen.width,
+    height: this.props.height ? this.props.height! : window.screen.height
   };
 
   private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
@@ -46,14 +49,6 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
     }
     this.props.onHeightChange(valueAsNumber);
     this.setState({ height: valueAsNumber });
-  };
-
-  getData = () => {
-    return {
-      wsize: this.state.wsize,
-      width: this.state.width,
-      height: this.state.height
-    };
   };
 
   render() {

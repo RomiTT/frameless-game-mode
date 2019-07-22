@@ -94,6 +94,29 @@ class FGMTask {
     Actions.addAppToList(newAppInfo);
   };
 
+  editApp = (
+    item: any,
+    pos: FGM_WINDOW_POSITION,
+    size: FGM_WINDOW_SIZE,
+    width: number,
+    height: number
+  ) => {
+    const itemToEdit = {
+      processPath: item.processPath,
+      processName: item.processName,
+      title: item.title,
+      key: item.key,
+      wpos: pos,
+      wsize: size,
+      width: width,
+      height: height
+    };
+
+    FGM.editGameModeInfo(itemToEdit);
+    FGM.forceApplyGameModeInfo(itemToEdit.key);
+    Actions.editApp(itemToEdit);
+  };
+
   removeApp = (key: string) => {
     FGM.removeGameModeInfo(key);
     Actions.removeAppFromList(key);

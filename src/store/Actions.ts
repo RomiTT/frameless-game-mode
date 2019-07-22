@@ -27,6 +27,23 @@ const Actions = {
     }
   }),
 
+  editApp: (itemToEdit: any) => ({
+    type: 'ACTION_EDIT_APP',
+    reducer: (state: IAppState) => {
+      const index = state.listAppToMonitor.findIndex(item => {
+        return (item as any).key === itemToEdit.key;
+      });
+
+      if (index > -1) {
+        return produce(state, draft => {
+          draft.listAppToMonitor[index] = itemToEdit;
+        });
+      }
+
+      return state;
+    }
+  }),
+
   removeAppFromList: (key: string) => ({
     type: 'ACTION_REMOVE_APP_FROM_LIST',
     reducer: (state: IAppState) => {
