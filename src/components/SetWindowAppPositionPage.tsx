@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from '@blueprintjs/core';
-import SetPositionView from './SetPositionView';
+import SetWindowAppPositionView from './SetWindowAppPositionView';
 import { FGM_WINDOW_POSITION } from '../lib/FGM';
-import styles from './SetPositionPage.module.scss';
+import styles from './SetWindowAppPositionPage.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -13,11 +13,11 @@ interface IProps {
 
 interface IState {}
 
-export default class SetPositionPage extends React.PureComponent<IProps, IState> {
+export default class SetWindowAppPositionPage extends React.PureComponent<IProps, IState> {
   render() {
     Logger.logRenderInfo(this);
     return (
-      <SetPositionView
+      <SetWindowAppPositionView
         renderButtons={wpos => (
           <>
             <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />

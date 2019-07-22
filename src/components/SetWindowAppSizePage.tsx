@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
-import SetSizeView from './SetSizeView';
-import styles from './SetSizePage.module.scss';
+import SetWindowAppSizeView from './SetWindowAppSizeView';
+import styles from './SetWindowAppSizePage.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -13,11 +13,11 @@ interface IProps {
 
 interface IState {}
 
-export default class SetSizePage extends React.PureComponent<IProps, IState> {
+export default class SetWindowAppSizePage extends React.PureComponent<IProps, IState> {
   render() {
     Logger.logRenderInfo(this);
     return (
-      <SetSizeView
+      <SetWindowAppSizeView
         renderButtons={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => (
           <>
             <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />

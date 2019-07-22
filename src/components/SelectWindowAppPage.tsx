@@ -1,8 +1,8 @@
 import React from 'react';
-import SelectAppView from './SelectAppView';
+import SelectWindowAppView from './SelectWindowAppView';
 import Tasks from '../store/Tasks';
 import { Button } from '@blueprintjs/core';
-import styles from './SelectAppPage.module.scss';
+import styles from './SelectWindowAppPage.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -14,7 +14,7 @@ interface IState {
   listApp: object[];
 }
 
-export default class SelectAppPage extends React.Component<IProps, IState> {
+export default class SelectWindowAppPage extends React.Component<IProps, IState> {
   private taskFGM = Tasks.FGM;
   private pendingUpdateList = false;
   state = {
@@ -64,7 +64,7 @@ export default class SelectAppPage extends React.Component<IProps, IState> {
   render() {
     Logger.logRenderInfo(this);
     return (
-      <SelectAppView
+      <SelectWindowAppView
         listApp={this.state.listApp}
         onRefreshList={this.updateList}
         renderButtons={this.renderButtons}

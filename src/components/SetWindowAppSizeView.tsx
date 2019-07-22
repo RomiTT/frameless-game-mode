@@ -2,7 +2,7 @@ import React from 'react';
 import { Classes } from '@blueprintjs/core';
 import { Divider, NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
-import styles from './SetSizeView.module.scss';
+import styles from './SetWindowAppSizeView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -15,7 +15,7 @@ interface IState {
   height: number;
 }
 
-class SetSizeView extends React.PureComponent<IProps, IState> {
+class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   state = {
     wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
     width: window.screen.width,
@@ -105,4 +105,4 @@ class SetSizeView extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default SetSizeView;
+export default SetWindowAppSizeView;

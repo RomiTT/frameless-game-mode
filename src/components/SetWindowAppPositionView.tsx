@@ -1,7 +1,7 @@
 import React from 'react';
 import { Classes, Divider } from '@blueprintjs/core';
 import { FGM_WINDOW_POSITION } from '../lib/FGM';
-import styles from './SetPositionView.module.scss';
+import styles from './SetWindowAppPositionView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -12,7 +12,7 @@ interface IState {
   selectedItem: FGM_WINDOW_POSITION;
 }
 
-class SetPositionView extends React.PureComponent<IProps, IState> {
+class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
   state = {
     selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
@@ -85,4 +85,4 @@ class SetPositionView extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default SetPositionView;
+export default SetWindowAppPositionView;

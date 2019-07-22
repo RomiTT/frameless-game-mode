@@ -1,4 +1,4 @@
-import AddAppDialog from './components/AddAppDialog';
+import AddWindowAppDialog from './components/AddWindowAppDialog';
 import AppLayout from './components/AppLayout';
 import FloatingButton from './components/FloatingButton';
 import React from 'react';
@@ -43,7 +43,7 @@ interface IState {
 class App extends React.PureComponent<IProps, IState> {
   private taskFGM = Tasks.FGM;
   private listRef: React.RefObject<WindowAppList> = React.createRef();
-  private addAppDialogRef: React.RefObject<AddAppDialog> = React.createRef();
+  private addAppDialogRef: React.RefObject<AddWindowAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
   private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
   private windowAppPropertyDialog: React.RefObject<WindowAppPropertyDialog> = React.createRef();
@@ -260,7 +260,7 @@ class App extends React.PureComponent<IProps, IState> {
               scale={1.2}
               onClick={this.handleOpenAddAppDialog}
             />
-            <AddAppDialog ref={this.addAppDialogRef} />
+            <AddWindowAppDialog ref={this.addAppDialogRef} />
             <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialog} />

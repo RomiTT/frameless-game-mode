@@ -3,7 +3,7 @@ import React from 'react';
 import WindowAppList from './WindowAppList';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import { Divider } from '@blueprintjs/core';
-import styles from './SelectAppView.module.scss';
+import styles from './SelectWindowAppView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
@@ -17,7 +17,7 @@ interface IState {
   selectedItem: any;
 }
 
-class SelectAppView extends React.PureComponent<IProps, IState> {
+class SelectWindowAppView extends React.PureComponent<IProps, IState> {
   private listRef: React.RefObject<WindowAppList> = React.createRef();
   state = {
     selectedIndex: -1,
@@ -72,4 +72,4 @@ class SelectAppView extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default SelectAppView;
+export default SelectWindowAppView;

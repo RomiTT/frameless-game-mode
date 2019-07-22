@@ -1,11 +1,11 @@
 import React from 'react';
-import SelectAppPage from './SelectAppPage';
-import SetPositionPage from './SetPositionPage';
-import SetSizePage from './SetSizePage';
+import SelectWindowAppPage from './SelectWindowAppPage';
+import SetWindowAppPositionPage from './SetWindowAppPositionPage';
+import SetWindowAppSizePage from './SetWindowAppSizePage';
 import { Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
-import styles from './AddAppDialog.module.scss';
+import styles from './AddWindowAppDialog.module.scss';
 import produce from 'immer';
 import Logger from '../lib/Logger';
 
@@ -30,7 +30,7 @@ type onOKCallback = (
   height: number
 ) => void;
 
-class AddAppDialog extends React.Component<IProps, IState> {
+class AddWindowAppDialog extends React.Component<IProps, IState> {
   private selectedItem: any;
   private wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
   private wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
@@ -84,14 +84,14 @@ class AddAppDialog extends React.Component<IProps, IState> {
   };
 
   private selectAppPageInfo = (): DialogPageInfo => ({
-    page: <SelectAppPage onNext={this.onNextFromSelectAppPage} onCancel={this.handleClose} />,
-    title: 'Select app',
+    page: <SelectWindowAppPage onNext={this.onNextFromSelectAppPage} onCancel={this.handleClose} />,
+    title: 'Select a app',
     icon: 'list'
   });
 
   private setPositionPageInfo = (): DialogPageInfo => ({
     page: (
-      <SetPositionPage
+      <SetWindowAppPositionPage
         onPrev={this.onPrev}
         onNext={this.onNextFromSetPositionPage}
         onCancel={this.handleClose}
@@ -102,7 +102,13 @@ class AddAppDialog extends React.Component<IProps, IState> {
   });
 
   private setSizePageInfo = (): DialogPageInfo => ({
-    page: <SetSizePage onPrev={this.onPrev} onCancel={this.handleClose} onOK={this.handleFinish} />,
+    page: (
+      <SetWindowAppSizePage
+        onPrev={this.onPrev}
+        onCancel={this.handleClose}
+        onOK={this.handleFinish}
+      />
+    ),
     title: 'Set size',
     icon: 'page-layout'
   });
@@ -162,4 +168,4 @@ class AddAppDialog extends React.Component<IProps, IState> {
   }
 }
 
-export default AddAppDialog;
+export default AddWindowAppDialog;
