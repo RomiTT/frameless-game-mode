@@ -106,15 +106,11 @@ void FGMWorker::ChangeState(FGM_STATE newState) {
 
 
 void FGMWorker::ForceApplyGameModeInfo(const WCHAR* keyToApply) {
-	_spContext->mtx.lock();
-
 	auto iter = std::find_if(_spContext->listGameModeInfo.begin(), _spContext->listGameModeInfo.end(), [&keyToApply](GameModeInfo& item) {
 		return lstrcmpi(keyToApply, item.key.c_str()) == 0;
 		});
 
-	if (iter != _spContext->listGameModeInfo.end()) {
-		_spContext->listGameModeInfo.erase(iter);
-
+	if (iter != _spContext->listGameModeInfo.end()) {	
 		HWND hWnd = GetForegroundWindow();
 		hWnd = GetWindow(hWnd, GW_HWNDFIRST);
 
@@ -129,8 +125,6 @@ void FGMWorker::ForceApplyGameModeInfo(const WCHAR* keyToApply) {
 			hWnd = GetWindow(hWnd, GW_HWNDNEXT);
 		}
 	}
-
-	_spContext->mtx.lock();
 }
 
 

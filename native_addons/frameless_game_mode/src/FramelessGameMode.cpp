@@ -96,8 +96,8 @@ public:
 			return lstrcmpi(info.key.c_str(), item.key.c_str()) == 0;
 		});
 
-		if (iter != _spContext->listGameModeInfo.end()) {
-			*iter = std::move(info);		
+		if (iter != _spContext->listGameModeInfo.end()) {			
+			*iter = std::move(info);					
 		}
 
 		_spContext->mtx.unlock();
