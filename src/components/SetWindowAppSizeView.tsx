@@ -4,6 +4,7 @@ import { Divider, NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/
 import { FGM_WINDOW_SIZE } from '../lib/FGM';
 import styles from './SetWindowAppSizeView.module.scss';
 import Logger from '../lib/Logger';
+import { throwStatement } from '@babel/types';
 
 interface IProps {
   dialogButtons?: JSX.Element;
@@ -23,10 +24,16 @@ interface IState {
 
 class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   state = {
-    wsize: this.props.wsize ? this.props.wsize! : FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
-    width: this.props.width ? this.props.width! : window.screen.width,
-    height: this.props.height ? this.props.height! : window.screen.height
+    wsize: FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA,
+    width: window.screen.width,
+    height: window.screen.height
   };
+
+  componentDidMount() {
+    if (this.props.wsize !== null) this.setState({ wsize: this.props.wsize! });
+    if (this.props.width !== null) this.setState({ width: this.props.width! });
+    if (this.props.height !== null) this.setState({ height: this.props.height! });
+  }
 
   private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const event = e.nativeEvent as any;

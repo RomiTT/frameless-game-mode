@@ -16,8 +16,12 @@ interface IState {
 
 class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
   state = {
-    selectedItem: this.props.wpos ? this.props.wpos! : FGM_WINDOW_POSITION.MIDDLE_CENTER
+    selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
+
+  componentDidMount() {
+    if (this.props.wpos !== null) this.setState({ selectedItem: this.props.wpos! });
+  }
 
   private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
     this.props.onWPosChange(wpos);
