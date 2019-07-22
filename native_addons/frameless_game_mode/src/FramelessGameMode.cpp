@@ -89,6 +89,21 @@ public:
 		_spContext->mtx.unlock();
 	}
 
+
+	void EditGameModeInfo(GameModeInfo& info) {
+		_spContext->mtx.lock();
+		auto iter = std::find_if(_spContext->listGameModeInfo.begin(), _spContext->listGameModeInfo.end(), [&info](GameModeInfo& item) {
+			return lstrcmpi(info.key.c_str(), item.key.c_str()) == 0;
+		});
+
+		if (iter != _spContext->listGameModeInfo.end()) {
+			*iter = std::move(info);		
+		}
+
+		_spContext->mtx.unlock();
+	}
+
+
 	void RemoveGameModeInfo(const WCHAR* key) {
 		_spContext->mtx.lock();
 		auto iter = std::find_if(_spContext->listGameModeInfo.begin(), _spContext->listGameModeInfo.end(), [&key](GameModeInfo& item) {
@@ -244,6 +259,45 @@ Napi::Value FGM::addGameModeInfo(const Napi::CallbackInfo &info) {
 
 	return env.Undefined();
 }
+
+
+Napi::Value FGM::editGameModeInfo(const Napi::CallbackInfo &info) {
+	Napi::Env env = info.Env();
+	if (g_FGM == NULL) {
+		Napi::TypeError::New(env, "You need to call the initialize function.").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}
+
+	if (info.Length() < 1) {
+		Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+		return env.Undefined();
+	}	
+
+	auto item = info[0].As<Napi::Object>();
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	auto utf8ProcessName = item.Get("processName").As<Napi::String>().Utf8Value();
+	std::wstring processName = converter.from_bytes(utf8ProcessName.c_str());
+	auto utf8Title = item.Get("title").As<Napi::String>().Utf8Value();
+	std::wstring title = converter.from_bytes(utf8Title);
+	std::wstring key;
+	MakeKey(processName.c_str(), title.c_str(), key);
+
+	auto wpos = (int)item.Get("wpos").As<Napi::Number>();
+	auto wsize = (int)item.Get("wsize").As<Napi::Number>();
+	auto width = (int)item.Get("width").As<Napi::Number>();
+	auto height = (int)item.Get("height").As<Napi::Number>();
+
+	g_FGM->EditGameModeInfo(GameModeInfo{ std::move(processName), 
+		                                   std::move(title), 
+																			 std::move(key),
+		                                   (FGM_WINDOW_POSITION)wpos, 
+		                                   (FGM_WINDOW_SIZE)wsize, 
+		                                   width, 
+		                                   height});
+
+	return env.Undefined();
+}
+
 
 
 Napi::Value FGM::removeGameModeInfo(const Napi::CallbackInfo &info) {
@@ -477,6 +531,7 @@ Napi::Object FGM::Init(Napi::Env env, Napi::Object exports) {
 	exports.Set("unInitialize", Napi::Function::New(env, FGM::unInitialize));
 	exports.Set("setDataList", Napi::Function::New(env, FGM::setDataList));
 	exports.Set("addGameModeInfo", Napi::Function::New(env, FGM::addGameModeInfo));
+	exports.Set("editGameModeInfo", Napi::Function::New(env, FGM::editGameModeInfo));
 	exports.Set("removeGameModeInfo", Napi::Function::New(env, FGM::removeGameModeInfo));
 	exports.Set("forceApplyGameModeInfo", Napi::Function::New(env, FGM::forceApplyGameModeInfo));
 	exports.Set("excludeProcess", Napi::Function::New(env, FGM::excludeProcess));

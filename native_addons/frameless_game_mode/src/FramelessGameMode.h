@@ -10,6 +10,7 @@ namespace FGM
   Napi::Value unInitialize(const Napi::CallbackInfo &info);
   Napi::Value setDataList(const Napi::CallbackInfo &info);
   Napi::Value addGameModeInfo(const Napi::CallbackInfo &info);
+  Napi::Value editGameModeInfo(const Napi::CallbackInfo &info);
   Napi::Value removeGameModeInfo(const Napi::CallbackInfo &info);
 	Napi::Value forceApplyGameModeInfo(const Napi::CallbackInfo& info);
 	Napi::Value excludeProcess(const Napi::CallbackInfo& info);
