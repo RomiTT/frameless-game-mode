@@ -6,6 +6,7 @@
   -webkit-app-region: no-drag;
 
   max-width: 400px;
+  min-width: 300px;
   width: auto;
 
   .container {
@@ -26,7 +27,7 @@
 }
 
 .wposView {
-  width: 290px;
+  width: 50%;
   height: 60px;
   margin-left: 8px;
   display: flex;

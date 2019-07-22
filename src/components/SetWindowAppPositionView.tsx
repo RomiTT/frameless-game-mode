@@ -5,7 +5,8 @@ import styles from './SetWindowAppPositionView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
-  renderButtons: (wpos: FGM_WINDOW_POSITION) => JSX.Element;
+  renderButtons: JSX.Element;
+  onWPosChange: (wpos: FGM_WINDOW_POSITION) => void;
 }
 
 interface IState {
@@ -18,6 +19,7 @@ class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
   };
 
   private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
+    this.props.onWPosChange(wpos);
     this.setState({ selectedItem: wpos });
   };
 
@@ -76,9 +78,7 @@ class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
         </div>
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            {this.props.renderButtons(this.state.selectedItem)}
-          </div>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons}</div>
         </div>
       </>
     );

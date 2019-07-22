@@ -6,7 +6,10 @@ import styles from './SetWindowAppSizeView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
-  renderButtons: (wsize: FGM_WINDOW_SIZE, width: number, height: number) => JSX.Element;
+  renderButtons: JSX.Element;
+  onWSizeChange: (wsize: FGM_WINDOW_SIZE) => void;
+  onWidthChange: (width: number) => void;
+  onHeightChange: (height: number) => void;
 }
 
 interface IState {
@@ -24,13 +27,16 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
 
   private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const event = e.nativeEvent as any;
-    this.setState({ wsize: Number(event.target.value) });
+    const wsize = Number(event.target.value);
+    this.props.onWSizeChange(wsize);
+    this.setState({ wsize: wsize });
   };
 
   private handleWidthChange = (valueAsNumber: number, valueAsString: string) => {
     if (valueAsNumber > window.screen.width) {
       valueAsNumber = window.screen.width;
     }
+    this.props.onWidthChange(valueAsNumber);
     this.setState({ width: valueAsNumber });
   };
 
@@ -38,6 +44,7 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
     if (valueAsNumber > window.screen.height) {
       valueAsNumber = window.screen.height;
     }
+    this.props.onHeightChange(valueAsNumber);
     this.setState({ height: valueAsNumber });
   };
 
@@ -99,9 +106,7 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
         </div>
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            {this.props.renderButtons(this.state.wsize, this.state.width, this.state.height)}
-          </div>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons}</div>
         </div>
       </>
     );

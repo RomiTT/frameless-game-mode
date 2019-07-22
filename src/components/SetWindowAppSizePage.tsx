@@ -14,30 +14,48 @@ interface IProps {
 interface IState {}
 
 export default class SetWindowAppSizePage extends React.PureComponent<IProps, IState> {
+  wsize: FGM_WINDOW_SIZE = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
+  width = 0;
+  height = 0;
+
+  private handleWSizeChange = (wsize: FGM_WINDOW_SIZE) => {
+    this.wsize = wsize;
+  };
+
+  private handleWidthChange = (width: number) => {
+    this.width = width;
+  };
+
+  private handleHeightChange = (height: number) => {
+    this.height = height;
+  };
+
+  private handleOK = () => {
+    if (this.wsize !== FGM_WINDOW_SIZE.CUSTOM_SIZE) {
+      this.width = 0;
+      this.height = 0;
+    }
+    this.props.onOK(this.wsize, this.width, this.height);
+  };
+
+  private renderButtons = (
+    <>
+      <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
+      <Button onClick={this.props.onCancel} className='dialogButtonPadding'>
+        Cancel
+      </Button>
+      <Button onClick={this.handleOK} intent='primary' className='dialogButtonPadding' text='OK' />
+    </>
+  );
+
   render() {
     Logger.logRenderInfo(this);
     return (
       <SetWindowAppSizeView
-        renderButtons={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => (
-          <>
-            <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
-            <Button onClick={this.props.onCancel} className='dialogButtonPadding'>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (wsize !== FGM_WINDOW_SIZE.CUSTOM_SIZE) {
-                  width = 0;
-                  height = 0;
-                }
-                this.props.onOK(wsize, width, height);
-              }}
-              intent='primary'
-              className='dialogButtonPadding'
-              text='OK'
-            />
-          </>
-        )}
+        onWSizeChange={this.handleWSizeChange}
+        onWidthChange={this.handleWidthChange}
+        onHeightChange={this.handleHeightChange}
+        renderButtons={this.renderButtons}
       />
     );
   }
