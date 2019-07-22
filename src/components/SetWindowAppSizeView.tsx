@@ -6,7 +6,7 @@ import styles from './SetWindowAppSizeView.module.scss';
 import Logger from '../lib/Logger';
 
 interface IProps {
-  renderButtons: JSX.Element;
+  dialogButtons?: JSX.Element;
   onWSizeChange: (wsize: FGM_WINDOW_SIZE) => void;
   onWidthChange: (width: number) => void;
   onHeightChange: (height: number) => void;
@@ -106,7 +106,7 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
         </div>
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.renderButtons}</div>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>{this.props.dialogButtons}</div>
         </div>
       </>
     );

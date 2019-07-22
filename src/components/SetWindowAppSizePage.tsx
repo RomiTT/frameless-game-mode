@@ -41,10 +41,8 @@ export default class SetWindowAppSizePage extends React.PureComponent<IProps, IS
   private renderButtons = (
     <>
       <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
-      <Button onClick={this.props.onCancel} className='dialogButtonPadding'>
-        Cancel
-      </Button>
       <Button onClick={this.handleOK} intent='primary' className='dialogButtonPadding' text='OK' />
+      <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
     </>
   );
 
@@ -55,7 +53,7 @@ export default class SetWindowAppSizePage extends React.PureComponent<IProps, IS
         onWSizeChange={this.handleWSizeChange}
         onWidthChange={this.handleWidthChange}
         onHeightChange={this.handleHeightChange}
-        renderButtons={this.renderButtons}
+        dialogButtons={this.renderButtons}
       />
     );
   }

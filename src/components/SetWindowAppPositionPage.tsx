@@ -42,7 +42,7 @@ export default class SetWindowAppPositionPage extends React.PureComponent<IProps
     return (
       <SetWindowAppPositionView
         onWPosChange={this.handleWPosChange}
-        renderButtons={this.renderButtons}
+        dialogButtons={this.renderButtons}
       />
     );
   }
