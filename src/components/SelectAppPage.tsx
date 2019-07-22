@@ -53,10 +53,10 @@ export default class SelectAppPage extends React.Component<IProps, IState> {
           }}
           intent='primary'
           disabled={item === null}
-          className={styles.buttonPadding}
+          className='dialogButtonPadding'
           text='Next'
         />
-        <Button onClick={this.props.onCancel} className={styles.buttonPadding} text='Cancel' />
+        <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
       </>
     );
   };

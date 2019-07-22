@@ -20,8 +20,8 @@ export default class SetSizePage extends React.PureComponent<IProps, IState> {
       <SetSizeView
         renderButtons={(wsize: FGM_WINDOW_SIZE, width: number, height: number) => (
           <>
-            <Button onClick={this.props.onPrev} className={styles.buttonPadding} text='Prev' />
-            <Button onClick={this.props.onCancel} className={styles.buttonPadding}>
+            <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
+            <Button onClick={this.props.onCancel} className='dialogButtonPadding'>
               Cancel
             </Button>
             <Button
@@ -33,7 +33,7 @@ export default class SetSizePage extends React.PureComponent<IProps, IState> {
                 this.props.onOK(wsize, width, height);
               }}
               intent='primary'
-              className={styles.buttonPadding}
+              className='dialogButtonPadding'
               text='OK'
             />
           </>

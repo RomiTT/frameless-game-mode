@@ -1,11 +1,5 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 
-$button-padding: 25px;
-.buttonPadding {
-  padding-left: $button-padding;
-  padding-right: $button-padding;
-}
-
 .dialog {
   max-width: 450px;
   width: auto;

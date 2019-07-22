@@ -105,10 +105,10 @@ class SettingsDialog extends React.PureComponent<IProps, IState> {
         <Divider className={styles.divider} />
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button className={styles.buttonPadding} onClick={this.handleOK} intent='primary'>
+            <Button className='dialogButtonPadding' onClick={this.handleOK} intent='primary'>
               OK
             </Button>
-            <Button className={styles.buttonPadding} onClick={this.handleClose} autoFocus={true}>
+            <Button className='dialogButtonPadding' onClick={this.handleClose} autoFocus={true}>
               Cancel
             </Button>
           </div>

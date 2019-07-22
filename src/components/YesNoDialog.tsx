@@ -56,10 +56,10 @@ export default class YesNoDialog extends React.PureComponent<IProps, IState> {
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button className={styles.buttonPadding} onClick={this.handleYes} intent='primary'>
+            <Button className='dialogButtonPadding' onClick={this.handleYes} intent='primary'>
               Yes
             </Button>
-            <Button className={styles.buttonPadding} onClick={this.handleClose} autoFocus={true}>
+            <Button className='dialogButtonPadding' onClick={this.handleClose} autoFocus={true}>
               No
             </Button>
           </div>

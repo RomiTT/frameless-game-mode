@@ -127,7 +127,7 @@ class WindowAppPropertyDialog extends React.PureComponent<IProps, IState> {
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button className={styles.buttonPadding} onClick={this.handleOK} intent='primary'>
+            <Button className='dialogButtonPadding' onClick={this.handleOK} intent='primary'>
               OK
             </Button>
           </div>

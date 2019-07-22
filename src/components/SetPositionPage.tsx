@@ -20,16 +20,16 @@ export default class SetPositionPage extends React.PureComponent<IProps, IState>
       <SetPositionView
         renderButtons={wpos => (
           <>
-            <Button onClick={this.props.onPrev} className={styles.buttonPadding} text='Prev' />
+            <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
             <Button
               onClick={() => {
                 this.props.onNext(wpos);
               }}
               intent='primary'
-              className={styles.buttonPadding}
+              className='dialogButtonPadding'
               text='Next'
             />
-            <Button onClick={this.props.onCancel} className={styles.buttonPadding} text='Cancel' />
+            <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
           </>
         )}
       />
