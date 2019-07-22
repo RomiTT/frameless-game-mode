@@ -10,6 +10,7 @@ BOOL CALLBACK EnumWindowProcForFGM(HWND hWnd, LPARAM lParam);
 void ProcessOnlyForForegroundWindow(std::vector<GameModeInfo>& list);
 
 void MakeKeyFromWindowHandle(HWND hWnd, std::wstring& out);
+void RestoreWindow(HWND hwnd, GameModeInfo& item);
 void MadeWindowFrameless(HWND hwnd, GameModeInfo& item);
 
 
@@ -207,6 +208,21 @@ void MakeKey(const WCHAR* processName, const WCHAR* title, std::wstring& out) {
 	out = key;
 }
 
+
+void RestoreWindow(HWND hwnd, GameModeInfo& item) {
+	if (item.style != 0) {
+		SetWindowLong(hwnd, GWL_STYLE, item.style);
+		SetWindowLong(hwnd, GWL_EXSTYLE, item.exStyle);
+
+		int x = item.windowBound.left;
+		int y = item.windowBound.top;
+		int width = (item.windowBound.right - item.windowBound.left);
+		int height = (item.windowBound.bottom - item.windowBound.top);
+		MoveWindow(hwnd, x, y, width, height, TRUE);
+	}
+}
+
+
 void MakeKeyFromWindowHandle(HWND hWnd, std::wstring& out) {
 	std::wstring processName, title;
 	GetProcessNameFromWindowHandle(hWnd, processName);
@@ -221,6 +237,17 @@ void MadeWindowFrameless(HWND hwnd, GameModeInfo& item) {
 
 	RECT rcWindow;
 	GetWindowRect(hwnd, &rcWindow);
+
+	if (item.style == 0) {
+		item.style = GetWindowLong(hwnd, GWL_STYLE);
+		item.exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+		item.clientBound = rc;
+		item.windowBound = rcWindow;
+	}
+	else {
+		rc = item.clientBound;
+		rcWindow = item.windowBound;
+	}
 
 	int titlebarHeight = (rcWindow.bottom - rcWindow.top) - (rc.bottom - rc.top);
 	int border2xWidth = (rcWindow.right - rcWindow.left) - (rc.right - rc.left);

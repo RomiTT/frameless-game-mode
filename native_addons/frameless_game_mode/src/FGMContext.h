@@ -38,6 +38,10 @@ namespace FGM {
     FGM_WINDOW_SIZE wsize;
     int width;
     int height;
+    DWORD style = 0;
+    DWORD exStyle = 0;
+    RECT clientBound = {0, 0, 0, 0};
+    RECT windowBound = {0, 0, 0, 0};
   };
 
   enum FGM_WATCH_MODE {
