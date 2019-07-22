@@ -1,9 +1,11 @@
+$font-size: 0.9em;
+
 .rootView {
-  height: 350px;
+  height: 300px;
   .radioItem {
     padding-top: 4px;
     padding-bottom: 4px;
-    font-size: 0.9em;
+    font-size: $font-size;
   }
 
   .inputContainer {
@@ -12,8 +14,12 @@
     margin-bottom: 4px;
 
     .label {
-      font-size: 0.9em;
+      font-size: $font-size;
       width: 65px;
+    }
+
+    .input {
+      width: 120px;
     }
   }
 }

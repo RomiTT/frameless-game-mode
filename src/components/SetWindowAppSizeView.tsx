@@ -76,10 +76,11 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
               value={FGM_WINDOW_SIZE.CUSTOM_SIZE}
             />
           </RadioGroup>
-          <br />
           <div className={styles.inputContainer}>
             <p className={styles.label}>Width: </p>
             <NumericInput
+              className={styles.input}
+              fill={true}
               disabled={this.state.wsize !== FGM_WINDOW_SIZE.CUSTOM_SIZE}
               value={this.state.width}
               onValueChange={this.handleWidthChange}
@@ -88,6 +89,8 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
           <div className={styles.inputContainer}>
             <p className={styles.label}>Height: </p>
             <NumericInput
+              className={styles.input}
+              fill={true}
               disabled={this.state.wsize !== FGM_WINDOW_SIZE.CUSTOM_SIZE}
               value={this.state.height}
               onValueChange={this.handleHeightChange}
