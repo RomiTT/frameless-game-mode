@@ -1,6 +1,7 @@
 const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
+const autoUpdater = require('electron-updater').autoUpdater;
 
 const path = require('path');
 const isDev = require('electron-is-dev');
@@ -41,9 +42,7 @@ function createWindow() {
   mainWindow.setMenu(null);
 
   mainWindow.loadURL(
-    isDev
-      ? 'http://localhost:3000'
-      : `file://${path.join(__dirname, '../build/index.html')}`
+    isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
   );
 
   if (isDev) {
@@ -62,25 +61,19 @@ function createWindow() {
     // React Dev Tool
     var version = readdirSync(`${extensionPath}/${REACT_DEV_TOOL_ID}`)[0];
     if (version) {
-      BrowserWindow.addDevToolsExtension(
-        `${extensionPath}/${REACT_DEV_TOOL_ID}/${version}`
-      );
+      BrowserWindow.addDevToolsExtension(`${extensionPath}/${REACT_DEV_TOOL_ID}/${version}`);
     }
 
     // Redux Dev Tool
     version = readdirSync(`${extensionPath}/${REDUX_DEV_TOOL_ID}`)[0];
     if (version) {
-      BrowserWindow.addDevToolsExtension(
-        `${extensionPath}/${REDUX_DEV_TOOL_ID}/${version}`
-      );
+      BrowserWindow.addDevToolsExtension(`${extensionPath}/${REDUX_DEV_TOOL_ID}/${version}`);
     }
 
     // Mobx Dev Tool
     version = readdirSync(`${extensionPath}/${MOBX_DEV_TOOL_ID}`)[0];
     if (version) {
-      BrowserWindow.addDevToolsExtension(
-        `${extensionPath}/${MOBX_DEV_TOOL_ID}/${version}`
-      );
+      BrowserWindow.addDevToolsExtension(`${extensionPath}/${MOBX_DEV_TOOL_ID}/${version}`);
     }
 
     // Open the DevTools.
@@ -108,6 +101,10 @@ function createWindow() {
   mainWindow.on('minimize', () => {
     mainWindow.hide();
   });
+
+  if (isDev === false) {
+    autoUpdater.checkForUpdates();
+  }
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -158,4 +155,43 @@ if (!gotTheLock) {
       createWindow();
     }
   });
+
+  if (isDev === false) {
+    const contents = mainWindow.webContents;
+
+    autoUpdater.on('update-available', function() {
+      console.log('A new update is available');
+      contents.send('updater-message', 'A new update is available');
+    });
+
+    autoUpdater.on('checking-for-update', function() {
+      console.log('Checking-for-update');
+      contents.send('updater-message', 'Checking for Update..');
+    });
+
+    autoUpdater.on('error', function(error) {
+      console.log('error');
+      console.error(error);
+      contents.send('updater-message', 'Got Error');
+    });
+
+    autoUpdater.on('download-progress', function(bytesPerSecond, percent, total, transferred) {
+      console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
+      contents.send(
+        'updater-message',
+        `download progress : ${bytesPerSecond}, ${percent}, ${total}, ${transferred}`
+      );
+    });
+
+    autoUpdater.on('update-downloaded', function(event) {
+      console.log('update-downloaded');
+      console.log(event);
+      contents.send('updater-message', 'update-downloaded');
+    });
+
+    autoUpdater.on('update-not-available', function() {
+      console.log('update-not-available');
+      contents.send('updater-message', 'update-not-available');
+    });
+  }
 }

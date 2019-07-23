@@ -1,6 +1,6 @@
 {
   "name": "frameless-game-mode",
-  "version": "1.0.1-beta",
+  "version": "0.9.0-beta",
   "private": true,
   "main": "public/electron.js",
   "scripts": {
@@ -23,13 +23,22 @@
     "appId": "romitt.frameless-game-mode",
     "productName": "Frameless Game Mode",
     "copyright": "Copyright © 2019 ${author}",
+    "publish": {
+      "provider": "github",
+      "owner": "RomiTT",
+      "repo": "frameless-game-mode"
+    },
     "win": {
       "target": [
         "zip",
         "nsis"
       ],
       "requestedExecutionLevel": "requireAdministrator",
-      "icon": "./public/appIcon.png"
+      "icon": "./public/appIcon.png",
+      "publish": [
+        "github"
+      ],
+      "remoteReleases": "https://github.com/RomiTT/frameless-game-mode"
     },
     "files": [
       "build/**/*",
