@@ -55,7 +55,6 @@ class App extends React.PureComponent<IProps, IState> {
   };
 
   componentDidMount() {
-    const remote = require('electron').remote;
     const argv = remote.process.argv;
 
     this.taskFGM.load();
@@ -132,6 +131,10 @@ class App extends React.PureComponent<IProps, IState> {
         this.taskFGM.save();
       }
     );
+  };
+
+  private handleOpenAbout = () => {
+    alert(`Frameless Game Mode ${remote.app.getVersion()}`);
   };
 
   private handleContextMenu = (e: any, item: any) => {
@@ -238,6 +241,11 @@ class App extends React.PureComponent<IProps, IState> {
             <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
               <NavbarGroup align={Alignment.LEFT}>
                 <NavbarHeading>Game List</NavbarHeading>
+                <Button
+                  className={Classes.MINIMAL}
+                  icon='info-sign'
+                  onClick={this.handleOpenAbout}
+                />
               </NavbarGroup>
               <NavbarGroup align={Alignment.RIGHT}>
                 <NavbarDivider />
@@ -262,6 +270,7 @@ class App extends React.PureComponent<IProps, IState> {
                   icon='stop'
                   onClick={this.handleStop}
                 />
+                <NavbarDivider />
                 <Button className={Classes.MINIMAL} icon='cog' onClick={this.handleOpenSettings} />
               </NavbarGroup>
             </Navbar>
