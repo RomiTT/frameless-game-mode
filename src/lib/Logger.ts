@@ -4,8 +4,8 @@ const Logger = {
   log: function(message?: any, ...optionalParams: any[]) {
     if (isDev) {
       const date = new Date();
-      const timedMessage = `[${date.toISOString()}] ${message}`;
-      const args: any = [timedMessage, ...optionalParams];
+      const timedMessage = `[${date.toISOString()}]`;
+      const args: any = [timedMessage, message, ...optionalParams];
       console.log.apply(console, args);
     }
   },
