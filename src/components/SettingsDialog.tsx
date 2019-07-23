@@ -47,7 +47,7 @@ class SettingsDialog extends React.PureComponent<IProps, IState> {
   };
 
   private handleOK = () => {
-    if (this.onOK) this.onOK(this.state.autoLaunch, this.state.watchMode, this.state.closeToTray);
+    this.onOK!(this.state.autoLaunch, this.state.watchMode, this.state.closeToTray);
     this.setState({ isOpen: false });
   };
 

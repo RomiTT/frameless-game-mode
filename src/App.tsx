@@ -233,7 +233,7 @@ class App extends React.PureComponent<IProps, IState> {
     return (
       <>
         <TitleBar app='Frameless Game Mode' icon={`./appIcon.png`} theme={TitleBarTheme} />
-        <AppLayout className='bp3-dark' bodyBackgroundColor={Colors.GOLD5}>
+        <AppLayout className='bp3-dark'>
           <header>
             <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
               <NavbarGroup align={Alignment.LEFT}>

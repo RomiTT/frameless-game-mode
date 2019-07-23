@@ -27,7 +27,7 @@ export default class FloatingButton extends React.PureComponent<IProps> {
           position: this.props.position,
           left: this.props.left,
           top: this.props.top,
-          transform: `scale(${this.props.scale})`
+          transform: `scale(${this.props.scale === undefined ? 1 : this.props.scale})`
         }}
       >
         <Button

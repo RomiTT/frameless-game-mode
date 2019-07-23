@@ -3,9 +3,6 @@ import { Colors } from '@blueprintjs/core';
 import styles from './AppLayout.module.scss';
 
 interface IProps {
-  headerBackgroundColor?: string;
-  bodyBackgroundColor?: string;
-  footerBackgroundColor?: string;
   className?: string;
   style?: object;
 }
@@ -19,7 +16,6 @@ export default class AppLayout extends React.PureComponent<IProps, IState> {
   private bodyId: string = 'romitt_applayout_body';
   private footerId: string = 'romitt_applayout_footer';
   private header: HTMLElement | null = null;
-  private body: HTMLElement | null = null;
   private footer: HTMLElement | null = null;
   state = { bodyHeight: 0 };
 
@@ -28,7 +24,6 @@ export default class AppLayout extends React.PureComponent<IProps, IState> {
     window.addEventListener('resize', this.handleResize);
 
     this.header = document.getElementById(this.headerId);
-    this.body = document.getElementById(this.bodyId);
     this.footer = document.getElementById(this.footerId);
     this.handleResize();
   }

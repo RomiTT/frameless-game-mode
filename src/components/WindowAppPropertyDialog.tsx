@@ -4,20 +4,6 @@ import Logger from '../lib/Logger';
 import styles from './WindowAppPropertyDialog.module.scss';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 
-type DialogCallback = () => void;
-
-interface IProps {
-  onOK?: DialogCallback;
-}
-
-interface IState {
-  isOpen: boolean;
-}
-
-interface WPosViewerProps {
-  wpos: FGM_WINDOW_POSITION;
-}
-
 class WPosViewer extends React.PureComponent<WPosViewerProps> {
   private getClassName = (wpos: FGM_WINDOW_POSITION) => {
     return this.props.wpos === wpos ? styles.itemSelected : styles.item;
@@ -44,6 +30,20 @@ class WPosViewer extends React.PureComponent<WPosViewerProps> {
       </div>
     );
   }
+}
+
+type DialogCallback = () => void;
+
+interface IProps {
+  onOK?: DialogCallback;
+}
+
+interface IState {
+  isOpen: boolean;
+}
+
+interface WPosViewerProps {
+  wpos: FGM_WINDOW_POSITION;
 }
 
 class WindowAppPropertyDialog extends React.PureComponent<IProps, IState> {

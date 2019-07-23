@@ -73,7 +73,8 @@ export default class WindowAppList extends React.Component<IProps, IState> {
   }
 
   componentDidMount = () => {
-    this.setState({ selectedIndex: this.props.selectedIndex ? this.props.selectedIndex! : -1 });
+    if (this.props.selectedIndex !== undefined)
+      this.setState({ selectedIndex: this.props.selectedIndex! });
   };
 
   init = () => {
