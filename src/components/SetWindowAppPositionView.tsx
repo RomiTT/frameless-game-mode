@@ -11,29 +11,30 @@ interface IProps {
 }
 
 interface IState {
-  selectedItem: FGM_WINDOW_POSITION;
+  wpos: FGM_WINDOW_POSITION;
 }
 
 class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
   state = {
-    selectedItem: FGM_WINDOW_POSITION.MIDDLE_CENTER
+    wpos: FGM_WINDOW_POSITION.MIDDLE_CENTER
   };
 
   componentDidMount() {
-    if (this.props.wpos !== null) this.setState({ selectedItem: this.props.wpos! });
+    if (this.props.wpos !== undefined) this.setState({ wpos: this.props.wpos! });
   }
 
   private handleSelectChange = (wpos: FGM_WINDOW_POSITION) => {
     this.props.onWPosChange(wpos);
-    this.setState({ selectedItem: wpos });
+    this.setState({ wpos: wpos });
   };
 
   private getClassName = (wpos: FGM_WINDOW_POSITION) => {
-    return this.state.selectedItem === wpos ? styles.itemSelected : styles.item;
+    return this.state.wpos === wpos ? styles.itemSelected : styles.item;
   };
 
   render() {
     Logger.logRenderInfo(this);
+    Logger.log('wpos', this.state.wpos);
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.rootView}`}>

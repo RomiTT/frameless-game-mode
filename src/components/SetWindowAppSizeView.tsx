@@ -30,9 +30,9 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   };
 
   componentDidMount() {
-    if (this.props.wsize !== null) this.setState({ wsize: this.props.wsize! });
-    if (this.props.width !== null) this.setState({ width: this.props.width! });
-    if (this.props.height !== null) this.setState({ height: this.props.height! });
+    if (this.props.wsize !== undefined) this.setState({ wsize: this.props.wsize! });
+    if (this.props.width !== undefined) this.setState({ width: this.props.width! });
+    if (this.props.height !== undefined) this.setState({ height: this.props.height! });
   }
 
   private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
