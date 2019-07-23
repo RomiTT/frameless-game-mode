@@ -25,11 +25,12 @@ import { FGM_STATE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE, FGM_WATCH_MODE } from 
 import { IAppState } from './store/Types';
 import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
 import store from './store/Store';
-import styles from './App.module.scss';
 import Logger from './lib/Logger';
 import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
 import EditWindowAppDialog from './components/EditWindowAppDialog';
+import AboutDialog from './components/AboutDialog';
 
+import styles from './App.module.scss';
 const { remote, ipcRenderer } = require('electron');
 
 interface IProps {
@@ -47,8 +48,9 @@ class App extends React.PureComponent<IProps, IState> {
   private addAppDialogRef: React.RefObject<AddWindowAppDialog> = React.createRef();
   private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
   private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
-  private windowAppPropertyDialog: React.RefObject<WindowAppPropertyDialog> = React.createRef();
-  private editWindowAppDialog: React.RefObject<EditWindowAppDialog> = React.createRef();
+  private windowAppPropertyDialogRef: React.RefObject<WindowAppPropertyDialog> = React.createRef();
+  private editWindowAppDialogRef: React.RefObject<EditWindowAppDialog> = React.createRef();
+  private aboutDialogRef: React.RefObject<AboutDialog> = React.createRef();
 
   state = {
     addBtnLeftPos: 0
@@ -134,7 +136,7 @@ class App extends React.PureComponent<IProps, IState> {
   };
 
   private handleOpenAbout = () => {
-    alert(`Frameless Game Mode ${remote.app.getVersion()}`);
+    this.aboutDialogRef.current!.open();
   };
 
   private handleContextMenu = (e: any, item: any) => {
@@ -148,7 +150,7 @@ class App extends React.PureComponent<IProps, IState> {
         icon: 'page-layout',
         onClick: () => {
           const selectedItem: any = this.listRef.current!.getSelectedItem();
-          this.editWindowAppDialog.current!.open(selectedItem, (item: any) => {
+          this.editWindowAppDialogRef.current!.open(selectedItem, (item: any) => {
             if (
               selectedItem.wpos !== item.wpos ||
               selectedItem.wsize !== item.wsize ||
@@ -177,7 +179,7 @@ class App extends React.PureComponent<IProps, IState> {
         text: 'Properties...',
         icon: 'properties',
         onClick: () => {
-          this.windowAppPropertyDialog.current!.open(this.listRef.current!.getSelectedItem());
+          this.windowAppPropertyDialogRef.current!.open(this.listRef.current!.getSelectedItem());
         }
       })
     );
@@ -293,8 +295,9 @@ class App extends React.PureComponent<IProps, IState> {
             <AddWindowAppDialog ref={this.addAppDialogRef} />
             <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
-            <WindowAppPropertyDialog ref={this.windowAppPropertyDialog} />
-            <EditWindowAppDialog ref={this.editWindowAppDialog} />
+            <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
+            <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
+            <AboutDialog ref={this.aboutDialogRef} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
