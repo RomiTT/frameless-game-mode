@@ -146,7 +146,6 @@ class App extends React.PureComponent<IProps, IState> {
         onClick: () => {
           const selectedItem: any = this.listRef.current!.getSelectedItem();
           this.editWindowAppDialog.current!.open(selectedItem, (item: any) => {
-            Logger.log('onOK', item, selectedItem);
             if (
               selectedItem.wpos !== item.wpos ||
               selectedItem.wsize !== item.wsize ||

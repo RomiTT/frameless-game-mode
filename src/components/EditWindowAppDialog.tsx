@@ -108,9 +108,7 @@ class EditWindowAppDialog extends React.PureComponent<IProps, IState> {
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
             <Button
               className='dialogButtonPadding'
-              onClick={() => {
-                this.handleOK();
-              }}
+              onClick={this.handleOK}
               intent='primary'
               text='OK'
             />

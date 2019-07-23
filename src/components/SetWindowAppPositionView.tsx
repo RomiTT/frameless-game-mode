@@ -34,7 +34,6 @@ class SetWindowAppPositionView extends React.PureComponent<IProps, IState> {
 
   render() {
     Logger.logRenderInfo(this);
-    Logger.log('wpos', this.state.wpos);
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.rootView}`}>

@@ -41,7 +41,6 @@ class AddWindowAppDialog extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
-    Logger.log('constructor of AddAppDialog');
     this.reset();
     this.state = {
       isOpen: false,
@@ -59,7 +58,6 @@ class AddWindowAppDialog extends React.Component<IProps, IState> {
   };
 
   private reset = () => {
-    Logger.log('reset');
     this.selectedItem = null;
     this.wpos = FGM_WINDOW_POSITION.MIDDLE_CENTER;
     this.wsize = FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA;
