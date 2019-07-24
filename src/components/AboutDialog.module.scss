@@ -5,4 +5,19 @@
   cursor: default;
 
   width: 430px;
+
+  .container {
+    display: flex;
+    margin-bottom: 4px;
+
+    $font-size: 0.8em;
+    .label {
+      font-size: $font-size;
+      margin-right: 4px;
+    }
+
+    .desc {
+      font-size: $font-size;
+    }
+  }
 }
