@@ -1,6 +1,6 @@
 const { remote, shell, ipcRenderer } = require('electron');
 
-interface IAutoUpdaterDownloadProgress {
+export interface IUpdateProgressInfo {
   bytesPerSecond: number;
   percent: number;
   total: number;
@@ -23,7 +23,7 @@ const AutoUpdater = {
   onUpdateNotAvailable: (handler: (event: any, msg: string) => void) => {
     ipcRenderer.on('update-not-available', handler);
   },
-  onDownloadProgress: (handler: (event: any, progress: IAutoUpdaterDownloadProgress) => void) => {
+  onDownloadProgress: (handler: (event: any, progressInfo: IUpdateProgressInfo) => void) => {
     ipcRenderer.on('download-progress', handler);
   },
   onUpdateDownloaded: (handler: (event: any, msg: string) => void) => {

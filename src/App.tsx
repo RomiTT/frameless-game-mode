@@ -85,11 +85,23 @@ class App extends React.PureComponent<IProps, IState> {
     ipcRenderer.on('quit', this.handleQuitApp);
     mainWindow.on('hide', this.handleHide);
 
-    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
-    AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
-    AutoUpdater.onError(this.handleUpdateError);
+    this.addUpdateListeners(true);
     AutoUpdater.checkUpdate();
   }
+
+  private addUpdateListeners = (initialCheck: boolean) => {
+    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
+    if (initialCheck === false) {
+      AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
+    }
+    AutoUpdater.onError(this.handleUpdateError);
+  };
+
+  private removeUpdateListeners = () => {
+    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
+    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
+    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+  };
 
   private handleUpdateAvailable = (event: any, msg: string) => {
     Logger.log(msg);
@@ -106,8 +118,7 @@ class App extends React.PureComponent<IProps, IState> {
       }
     });
 
-    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
-    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+    this.removeUpdateListeners();
   };
 
   private handleUpdateNotAvailable = (event: any, msg: string) => {
@@ -118,9 +129,7 @@ class App extends React.PureComponent<IProps, IState> {
       message: 'You are using the latest version.'
     });
 
-    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
-    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
-    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+    this.removeUpdateListeners();
   };
 
   private handleUpdateError = (event: any, error: any) => {
@@ -128,18 +137,15 @@ class App extends React.PureComponent<IProps, IState> {
     AppToaster.show({
       intent: 'primary',
       icon: 'download',
-      message: 'Update error'
+      message: `${error.name} - ${error.statusCode}`,
+      timeout: 5000
     });
 
-    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
-    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
-    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+    this.removeUpdateListeners();
   };
 
   private handleCheckUpdate = () => {
-    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
-    AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
-    AutoUpdater.onError(this.handleUpdateError);
+    this.addUpdateListeners(false);
     AutoUpdater.checkUpdate();
   };
 
@@ -358,6 +364,7 @@ class App extends React.PureComponent<IProps, IState> {
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
             <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
             <AboutDialog ref={this.aboutDialogRef} />
+            <AutoUpdateDialog ref={this.autoUpdateDialogRef} />
             <YesNoDialog ref={this.yesNoDialogRef} />
           </main>
 
