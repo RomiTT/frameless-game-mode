@@ -242,7 +242,7 @@ class App extends React.PureComponent<IProps, IState> {
           <header>
             <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
               <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading>Game List</NavbarHeading>
+                <NavbarHeading>Favorites</NavbarHeading>
                 <Button
                   className={Classes.MINIMAL}
                   icon='info-sign'

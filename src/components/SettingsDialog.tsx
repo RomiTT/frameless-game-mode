@@ -62,8 +62,8 @@ class SettingsDialog extends React.PureComponent<IProps, IState> {
   };
 
   private onChangeFromWatchMoe = (e: React.FormEvent<HTMLInputElement>) => {
-    const event = e.nativeEvent as any;
-    this.setState({ watchMode: Number(event.target.value) });
+    const target: any = e.target;
+    this.setState({ watchMode: Number(target.value) });
   };
 
   render() {

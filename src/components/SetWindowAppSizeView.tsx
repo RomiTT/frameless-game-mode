@@ -36,8 +36,8 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   }
 
   private onWSizeChanged = (e: React.FormEvent<HTMLInputElement>) => {
-    const event = e.nativeEvent as any;
-    const wsize = Number(event.target.value);
+    const target: any = e.target;
+    const wsize = Number(target.value);
     this.props.onWSizeChange(wsize);
     this.setState({ wsize: wsize });
   };
