@@ -293,11 +293,11 @@ class App extends React.PureComponent<IProps, IState> {
               onClick={this.handleOpenAddAppDialog}
             />
             <AddWindowAppDialog ref={this.addAppDialogRef} />
-            <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
             <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
-            <AboutDialog ref={this.aboutDialogRef} />
+            <AboutDialog ref={this.aboutDialogRef} yesNoDialog={this.yesNoDialogRef} />
+            <YesNoDialog ref={this.yesNoDialogRef} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>

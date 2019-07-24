@@ -7,6 +7,7 @@ const path = require('path');
 const isDev = require('electron-is-dev');
 
 let mainWindow = null;
+let webContents = null;
 let tray = null;
 
 electron.app.FGM = require('./fgm.node');
@@ -45,6 +46,8 @@ function createWindow() {
     isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`
   );
 
+  webContents = mainWindow.webContents;
+
   if (isDev) {
     const os = require('os');
     const { readdirSync } = require('fs');
@@ -70,12 +73,6 @@ function createWindow() {
       BrowserWindow.addDevToolsExtension(`${extensionPath}/${REDUX_DEV_TOOL_ID}/${version}`);
     }
 
-    // Mobx Dev Tool
-    version = readdirSync(`${extensionPath}/${MOBX_DEV_TOOL_ID}`)[0];
-    if (version) {
-      BrowserWindow.addDevToolsExtension(`${extensionPath}/${MOBX_DEV_TOOL_ID}/${version}`);
-    }
-
     // Open the DevTools.
     //mainWindow.webContents.openDevTools({ mode: 'bottom' });
     mainWindow.webContents.openDevTools();
@@ -84,7 +81,7 @@ function createWindow() {
   mainWindow.on('close', e => {
     if (mainWindow) {
       e.preventDefault();
-      mainWindow.send('close');
+      webContents.send('close');
     } else {
       app.FGM.unInitialize();
       tray.destroy();
@@ -98,50 +95,48 @@ function createWindow() {
     }
   });
 
+  electron.ipcMain.on('check-update', () => {
+    autoUpdater.checkForUpdates();
+    autoUpdater.on('checking-for-update', () => {
+      console.log('Checking-for-update');
+    });
+
+    autoUpdater.on('update-available', () => {
+      console.log('A new update is available');
+      webContents.send('update-available', 'A new update is available');
+    });
+
+    autoUpdater.on('update-not-available', () => {
+      console.log('An update is not available');
+      webContents.send('update-not-available', 'An update not available');
+    });
+
+    autoUpdater.on('download-progress', (bytesPerSecond, percent, total, transferred) => {
+      console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
+      webContents.send('download-progress', {
+        bytesPerSecond: bytesPerSecond,
+        percent: percent,
+        total: total,
+        transferred: transferred
+      });
+    });
+
+    autoUpdater.on('update-downloaded', event => {
+      console.log('update-downloaded');
+      console.log(event);
+      webContents.send('update-downloaded', 'Update downloaded');
+    });
+
+    autoUpdater.on('error', error => {
+      console.log('update-error');
+      console.error(error);
+      webContents.send('update-error', error);
+    });
+  });
+
   mainWindow.on('minimize', () => {
     mainWindow.hide();
   });
-
-  if (isDev === false) {
-    autoUpdater.checkForUpdates();
-
-    const contents = mainWindow.webContents;
-
-    autoUpdater.on('update-available', function() {
-      console.log('A new update is available');
-      contents.send('updater-message', 'A new update is available');
-    });
-
-    autoUpdater.on('checking-for-update', function() {
-      console.log('Checking-for-update');
-      contents.send('updater-message', 'Checking for Update..');
-    });
-
-    autoUpdater.on('error', function(error) {
-      console.log('error');
-      console.error(error);
-      contents.send('updater-message', 'Got Error');
-    });
-
-    autoUpdater.on('download-progress', function(bytesPerSecond, percent, total, transferred) {
-      console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
-      contents.send(
-        'updater-message',
-        `download progress : ${bytesPerSecond}, ${percent}, ${total}, ${transferred}`
-      );
-    });
-
-    autoUpdater.on('update-downloaded', function(event) {
-      console.log('update-downloaded');
-      console.log(event);
-      contents.send('updater-message', 'update-downloaded');
-    });
-
-    autoUpdater.on('update-not-available', function() {
-      console.log('update-not-available');
-      contents.send('updater-message', 'update-not-available');
-    });
-  }
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -172,7 +167,7 @@ if (!gotTheLock) {
       {
         label: 'Quit Frameless Game Mode',
         click: () => {
-          mainWindow.send('quit');
+          webContents.send('quit');
           app.quit();
         }
       }
