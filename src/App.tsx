@@ -32,6 +32,7 @@ import AboutDialog from './components/AboutDialog';
 import { AppToaster } from './lib/Toaster';
 import AutoUpdater from './lib/AutoUpdater';
 import styles from './App.module.scss';
+import AutoUpdateDialog from './components/AutoUpdateDialog';
 
 const { remote, ipcRenderer } = require('electron');
 
@@ -53,6 +54,7 @@ class App extends React.PureComponent<IProps, IState> {
   private windowAppPropertyDialogRef: React.RefObject<WindowAppPropertyDialog> = React.createRef();
   private editWindowAppDialogRef: React.RefObject<EditWindowAppDialog> = React.createRef();
   private aboutDialogRef: React.RefObject<AboutDialog> = React.createRef();
+  private autoUpdateDialogRef: React.RefObject<AutoUpdateDialog> = React.createRef();
 
   state = {
     addBtnLeftPos: 0
@@ -84,6 +86,7 @@ class App extends React.PureComponent<IProps, IState> {
     mainWindow.on('hide', this.handleHide);
 
     AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
+    AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
     AutoUpdater.onError(this.handleUpdateError);
     AutoUpdater.checkUpdate();
   }
@@ -94,25 +97,30 @@ class App extends React.PureComponent<IProps, IState> {
       intent: 'primary',
       icon: 'download',
       message: 'A new update is avaiable',
+      timeout: 0,
       action: {
         onClick: () => {
-          // open update dialog.
+          this.autoUpdateDialogRef.current!.open();
         },
         text: 'Install update'
       }
     });
+
+    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
+    AutoUpdater.removeErrorHandler(this.handleUpdateError);
   };
 
   private handleUpdateNotAvailable = (event: any, msg: string) => {
     Logger.log(msg);
-  };
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: 'You are using the latest version.'
+    });
 
-  private handleDownloadProgress = (event: any, arg: any) => {
-    Logger.log(arg);
-  };
-
-  private handleUpdateDownloaded = (event: any, msg: string) => {
-    Logger.log(msg);
+    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
+    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
+    AutoUpdater.removeErrorHandler(this.handleUpdateError);
   };
 
   private handleUpdateError = (event: any, error: any) => {
@@ -122,6 +130,17 @@ class App extends React.PureComponent<IProps, IState> {
       icon: 'download',
       message: 'Update error'
     });
+
+    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
+    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
+    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+  };
+
+  private handleCheckUpdate = () => {
+    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
+    AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
+    AutoUpdater.onError(this.handleUpdateError);
+    AutoUpdater.checkUpdate();
   };
 
   private handleResize = () => {
@@ -346,7 +365,7 @@ class App extends React.PureComponent<IProps, IState> {
             <Icon className={styles.stateIcon} icon='record' iconSize={18} color={stateColor} />
             <p className={styles.stateText}>{stateText}</p>
             <div className={styles.notificationsContainer}>
-              <div className={styles.notification} onClick={AutoUpdater.checkUpdate}>
+              <div className={styles.notification} onClick={this.handleCheckUpdate}>
                 <Icon icon='refresh' iconSize={12} />
               </div>
             </div>

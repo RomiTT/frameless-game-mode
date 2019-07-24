@@ -17,6 +17,8 @@ electron.app.FGM.initialize();
 electron.app.LaunchAtLogon = require('./launchAtLogon.node');
 console.log('electron.app.LaunchAtLogon', electron.app.LaunchAtLogon);
 
+autoUpdater.autoDownload = false;
+
 const width = 500;
 const height = 600;
 
@@ -94,16 +96,20 @@ function createWindow() {
     }
   });
 
-  electron.ipcMain.on('install-update', () => {
-    autoUpdater.quitAndInstall();
-  });
-
   mainWindow.on('minimize', () => {
     mainWindow.hide();
   });
 
   electron.ipcMain.on('check-update', () => {
-    autoUpdater.checkForUpdates(false, true);
+    autoUpdater.checkForUpdates();
+  });
+
+  electron.ipcMain.on('download-update', () => {
+    autoUpdater.downloadUpdate();
+  });
+
+  electron.ipcMain.on('install-update', () => {
+    autoUpdater.quitAndInstall(false, true);
   });
 
   autoUpdater.on('checking-for-update', () => {

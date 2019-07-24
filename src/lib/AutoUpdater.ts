@@ -1,8 +1,18 @@
 const { remote, shell, ipcRenderer } = require('electron');
 
+interface IAutoUpdaterDownloadProgress {
+  bytesPerSecond: number;
+  percent: number;
+  total: number;
+  transferred: number;
+}
+
 const AutoUpdater = {
   checkUpdate: () => {
     ipcRenderer.send('check-update');
+  },
+  downloadUpdate: () => {
+    ipcRenderer.send('download-update');
   },
   installUpdate: () => {
     ipcRenderer.send('install-update');
@@ -13,7 +23,7 @@ const AutoUpdater = {
   onUpdateNotAvailable: (handler: (event: any, msg: string) => void) => {
     ipcRenderer.on('update-not-available', handler);
   },
-  onDownloadProgress: (handler: (event: any, arg: any) => void) => {
+  onDownloadProgress: (handler: (event: any, progress: IAutoUpdaterDownloadProgress) => void) => {
     ipcRenderer.on('download-progress', handler);
   },
   onUpdateDownloaded: (handler: (event: any, msg: string) => void) => {
