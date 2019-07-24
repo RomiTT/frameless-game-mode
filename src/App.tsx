@@ -29,8 +29,10 @@ import Logger from './lib/Logger';
 import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
 import EditWindowAppDialog from './components/EditWindowAppDialog';
 import AboutDialog from './components/AboutDialog';
-
+import { AppToaster } from './lib/Toaster';
+import AutoUpdater from './lib/AutoUpdater';
 import styles from './App.module.scss';
+
 const { remote, ipcRenderer } = require('electron');
 
 interface IProps {
@@ -80,7 +82,47 @@ class App extends React.PureComponent<IProps, IState> {
     ipcRenderer.on('close', this.handleCloseApp);
     ipcRenderer.on('quit', this.handleQuitApp);
     mainWindow.on('hide', this.handleHide);
+
+    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
+    AutoUpdater.onError(this.handleUpdateError);
+    AutoUpdater.checkUpdate();
   }
+
+  private handleUpdateAvailable = (event: any, msg: string) => {
+    Logger.log(msg);
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: 'A new update is avaiable',
+      action: {
+        onClick: () => {
+          // open update dialog.
+        },
+        text: 'Install update'
+      }
+    });
+  };
+
+  private handleUpdateNotAvailable = (event: any, msg: string) => {
+    Logger.log(msg);
+  };
+
+  private handleDownloadProgress = (event: any, arg: any) => {
+    Logger.log(arg);
+  };
+
+  private handleUpdateDownloaded = (event: any, msg: string) => {
+    Logger.log(msg);
+  };
+
+  private handleUpdateError = (event: any, error: any) => {
+    Logger.log('Update error', error);
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: 'Update error'
+    });
+  };
 
   private handleResize = () => {
     this.setState({ addBtnLeftPos: window.innerWidth - 52 });
@@ -296,13 +338,18 @@ class App extends React.PureComponent<IProps, IState> {
             <SettingsDialog ref={this.settingsDialogRef} />
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
             <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
-            <AboutDialog ref={this.aboutDialogRef} yesNoDialog={this.yesNoDialogRef} />
+            <AboutDialog ref={this.aboutDialogRef} />
             <YesNoDialog ref={this.yesNoDialogRef} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
             <Icon className={styles.stateIcon} icon='record' iconSize={18} color={stateColor} />
             <p className={styles.stateText}>{stateText}</p>
+            <div className={styles.notificationsContainer}>
+              <div className={styles.notification} onClick={AutoUpdater.checkUpdate}>
+                <Icon icon='refresh' iconSize={12} />
+              </div>
+            </div>
           </footer>
         </AppLayout>
       </>

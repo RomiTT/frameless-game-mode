@@ -54,7 +54,6 @@ function createWindow() {
 
     const REACT_DEV_TOOL_ID = 'fmkadmapgofadopljbjfkapdkoienihi';
     const REDUX_DEV_TOOL_ID = 'lmhkpmbekcpmknklioeibfkpmmfibljd';
-    const MOBX_DEV_TOOL_ID = 'pfgnfdagidkfgccljigdamigbcnndkod';
 
     const extensionPath = path.join(
       os.homedir(),
@@ -95,47 +94,52 @@ function createWindow() {
     }
   });
 
-  electron.ipcMain.on('check-update', () => {
-    autoUpdater.checkForUpdates();
-    autoUpdater.on('checking-for-update', () => {
-      console.log('Checking-for-update');
-    });
-
-    autoUpdater.on('update-available', () => {
-      console.log('A new update is available');
-      webContents.send('update-available', 'A new update is available');
-    });
-
-    autoUpdater.on('update-not-available', () => {
-      console.log('An update is not available');
-      webContents.send('update-not-available', 'An update not available');
-    });
-
-    autoUpdater.on('download-progress', (bytesPerSecond, percent, total, transferred) => {
-      console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
-      webContents.send('download-progress', {
-        bytesPerSecond: bytesPerSecond,
-        percent: percent,
-        total: total,
-        transferred: transferred
-      });
-    });
-
-    autoUpdater.on('update-downloaded', event => {
-      console.log('update-downloaded');
-      console.log(event);
-      webContents.send('update-downloaded', 'Update downloaded');
-    });
-
-    autoUpdater.on('error', error => {
-      console.log('update-error');
-      console.error(error);
-      webContents.send('update-error', error);
-    });
+  electron.ipcMain.on('install-update', () => {
+    autoUpdater.quitAndInstall();
   });
 
   mainWindow.on('minimize', () => {
     mainWindow.hide();
+  });
+
+  electron.ipcMain.on('check-update', () => {
+    autoUpdater.checkForUpdates(false, true);
+  });
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking-for-update');
+  });
+
+  autoUpdater.on('update-available', () => {
+    console.log('A new update is available');
+    webContents.send('update-available', 'A new update is available');
+  });
+
+  autoUpdater.on('update-not-available', () => {
+    console.log('An update is not available');
+    webContents.send('update-not-available', 'An update not available');
+  });
+
+  autoUpdater.on('download-progress', (bytesPerSecond, percent, total, transferred) => {
+    console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
+    webContents.send('download-progress', {
+      bytesPerSecond: bytesPerSecond,
+      percent: percent,
+      total: total,
+      transferred: transferred
+    });
+  });
+
+  autoUpdater.on('update-downloaded', event => {
+    console.log('update-downloaded');
+    console.log(event);
+    webContents.send('update-downloaded', 'Update downloaded');
+  });
+
+  autoUpdater.on('error', error => {
+    console.log('update-error');
+    console.error(error);
+    webContents.send('update-error', error);
   });
 }
 
