@@ -23,22 +23,13 @@
     "appId": "romitt.frameless-game-mode",
     "productName": "Frameless Game Mode",
     "copyright": "Copyright © 2019 ${author}",
-    "publish": {
-      "provider": "github",
-      "owner": "RomiTT",
-      "repo": "frameless-game-mode"
-    },
     "win": {
       "target": [
         "zip",
         "nsis"
       ],
       "requestedExecutionLevel": "requireAdministrator",
-      "icon": "./public/appIcon.png",
-      "publish": [
-        "github"
-      ],
-      "remoteReleases": "https://github.com/RomiTT/frameless-game-mode"
+      "icon": "./public/appIcon.png"
     },
     "files": [
       "build/**/*",
