@@ -105,6 +105,11 @@ class App extends React.PureComponent<IProps, IState> {
 
   private handleUpdateAvailable = (event: any, msg: string) => {
     Logger.log(msg);
+    const mainWindow = remote.getCurrentWindow();
+    if (mainWindow.isVisible() === false) {
+      mainWindow.show();
+    }
+
     AppToaster.show({
       intent: 'primary',
       icon: 'download',
