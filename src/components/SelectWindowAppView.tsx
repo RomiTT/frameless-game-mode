@@ -32,7 +32,7 @@ class SelectWindowAppView extends React.PureComponent<IProps, IState> {
         <WindowAppList
           ref={this.listRef}
           listApp={this.props.listApp}
-          selectedIndex={-1}
+          initialSelectIndex={-1}
           className={styles.appList}
           onSelectionChange={this.props.onSelectionChange}
         />
