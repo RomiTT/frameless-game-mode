@@ -113,7 +113,7 @@ class FGMTask {
     };
 
     FGM.editGameModeInfo(itemToEdit);
-    FGM.forceApplyGameModeInfo(itemToEdit.key);
+    //FGM.forceApplyGameModeInfo(itemToEdit.key);
     Actions.editApp(itemToEdit);
   };
 
