@@ -1,5 +1,4 @@
 import React from 'react';
-import { Colors } from '@blueprintjs/core';
 import styles from './AppLayout.module.scss';
 
 interface IProps {

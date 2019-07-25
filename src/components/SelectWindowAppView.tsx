@@ -1,8 +1,8 @@
 import FloatingButton from './FloatingButton';
 import React from 'react';
 import WindowAppList from './WindowAppList';
-import styles from './SelectWindowAppView.module.scss';
 import Logger from '../lib/Logger';
+import styles from './SelectWindowAppView.module.scss';
 
 interface IProps {
   listApp: Array<object>;

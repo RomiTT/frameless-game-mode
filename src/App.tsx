@@ -31,8 +31,8 @@ import EditWindowAppDialog from './components/EditWindowAppDialog';
 import AboutDialog from './components/AboutDialog';
 import { AppToaster } from './lib/Toaster';
 import AutoUpdater from './lib/AutoUpdater';
-import styles from './App.module.scss';
 import AutoUpdateDialog from './components/AutoUpdateDialog';
+import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');
 

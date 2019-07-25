@@ -2,8 +2,8 @@ import React from 'react';
 import SelectWindowAppView from './SelectWindowAppView';
 import Tasks from '../store/Tasks';
 import { Button, Classes } from '@blueprintjs/core';
-import styles from './SelectWindowAppPage.module.scss';
 import Logger from '../lib/Logger';
+import styles from './SelectWindowAppPage.module.scss';
 
 interface IProps {
   onNext: (item: any) => void;
@@ -67,7 +67,7 @@ export default class SelectWindowAppPage extends React.Component<IProps, IState>
     Logger.logRenderInfo(this);
     return (
       <>
-        <div className={Classes.DIALOG_BODY}>
+        <div className={`${Classes.DIALOG_BODY} ${styles.dialogBody}`}>
           <SelectWindowAppView
             ref={this.selectWindowAppViewRef}
             listApp={this.state.listApp}
