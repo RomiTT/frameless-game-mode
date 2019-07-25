@@ -18,7 +18,8 @@ import {
   Navbar,
   NavbarDivider,
   NavbarGroup,
-  NavbarHeading
+  NavbarHeading,
+  Spinner
 } from '@blueprintjs/core';
 import { connect } from 'react-redux';
 import { FGM_STATE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE, FGM_WATCH_MODE } from './lib/FGM';
@@ -43,6 +44,7 @@ interface IProps {
 
 interface IState {
   addBtnLeftPos: number;
+  checkUpdate: boolean;
 }
 
 class App extends React.PureComponent<IProps, IState> {
@@ -57,7 +59,8 @@ class App extends React.PureComponent<IProps, IState> {
   private autoUpdateDialogRef: React.RefObject<AutoUpdateDialog> = React.createRef();
 
   state = {
-    addBtnLeftPos: 0
+    addBtnLeftPos: 0,
+    checkUpdate: false
   };
 
   componentDidMount() {
@@ -89,6 +92,22 @@ class App extends React.PureComponent<IProps, IState> {
     AutoUpdater.checkUpdate();
   }
 
+  private renderCheckUpdateButton() {
+    if (this.state.checkUpdate) {
+      return (
+        <div className={styles.spinner}>
+          <Spinner intent='success' size={15} />
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.notification} onClick={this.handleCheckUpdate}>
+        <Icon icon='refresh' iconSize={12} />
+      </div>
+    );
+  }
+
   private addUpdateListeners = (initialCheck: boolean) => {
     AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
     if (initialCheck === false) {
@@ -112,7 +131,7 @@ class App extends React.PureComponent<IProps, IState> {
 
     AppToaster.show({
       intent: 'primary',
-      icon: 'download',
+      icon: 'info-sign',
       message: 'A new update is avaiable',
       timeout: 0,
       action: {
@@ -124,34 +143,38 @@ class App extends React.PureComponent<IProps, IState> {
     });
 
     this.removeUpdateListeners();
+    this.setState({ checkUpdate: false });
   };
 
   private handleUpdateNotAvailable = (event: any, msg: string) => {
     Logger.log(msg);
     AppToaster.show({
       intent: 'primary',
-      icon: 'download',
+      icon: 'info-sign',
       message: 'You are using the latest version.'
     });
 
     this.removeUpdateListeners();
+    this.setState({ checkUpdate: false });
   };
 
   private handleUpdateError = (event: any, error: any) => {
     Logger.log('Update error', error);
     AppToaster.show({
-      intent: 'primary',
-      icon: 'download',
+      intent: 'danger',
+      icon: 'error',
       message: `${error.name} - ${error.statusCode}`,
       timeout: 5000
     });
 
     this.removeUpdateListeners();
+    this.setState({ checkUpdate: false });
   };
 
   private handleCheckUpdate = () => {
     this.addUpdateListeners(false);
     AutoUpdater.checkUpdate();
+    this.setState({ checkUpdate: true });
   };
 
   private handleResize = () => {
@@ -376,11 +399,7 @@ class App extends React.PureComponent<IProps, IState> {
           <footer className={`has-text-centered ${styles.footer}`}>
             <Icon className={styles.stateIcon} icon='record' iconSize={18} color={stateColor} />
             <p className={styles.stateText}>{stateText}</p>
-            <div className={styles.notificationsContainer}>
-              <div className={styles.notification} onClick={this.handleCheckUpdate}>
-                <Icon icon='refresh' iconSize={12} />
-              </div>
-            </div>
+            <div className={styles.notificationsContainer}>{this.renderCheckUpdateButton()}</div>
           </footer>
         </AppLayout>
       </>
