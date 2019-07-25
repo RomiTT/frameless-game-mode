@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button } from '@blueprintjs/core';
+import { Button, Classes } from '@blueprintjs/core';
 import SetWindowAppPositionView from './SetWindowAppPositionView';
 import { FGM_WINDOW_POSITION, FGM } from '../lib/FGM';
-import styles from './SetWindowAppPositionPage.module.scss';
 import Logger from '../lib/Logger';
+import styles from './SetWindowAppPositionPage.module.scss';
 
 interface IProps {
   onPrev: () => void;
@@ -24,26 +24,26 @@ export default class SetWindowAppPositionPage extends React.PureComponent<IProps
     this.wpos = wpos;
   };
 
-  private renderButtons = (
-    <>
-      <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
-      <Button
-        onClick={this.handleNext}
-        intent='primary'
-        className='dialogButtonPadding'
-        text='Next'
-      />
-      <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
-    </>
-  );
-
   render() {
     Logger.logRenderInfo(this);
     return (
-      <SetWindowAppPositionView
-        onWPosChange={this.handleWPosChange}
-        dialogButtons={this.renderButtons}
-      />
+      <>
+        <div className={`${Classes.DIALOG_BODY} ${styles.dialogBody}`}>
+          <SetWindowAppPositionView onWPosChange={this.handleWPosChange} />
+        </div>
+        <div className={Classes.DIALOG_FOOTER}>
+          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+            <Button onClick={this.props.onPrev} className='dialogButtonPadding' text='Prev' />
+            <Button
+              onClick={this.handleNext}
+              intent='primary'
+              className='dialogButtonPadding'
+              text='Next'
+            />
+            <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
+          </div>
+        </div>
+      </>
     );
   }
 }

@@ -29,8 +29,11 @@ import Logger from './lib/Logger';
 import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
 import EditWindowAppDialog from './components/EditWindowAppDialog';
 import AboutDialog from './components/AboutDialog';
-
+import { AppToaster } from './lib/Toaster';
+import AutoUpdater from './lib/AutoUpdater';
+import AutoUpdateDialog from './components/AutoUpdateDialog';
 import styles from './App.module.scss';
+
 const { remote, ipcRenderer } = require('electron');
 
 interface IProps {
@@ -51,6 +54,7 @@ class App extends React.PureComponent<IProps, IState> {
   private windowAppPropertyDialogRef: React.RefObject<WindowAppPropertyDialog> = React.createRef();
   private editWindowAppDialogRef: React.RefObject<EditWindowAppDialog> = React.createRef();
   private aboutDialogRef: React.RefObject<AboutDialog> = React.createRef();
+  private autoUpdateDialogRef: React.RefObject<AutoUpdateDialog> = React.createRef();
 
   state = {
     addBtnLeftPos: 0
@@ -80,7 +84,75 @@ class App extends React.PureComponent<IProps, IState> {
     ipcRenderer.on('close', this.handleCloseApp);
     ipcRenderer.on('quit', this.handleQuitApp);
     mainWindow.on('hide', this.handleHide);
+
+    this.addUpdateListeners(true);
+    AutoUpdater.checkUpdate();
   }
+
+  private addUpdateListeners = (initialCheck: boolean) => {
+    AutoUpdater.onUdateAvailable(this.handleUpdateAvailable);
+    if (initialCheck === false) {
+      AutoUpdater.onUpdateNotAvailable(this.handleUpdateNotAvailable);
+    }
+    AutoUpdater.onError(this.handleUpdateError);
+  };
+
+  private removeUpdateListeners = () => {
+    AutoUpdater.removeUpdateAvailableListener(this.handleUpdateAvailable);
+    AutoUpdater.removeUpdateNotAvailableListener(this.handleUpdateNotAvailable);
+    AutoUpdater.removeErrorHandler(this.handleUpdateError);
+  };
+
+  private handleUpdateAvailable = (event: any, msg: string) => {
+    Logger.log(msg);
+    const mainWindow = remote.getCurrentWindow();
+    if (mainWindow.isVisible() === false) {
+      mainWindow.show();
+    }
+
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: 'A new update is avaiable',
+      timeout: 0,
+      action: {
+        onClick: () => {
+          this.autoUpdateDialogRef.current!.open();
+        },
+        text: 'Install update'
+      }
+    });
+
+    this.removeUpdateListeners();
+  };
+
+  private handleUpdateNotAvailable = (event: any, msg: string) => {
+    Logger.log(msg);
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: 'You are using the latest version.'
+    });
+
+    this.removeUpdateListeners();
+  };
+
+  private handleUpdateError = (event: any, error: any) => {
+    Logger.log('Update error', error);
+    AppToaster.show({
+      intent: 'primary',
+      icon: 'download',
+      message: `${error.name} - ${error.statusCode}`,
+      timeout: 5000
+    });
+
+    this.removeUpdateListeners();
+  };
+
+  private handleCheckUpdate = () => {
+    this.addUpdateListeners(false);
+    AutoUpdater.checkUpdate();
+  };
 
   private handleResize = () => {
     this.setState({ addBtnLeftPos: window.innerWidth - 52 });
@@ -293,16 +365,22 @@ class App extends React.PureComponent<IProps, IState> {
               onClick={this.handleOpenAddAppDialog}
             />
             <AddWindowAppDialog ref={this.addAppDialogRef} />
-            <YesNoDialog ref={this.yesNoDialogRef} />
             <SettingsDialog ref={this.settingsDialogRef} />
             <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
             <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
             <AboutDialog ref={this.aboutDialogRef} />
+            <AutoUpdateDialog ref={this.autoUpdateDialogRef} />
+            <YesNoDialog ref={this.yesNoDialogRef} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
             <Icon className={styles.stateIcon} icon='record' iconSize={18} color={stateColor} />
             <p className={styles.stateText}>{stateText}</p>
+            <div className={styles.notificationsContainer}>
+              <div className={styles.notification} onClick={this.handleCheckUpdate}>
+                <Icon icon='refresh' iconSize={12} />
+              </div>
+            </div>
           </footer>
         </AppLayout>
       </>

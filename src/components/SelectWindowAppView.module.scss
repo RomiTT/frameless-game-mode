@@ -1,11 +1,8 @@
 .rootView {
   position: relative;
+  height: 100%;
+
   .appList {
-    height: 300px;
     border: solid 1px gray;
   }
-}
-
-.divider {
-  margin-bottom: 10px;
 }

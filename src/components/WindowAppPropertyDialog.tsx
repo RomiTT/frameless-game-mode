@@ -1,8 +1,8 @@
 import React from 'react';
 import { Dialog, Classes, Button } from '@blueprintjs/core';
 import Logger from '../lib/Logger';
-import styles from './WindowAppPropertyDialog.module.scss';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
+import styles from './WindowAppPropertyDialog.module.scss';
 
 class WPosViewer extends React.PureComponent<WPosViewerProps> {
   private getClassName = (wpos: FGM_WINDOW_POSITION) => {

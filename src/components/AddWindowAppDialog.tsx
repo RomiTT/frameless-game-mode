@@ -5,9 +5,9 @@ import SetWindowAppSizePage from './SetWindowAppSizePage';
 import { Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
 import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
-import styles from './AddWindowAppDialog.module.scss';
 import produce from 'immer';
 import Logger from '../lib/Logger';
+import styles from './AddWindowAppDialog.module.scss';
 
 interface DialogPageInfo {
   page: any;

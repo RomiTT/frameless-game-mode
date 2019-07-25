@@ -46,7 +46,7 @@ class WindowAppListRowItem extends React.PureComponent<IWindowAppListRowItemProp
 
 interface IProps {
   listApp: ReadonlyArray<object>;
-  selectedIndex?: number;
+  initialSelectIndex?: number;
   style?: React.CSSProperties;
   className?: string;
   onSelectionChange?: (index: number, item: any) => void;
@@ -73,8 +73,8 @@ export default class WindowAppList extends React.Component<IProps, IState> {
   }
 
   componentDidMount = () => {
-    if (this.props.selectedIndex !== undefined)
-      this.setState({ selectedIndex: this.props.selectedIndex! });
+    if (this.props.initialSelectIndex !== undefined)
+      this.setState({ selectedIndex: this.props.initialSelectIndex! });
   };
 
   init = () => {

@@ -1,5 +1,4 @@
 @import '~@blueprintjs/core/lib/scss/variables';
-@import '../lib/scss//variables';
 
 .dialog {
   -webkit-user-select: none;
@@ -7,6 +6,11 @@
   -webkit-app-region: no-drag;
   cursor: default;
 
-  width: $add-window-app-dialog-width;
-  height: $add-window-app-dialog-height;
+  width: 350px;
+
+  .label {
+    font-size: 0.9em;
+    color: $gray4;
+    padding-bottom: 10px;
+  }
 }

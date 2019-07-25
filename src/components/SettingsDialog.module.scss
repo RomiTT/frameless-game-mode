@@ -1,10 +1,12 @@
+@import '../lib/scss/variables';
+
 .dialog {
   -webkit-user-select: none;
   -webkit-user-drag: none;
   -webkit-app-region: no-drag;
   cursor: default;
 
-  width: 430px;
+  width: $settings-dialog-width;
 
   .divider {
     margin-bottom: 10px;

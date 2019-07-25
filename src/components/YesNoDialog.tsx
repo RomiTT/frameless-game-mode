@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Dialog } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
-import styles from './YesNoDialog.module.scss';
 import Logger from '../lib/Logger';
+import styles from './YesNoDialog.module.scss';
 
 interface IProps {}
 
@@ -56,12 +56,18 @@ export default class YesNoDialog extends React.PureComponent<IProps, IState> {
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button className='dialogButtonPadding' onClick={this.handleYes} intent='primary'>
-              Yes
-            </Button>
-            <Button className='dialogButtonPadding' onClick={this.handleClose} autoFocus={true}>
-              No
-            </Button>
+            <Button
+              className='dialogButtonPadding'
+              onClick={this.handleYes}
+              intent='primary'
+              text='Yes'
+            />
+            <Button
+              className='dialogButtonPadding'
+              onClick={this.handleClose}
+              autoFocus={true}
+              text='No'
+            />
           </div>
         </div>
       </Dialog>

@@ -1,9 +1,12 @@
 import React from 'react';
-import { Button, Dialog } from '@blueprintjs/core/lib/esm/components';
+import { Button, Dialog, Icon } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
-import styles from './AboutDialog.module.scss';
 import Logger from '../lib/Logger';
-const { remote, shell } = require('electron');
+import YesNoDialog from './YesNoDialog';
+import styles from './AboutDialog.module.scss';
+
+const { remote, shell, ipcRenderer } = require('electron');
+const isDev = require('electron-is-dev');
 
 interface IProps {}
 
@@ -11,7 +14,7 @@ interface IState {
   isOpen: boolean;
 }
 
-class AboutDialog extends React.PureComponent {
+class AboutDialog extends React.PureComponent<IProps, IState> {
   private handleClose = () => {
     this.setState({ isOpen: false });
   };
@@ -33,14 +36,14 @@ class AboutDialog extends React.PureComponent {
         canOutsideClickClose={false}
         onClose={this.handleClose}
         title='Frameless Game Mode'
-        icon='info-sign'
+        icon={<Icon icon='info-sign' />}
         lazy={false}
         {...this.state}
       >
         <div className={Classes.DIALOG_BODY}>
           <div className={styles.container}>
             <p className={styles.label}>Version:</p>
-            <p className={styles.desc}>{remote.app.getVersion()}</p>
+            <p className={styles.version}>{remote.app.getVersion()}</p>
           </div>
           <div className={styles.container}>
             <p className={styles.label}>GitHub:</p>
