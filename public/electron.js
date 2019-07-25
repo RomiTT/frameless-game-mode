@@ -184,6 +184,9 @@ if (!gotTheLock) {
     ]);
     tray.setToolTip('This is my application.');
     tray.setContextMenu(contextMenu);
+    tray.on('double-click', () => {
+      mainWindow.show();
+    });
   });
 
   app.on('window-all-closed', () => {

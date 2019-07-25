@@ -39,10 +39,14 @@
     align-items: center;
     padding-right: 4px;
 
-    .notification {
+    .spinner {
       padding: 6px;
       display: flex;
       align-items: center;
+    }
+
+    .notification {
+      @extend .spinner;
 
       &:hover {
         background-color: $dark-gray4;
