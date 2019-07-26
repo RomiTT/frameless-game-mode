@@ -1,4 +1,5 @@
 @import '~@blueprintjs/core/lib/scss/variables';
+@import '../lib/scss/variables';
 
 .dialog {
   -webkit-user-select: none;
@@ -12,19 +13,18 @@
     display: flex;
     margin-bottom: 6px;
 
-    $font-size: 0.9em;
     .label {
-      font-size: $font-size;
+      font-size: $dialog-font-size;
       margin-right: 6px;
     }
 
     .version {
-      font-size: $font-size;
+      font-size: $dialog-font-size;
       color: $gray4;
     }
 
     .desc {
-      font-size: $font-size;
+      font-size: $dialog-font-size;
     }
   }
 }

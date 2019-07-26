@@ -8,6 +8,10 @@
 
   width: $settings-dialog-width;
 
+  .label {
+    font-size: $dialog-font-size;
+  }
+
   .divider {
     margin-bottom: 10px;
   }
