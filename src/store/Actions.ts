@@ -1,6 +1,7 @@
 import produce from 'immer';
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IWindowBound } from './Types';
+import { Language } from '../languages';
 
 const Actions = {
   loadAppState: (val: object) => ({
@@ -105,6 +106,15 @@ const Actions = {
     reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.windowBound = val;
+      });
+    }
+  }),
+
+  setLanguage: (val: Language) => ({
+    type: 'ACTION_SET_LANGUAGE',
+    reducer: (state: IAppState) => {
+      return produce(state, draft => {
+        draft.currentLanguage = val;
       });
     }
   })

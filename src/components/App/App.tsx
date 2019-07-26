@@ -33,6 +33,7 @@ import AboutDialog from '../AboutDialog/AboutDialog';
 import { AppToaster } from '../../lib/Toaster';
 import AutoUpdater from '../../lib/AutoUpdater';
 import AutoUpdateDialog from '../AutoUpdateDialog/AutoUpdateDialog';
+import { Language, getLocaleNameFromLanguage } from '../../languages';
 import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');
@@ -40,6 +41,7 @@ const { remote, ipcRenderer } = require('electron');
 interface IProps {
   listAppToMonitor: ReadonlyArray<object>;
   stateFGM: FGM_STATE;
+  langData: any;
 }
 
 interface IState {
@@ -129,16 +131,18 @@ class App extends React.PureComponent<IProps, IState> {
       mainWindow.show();
     }
 
+    const { updateAvailableToast } = this.props.langData;
+
     AppToaster.show({
       intent: 'primary',
       icon: 'info-sign',
-      message: 'A new update is avaiable',
+      message: updateAvailableToast.message,
       timeout: 0,
       action: {
         onClick: () => {
           this.autoUpdateDialogRef.current!.open();
         },
-        text: 'Install update'
+        text: updateAvailableToast.actionName
       }
     });
 
@@ -147,11 +151,13 @@ class App extends React.PureComponent<IProps, IState> {
   };
 
   private handleUpdateNotAvailable = (event: any, msg: string) => {
+    const { updateNotAvailableToast } = this.props.langData;
+
     Logger.log(msg);
     AppToaster.show({
       intent: 'primary',
       icon: 'info-sign',
-      message: 'You are using the latest version.'
+      message: updateNotAvailableToast.message
     });
 
     this.removeUpdateListeners();
@@ -237,11 +243,13 @@ class App extends React.PureComponent<IProps, IState> {
   private handleContextMenu = (e: any, item: any) => {
     e.preventDefault();
 
+    const { contextMenu } = this.props.langData;
+
     const menu = React.createElement(
       Menu,
       { className: 'bp3-ui-text' }, // empty props
       React.createElement(MenuItem, {
-        text: 'Edit...',
+        text: contextMenu.edit,
         icon: 'page-layout',
         onClick: () => {
           const selectedItem: any = this.listRef.current!.getSelectedItem();
@@ -259,7 +267,7 @@ class App extends React.PureComponent<IProps, IState> {
         }
       }),
       React.createElement(MenuItem, {
-        text: 'Delete',
+        text: contextMenu.delete,
         icon: 'delete',
         onClick: () => {
           this.yesNoDialogRef.current!.open('Delete item', 'Are you sure to delete?', () => {
@@ -271,7 +279,7 @@ class App extends React.PureComponent<IProps, IState> {
         }
       }),
       React.createElement(MenuItem, {
-        text: 'Properties...',
+        text: contextMenu.properties,
         icon: 'properties',
         onClick: () => {
           this.windowAppPropertyDialogRef.current!.open(this.listRef.current!.getSelectedItem());
@@ -308,6 +316,7 @@ class App extends React.PureComponent<IProps, IState> {
 
   render() {
     Logger.logRenderInfo(this);
+    const { mainWindow } = this.props.langData;
 
     const newState = this.props.stateFGM;
     let stateText: string = '';
@@ -315,17 +324,17 @@ class App extends React.PureComponent<IProps, IState> {
 
     switch (newState) {
       case FGM_STATE.STARTED:
-        stateText = 'started';
+        stateText = mainWindow.stateStarted;
         stateColor = Colors.GREEN5;
         break;
 
       case FGM_STATE.PAUSED:
-        stateText = 'paused';
+        stateText = mainWindow.statePaused;
         stateColor = Colors.GOLD3;
         break;
 
       case FGM_STATE.STOPPED:
-        stateText = 'stopped';
+        stateText = mainWindow.stateStopped;
         stateColor = Colors.GRAY3;
         break;
     }
@@ -337,7 +346,7 @@ class App extends React.PureComponent<IProps, IState> {
           <header>
             <Navbar style={{ height: 'auto', overflow: 'hidden' }}>
               <NavbarGroup align={Alignment.LEFT}>
-                <NavbarHeading>Favorites</NavbarHeading>
+                <NavbarHeading>{mainWindow.headerName}</NavbarHeading>
                 <Button
                   className={Classes.MINIMAL}
                   icon='info-sign'
@@ -409,9 +418,13 @@ class App extends React.PureComponent<IProps, IState> {
 
 const mapStateToProps = (state: IAppState, ownProps?: any) => {
   Logger.log('mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
   return {
     listAppToMonitor: state.listAppToMonitor,
-    stateFGM: state.stateFGM
+    stateFGM: state.stateFGM,
+    langData: langData
   };
 };
 

@@ -2,6 +2,7 @@ import Actions from './Actions';
 import { createStore, Store, bindActionCreators } from 'redux';
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IReduxAction } from './Types';
+import { getDefaultLanguage } from '../languages';
 const isDev = require('electron-is-dev');
 
 const appState: IAppState = {
@@ -10,7 +11,8 @@ const appState: IAppState = {
   watchMode: FGM_WATCH_MODE.ALL_WINDOWS,
   launchAtLogon: false,
   closeToTray: false,
-  windowBound: { x: 0, y: 0, width: 0, height: 0 }
+  windowBound: { x: 0, y: 0, width: 0, height: 0 },
+  currentLanguage: getDefaultLanguage()
 };
 
 const blackList = ['stateFGM', 'launchAtLogon'];

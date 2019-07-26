@@ -1,0 +1,23 @@
+{
+  "mainWindow": {
+    "headerName": "Favorites",
+    "stateStarted": "started",
+    "statePaused": "paused",
+    "stateStopped": "stopped"
+  },
+
+  "updateAvailableToast": {
+    "message": "A new update is avaiable.",
+    "actionName": "Install update"
+  },
+
+  "updateNotAvailableToast": {
+    "message": "You are using the latest version."
+  },
+
+  "contextMenu": {
+    "edit": "Edit...",
+    "delete": "Delete",
+    "properties": "Properties..."
+  }
+}
