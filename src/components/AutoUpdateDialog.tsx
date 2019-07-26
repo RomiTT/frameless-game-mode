@@ -5,6 +5,8 @@ import { Dialog, Button, ProgressBar } from '@blueprintjs/core/lib/esm/component
 import { Classes } from '@blueprintjs/core';
 import styles from './AutoUpdateDialog.module.scss';
 
+const isDev = require('electron-is-dev');
+
 interface IProps {}
 
 interface IState {
@@ -39,13 +41,13 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
 
   private handleDownloadProgress = (event: any, progressInfo: IUpdateProgressInfo) => {
     Logger.log(progressInfo);
-    this.setState({ progressValue: progressInfo.transferred / progressInfo.total });
+    this.setState({ progressValue: progressInfo.percent / 100 });
   };
 
   private handleUpdateDownloaded = (event: any, msg: string) => {
     Logger.log(msg);
     this.handleClose();
-    AutoUpdater.installUpdate();
+    if (!isDev) AutoUpdater.installUpdate();
   };
 
   private handleUpdateError = (event: any, error: any) => {

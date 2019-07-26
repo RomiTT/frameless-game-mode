@@ -126,14 +126,9 @@ function createWindow() {
     webContents.send('update-not-available', 'An update not available');
   });
 
-  autoUpdater.on('download-progress', (bytesPerSecond, percent, total, transferred) => {
-    console.log(`${bytesPerSecond}, ${percent}, ${total}, ${transferred}`);
-    webContents.send('download-progress', {
-      bytesPerSecond: bytesPerSecond,
-      percent: percent,
-      total: total,
-      transferred: transferred
-    });
+  autoUpdater.on('download-progress', progressInfo => {
+    console.log('download-progress - ', progressInfo);
+    webContents.send('download-progress', progressInfo);
   });
 
   autoUpdater.on('update-downloaded', event => {
