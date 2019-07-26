@@ -1,8 +1,8 @@
 import React from 'react';
-import store from '../store/Store';
+import store from '../../store/Store';
 import { Button, Classes, Dialog, Divider, Radio, RadioGroup, Switch } from '@blueprintjs/core';
-import { FGM_WATCH_MODE } from '../lib/FGM';
-import Logger from '../lib/Logger';
+import { FGM_WATCH_MODE } from '../../lib/FGM';
+import Logger from '../../lib/Logger';
 import styles from './SettingsDialog.module.scss';
 
 interface IProps {}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Classes } from '@blueprintjs/core';
-import SetWindowAppPositionView from './SetWindowAppPositionView';
-import { FGM_WINDOW_POSITION, FGM } from '../lib/FGM';
-import Logger from '../lib/Logger';
+import SetWindowAppPositionView from '../SetWindowAppPositionView/SetWindowAppPositionView';
+import { FGM_WINDOW_POSITION, FGM } from '../../lib/FGM';
+import Logger from '../../lib/Logger';
 import styles from './SetWindowAppPositionPage.module.scss';
 
 interface IProps {

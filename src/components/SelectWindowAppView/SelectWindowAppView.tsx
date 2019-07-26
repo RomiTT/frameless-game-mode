@@ -1,7 +1,7 @@
-import FloatingButton from './FloatingButton';
+import FloatingButton from '../FloatingButton';
 import React from 'react';
-import WindowAppList from './WindowAppList';
-import Logger from '../lib/Logger';
+import WindowAppList from '../WindowAppList/WindowAppList';
+import Logger from '../../lib/Logger';
 import styles from './SelectWindowAppView.module.scss';
 
 interface IProps {

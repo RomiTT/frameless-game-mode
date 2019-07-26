@@ -1,11 +1,11 @@
-import AddWindowAppDialog from './components/AddWindowAppDialog';
-import AppLayout from './components/AppLayout';
-import FloatingButton from './components/FloatingButton';
+import AddWindowAppDialog from '../AddWindowAppDialog/AddWindowAppDialog';
+import AppLayout from '../AppLayout/AppLayout';
+import FloatingButton from '../FloatingButton';
 import React from 'react';
-import SettingsDialog from './components/SettingsDialog';
-import Tasks from './store/Tasks';
-import WindowAppList from './components/WindowAppList';
-import YesNoDialog from './components/YesNoDialog';
+import SettingsDialog from '../SettingsDialog/SettingsDialog';
+import Tasks from '../../store/Tasks';
+import WindowAppList from '../WindowAppList/WindowAppList';
+import YesNoDialog from '../YesNoDialog/YesNoDialog';
 import {
   Alignment,
   Button,
@@ -22,17 +22,17 @@ import {
   Spinner
 } from '@blueprintjs/core';
 import { connect } from 'react-redux';
-import { FGM_STATE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE, FGM_WATCH_MODE } from './lib/FGM';
-import { IAppState } from './store/Types';
-import { TitleBar, TitleBarTheme } from './components/FramelessTitleBar';
-import store from './store/Store';
-import Logger from './lib/Logger';
-import WindowAppPropertyDialog from './components/WindowAppPropertyDialog';
-import EditWindowAppDialog from './components/EditWindowAppDialog';
-import AboutDialog from './components/AboutDialog';
-import { AppToaster } from './lib/Toaster';
-import AutoUpdater from './lib/AutoUpdater';
-import AutoUpdateDialog from './components/AutoUpdateDialog';
+import { FGM_STATE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE, FGM_WATCH_MODE } from '../../lib/FGM';
+import { IAppState } from '../../store/Types';
+import { TitleBar, TitleBarTheme } from '../FramelessTitleBar';
+import store from '../../store/Store';
+import Logger from '../../lib/Logger';
+import WindowAppPropertyDialog from '../WindowAppPropertyDialog/WindowAppPropertyDialog';
+import EditWindowAppDialog from '../EditWindowAppDialog/EditWindowAppDialog';
+import AboutDialog from '../AboutDialog/AboutDialog';
+import { AppToaster } from '../../lib/Toaster';
+import AutoUpdater from '../../lib/AutoUpdater';
+import AutoUpdateDialog from '../AutoUpdateDialog/AutoUpdateDialog';
 import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/esm/components';
-import { FGM_WINDOW_SIZE } from '../lib/FGM';
-import Logger from '../lib/Logger';
+import { FGM_WINDOW_SIZE } from '../../lib/FGM';
+import Logger from '../../lib/Logger';
 import styles from './SetWindowAppSizeView.module.scss';
 
 interface IProps {

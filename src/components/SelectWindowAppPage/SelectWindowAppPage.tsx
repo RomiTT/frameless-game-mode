@@ -1,8 +1,8 @@
 import React from 'react';
-import SelectWindowAppView from './SelectWindowAppView';
-import Tasks from '../store/Tasks';
+import SelectWindowAppView from '../SelectWindowAppView/SelectWindowAppView';
+import Tasks from '../../store/Tasks';
 import { Button, Classes } from '@blueprintjs/core';
-import Logger from '../lib/Logger';
+import Logger from '../../lib/Logger';
 import styles from './SelectWindowAppPage.module.scss';
 
 interface IProps {

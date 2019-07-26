@@ -1,6 +1,6 @@
 import React from 'react';
-import Logger from '../lib/Logger';
-import AutoUpdater, { IUpdateProgressInfo } from '../lib/AutoUpdater';
+import Logger from '../../lib/Logger';
+import AutoUpdater, { IUpdateProgressInfo } from '../../lib/AutoUpdater';
 import { Dialog, Button, ProgressBar } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core';
 import styles from './AutoUpdateDialog.module.scss';

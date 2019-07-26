@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from '@blueprintjs/core/lib/esm/components';
-import { FGM_WINDOW_SIZE } from '../lib/FGM';
-import SetWindowAppSizeView from './SetWindowAppSizeView';
-import Logger from '../lib/Logger';
+import { FGM_WINDOW_SIZE } from '../../lib/FGM';
+import SetWindowAppSizeView from '../SetWindowAppSizeView/SetWindowAppSizeView';
+import Logger from '../../lib/Logger';
 import { Classes } from '@blueprintjs/core';
 import styles from './SetWindowAppSizePage.module.scss';
 

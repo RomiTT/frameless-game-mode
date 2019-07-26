@@ -1,12 +1,12 @@
 import React from 'react';
-import SelectWindowAppPage from './SelectWindowAppPage';
-import SetWindowAppPositionPage from './SetWindowAppPositionPage';
-import SetWindowAppSizePage from './SetWindowAppSizePage';
+import SelectWindowAppPage from '../SelectWindowAppPage/SelectWindowAppPage';
+import SetWindowAppPositionPage from '../SetWindowAppPositionPage/SetWindowAppPositionPage';
+import SetWindowAppSizePage from '../SetWindowAppSizePage/SetWindowAppSizePage';
 import { Dialog, IconName } from '@blueprintjs/core/lib/esm/components';
-import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
+import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../../lib/FGM';
 import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import produce from 'immer';
-import Logger from '../lib/Logger';
+import Logger from '../../lib/Logger';
 import styles from './AddWindowAppDialog.module.scss';
 
 interface DialogPageInfo {

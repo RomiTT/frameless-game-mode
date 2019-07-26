@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Dialog, Icon } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
-import Logger from '../lib/Logger';
-import YesNoDialog from './YesNoDialog';
+import Logger from '../../lib/Logger';
+import YesNoDialog from '../YesNoDialog/YesNoDialog';
 import styles from './AboutDialog.module.scss';
 
 const { remote, shell, ipcRenderer } = require('electron');

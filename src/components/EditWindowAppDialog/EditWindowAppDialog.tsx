@@ -1,10 +1,10 @@
 import React from 'react';
 import { Dialog } from '@blueprintjs/core/lib/esm/components/dialog/dialog';
-import Logger from '../lib/Logger';
-import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../lib/FGM';
+import Logger from '../../lib/Logger';
+import { FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../../lib/FGM';
 import { Button, Classes, Tabs, Tab } from '@blueprintjs/core';
-import SetWindowAppPositionView from './SetWindowAppPositionView';
-import SetWindowAppSizeView from './SetWindowAppSizeView';
+import SetWindowAppPositionView from '../SetWindowAppPositionView/SetWindowAppPositionView';
+import SetWindowAppSizeView from '../SetWindowAppSizeView/SetWindowAppSizeView';
 import styles from './EditWindowAppDialog.module.scss';
 
 interface IProps {}

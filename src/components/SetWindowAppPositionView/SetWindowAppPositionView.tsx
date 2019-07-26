@@ -1,6 +1,6 @@
 import React from 'react';
-import { FGM_WINDOW_POSITION } from '../lib/FGM';
-import Logger from '../lib/Logger';
+import { FGM_WINDOW_POSITION } from '../../lib/FGM';
+import Logger from '../../lib/Logger';
 import styles from './SetWindowAppPositionView.module.scss';
 
 interface IProps {
