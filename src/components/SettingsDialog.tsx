@@ -79,23 +79,31 @@ class SettingsDialog extends React.PureComponent<IProps, IState> {
       >
         <div className={Classes.DIALOG_BODY}>
           <Switch
+            className={styles.label}
             checked={this.state.autoLaunch}
             label='Launch at login'
             onChange={this.onChangeFromLaunchAtLogon}
           />
           <Switch
+            className={styles.label}
             checked={this.state.closeToTray}
             label='Close to tray'
             onChange={this.onChangeFromCloseToTray}
           />
           <br />
           <RadioGroup
+            className={styles.label}
             label='Watch mode'
             onChange={this.onChangeFromWatchMoe}
             selectedValue={this.state.watchMode}
           >
-            <Radio label='All windows' value={FGM_WATCH_MODE.ALL_WINDOWS} />
             <Radio
+              className={styles.label}
+              label='All windows'
+              value={FGM_WATCH_MODE.ALL_WINDOWS}
+            />
+            <Radio
+              className={styles.label}
               label='Only the foreground window'
               value={FGM_WATCH_MODE.ONLY_FOR_FOREGROUND_WINDOW}
             />
