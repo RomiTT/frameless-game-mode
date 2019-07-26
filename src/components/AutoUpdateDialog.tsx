@@ -76,14 +76,14 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
       if (this.error.statusCode === undefined) {
         return (
           <>
-            <p className={styles.label}>{this.error}</p>
+            <p className={styles.error}>{this.error}</p>
           </>
         );
       } else {
         return (
           <>
-            <p className={styles.label}>Error occured.</p>
-            <p className={styles.label}>
+            <p className={styles.error}>Error occured.</p>
+            <p className={styles.error}>
               {this.error.name} - {this.error.statusCode}
             </p>
           </>
