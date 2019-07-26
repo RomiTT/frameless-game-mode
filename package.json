@@ -1,6 +1,6 @@
 {
   "name": "frameless-game-mode",
-  "version": "0.9.1-beta",
+  "version": "0.9.2-beta",
   "private": true,
   "main": "public/electron.js",
   "scripts": {
@@ -21,6 +21,7 @@
   },
   "build": {
     "appId": "romitt.frameless-game-mode",
+    "artifactName": "frameless-game-mode-setup-${version}.${ext}",
     "productName": "Frameless Game Mode",
     "copyright": "Copyright © 2019 ${author}",
     "win": {

@@ -71,11 +71,22 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
 
   private renderBody = () => {
     if (this.state.errorOccured) {
-      return (
-        <p className={styles.label}>
-          {this.error.name} - {this.error.statusCode}
-        </p>
-      );
+      if (this.error.statusCode === undefined) {
+        return (
+          <>
+            <p className={styles.label}>{this.error}</p>
+          </>
+        );
+      } else {
+        return (
+          <>
+            <p className={styles.label}>Error occured.</p>
+            <p className={styles.label}>
+              {this.error.name} - {this.error.statusCode}
+            </p>
+          </>
+        );
+      }
     }
 
     return (
@@ -91,6 +102,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
+        onClose={this.state.errorOccured ? this.handleClose : undefined}
         canOutsideClickClose={false}
         title='A new update'
         icon='info-sign'

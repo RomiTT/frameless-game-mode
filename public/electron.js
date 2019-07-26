@@ -143,9 +143,12 @@ function createWindow() {
   });
 
   autoUpdater.on('error', error => {
-    console.log('update-error');
-    console.error(error);
-    webContents.send('update-error', error);
+    console.log('update-error - ', error);
+    if (error.statusCode === undefined) {
+      webContents.send('update-error', error.toString());
+    } else {
+      webContents.send('update-error', error);
+    }
   });
 }
 
