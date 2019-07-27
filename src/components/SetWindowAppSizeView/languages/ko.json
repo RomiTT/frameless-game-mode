@@ -1,0 +1,8 @@
+{
+  "wsizeBasedOnClientArea": "윈도우 클라이언트 영역(윈도우 프레임 영역 제외)",
+  "wsizeBasedOnWindowArea": "윈도우 영역 (윈도우 프레임 영역 포함)",
+  "wsizeFullScreen": "전체 화면",
+  "wsizeCustom": "사용자 지정",
+  "width": "너비:",
+  "height": "높이:"
+}

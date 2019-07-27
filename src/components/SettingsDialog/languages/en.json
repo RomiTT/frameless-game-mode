@@ -1,0 +1,11 @@
+{
+  "title": "Settings",
+  "launchAtLogon": "Launch at logon",
+  "closeToTray": "Close to tray",
+  "watchMode": "Watch mode",
+  "allWindows": "All windows",
+  "onlyForegroundWindow": "Only the foreground window",
+  "languages": "Languages",
+  "buttonOK": "OK",
+  "buttonCancel": "Cancel"
+}

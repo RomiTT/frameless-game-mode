@@ -1,0 +1,28 @@
+@import '../../lib/scss/variables.scss';
+
+.dialog {
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-app-region: no-drag;
+  cursor: default;
+
+  width: $settings-dialog-width;
+
+  .label {
+    font-size: $dialog-font-size;
+  }
+
+  .divider {
+    margin-bottom: 10px;
+  }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-size: $dialog-font-size;
+      margin-bottom: 10px;
+    }
+  }
+}

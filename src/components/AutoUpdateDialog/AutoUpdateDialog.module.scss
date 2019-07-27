@@ -1,0 +1,22 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+@import '../../lib/scss/variables.scss';
+
+.dialog {
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-app-region: no-drag;
+  cursor: default;
+
+  width: 350px;
+
+  .label {
+    font-size: $dialog-font-size;
+    color: $gray4;
+    padding-bottom: 10px;
+  }
+
+  .error {
+    @extend .label;
+    color: $red5;
+  }
+}

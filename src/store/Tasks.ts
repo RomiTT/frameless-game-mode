@@ -4,6 +4,7 @@ import { FGM, FGM_WATCH_MODE, FGM_WINDOW_POSITION, FGM_WINDOW_SIZE } from '../li
 import { IWindowBound, IWindowApp } from './Types';
 import { LaunchAtLogon, schedulerName, appArgs } from '../lib/LaunchAtLogon';
 import Logger from '../lib/Logger';
+import { Language, getLanguageName } from '../lib/lang';
 
 class FGMTask {
   constructor() {
@@ -71,8 +72,7 @@ class FGMTask {
     width: number,
     height: number
   ) => {
-    const appState = store.getState();
-    const index = appState.listAppToMonitor.findIndex(obj => {
+    const index = store.getState().listAppToMonitor.findIndex(obj => {
       return (obj as any).key === item.key;
     });
 
@@ -123,11 +123,15 @@ class FGMTask {
   };
 
   setWatchMode = (mode: FGM_WATCH_MODE) => {
+    if (mode === store.getState().watchMode) return;
+
     FGM.setMode(mode);
     Actions.setWatchMode(mode);
   };
 
   setLaunchAtLogon = async (val: boolean) => {
+    if (val === store.getState().launchAtLogon) return;
+
     try {
       await LaunchAtLogon.set(val, schedulerName, process.execPath, appArgs);
       const result = await LaunchAtLogon.get(schedulerName);
@@ -138,11 +142,30 @@ class FGMTask {
   };
 
   setCloseToTray = (val: boolean) => {
+    if (val === store.getState().closeToTray) return;
+
     Actions.setCloseToTray(val);
   };
 
   setWindowBound = (bound: IWindowBound) => {
+    const winBound = store.getState().windowBound;
+    if (
+      bound.x === winBound.x &&
+      bound.y === winBound.y &&
+      bound.width === winBound.width &&
+      bound.height === winBound.height
+    )
+      return;
+
     Actions.setWindowBound(bound);
+  };
+
+  setLanguage = (language: Language) => {
+    Logger.log('language:', getLanguageName(language));
+    //Logger.log('currentLanguage:', getLanguageName(this.appState.currentLanguage));
+    if (language === store.getState().currentLanguage) return;
+
+    Actions.setLanguage(language);
   };
 
   start = () => {

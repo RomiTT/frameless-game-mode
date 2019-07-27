@@ -1,4 +1,5 @@
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
+import { Language } from '../lib/lang';
 
 export interface IWindowBound {
   readonly x: number;
@@ -14,6 +15,7 @@ export interface IAppState {
   readonly launchAtLogon: boolean;
   readonly closeToTray: boolean;
   readonly windowBound: IWindowBound;
+  readonly currentLanguage: Language;
 }
 
 export interface IReduxAction {

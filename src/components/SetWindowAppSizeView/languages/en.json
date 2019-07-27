@@ -1,0 +1,8 @@
+{
+  "wsizeBasedOnClientArea": "Window-Client area (excluded frame-area)",
+  "wsizeBasedOnWindowArea": "Window area (included frame-area)",
+  "wsizeFullScreen": "Full-screen",
+  "wsizeCustom": "Custom size",
+  "width": "Width:",
+  "height": "Height:"
+}

@@ -1,6 +1,7 @@
 import produce from 'immer';
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IWindowBound } from './Types';
+import { Language } from '../lib/lang';
 
 const Actions = {
   loadAppState: (val: object) => ({
@@ -15,6 +16,17 @@ const Actions = {
           }
         }
       });
+    }
+  }),
+
+  batchActions: (actions: any[]) => ({
+    type: 'ACTION_BATCH_ACTIONS',
+    reducer: (state: IAppState) => {
+      let result = state;
+      for (let action of actions) {
+        result = action.reducer(result);
+      }
+      return result;
     }
   }),
 
@@ -105,6 +117,15 @@ const Actions = {
     reducer: (state: IAppState) => {
       return produce(state, draft => {
         draft.windowBound = val;
+      });
+    }
+  }),
+
+  setLanguage: (val: Language) => ({
+    type: 'ACTION_SET_LANGUAGE',
+    reducer: (state: IAppState) => {
+      return produce(state, draft => {
+        draft.currentLanguage = val;
       });
     }
   })
