@@ -317,6 +317,21 @@ class App extends React.PureComponent<IProps, IState> {
         width: number,
         height: number
       ) => {
+        const index = this.props.listAppToMonitor.findIndex(it => {
+          return (it as any).key === item.key;
+        });
+
+        if (index > -1) {
+          AppToaster.show({
+            intent: 'primary',
+            icon: 'info-sign',
+            message: `'${item.processName}' already exists.`,
+            timeout: 3000
+          });
+
+          return;
+        }
+
         this.taskFGM.addApp(item, wpos, wsize, width, height);
         this.taskFGM.save();
         this.listRef.current!.forceUpdate();
