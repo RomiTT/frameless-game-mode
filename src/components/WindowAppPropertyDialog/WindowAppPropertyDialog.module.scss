@@ -1,6 +1,8 @@
 @import '~@blueprintjs/core/lib/scss/variables';
 @import '../../lib/scss/variables.scss';
 
+$margin-left: 10px;
+
 .dialog {
   -webkit-user-select: none;
   -webkit-user-drag: none;
@@ -12,14 +14,16 @@
 
   .container {
     display: flex;
+    flex-direction: column;
     margin-bottom: 15px;
 
     .name {
       font-size: $dialog-font-size;
+      margin-bottom: 2px;
     }
 
     .desc {
-      margin-left: 8px;
+      margin-left: $margin-left;
       font-size: $dialog-font-size;
       color: $gray4;
     }
@@ -29,7 +33,7 @@
 .wposView {
   width: 50%;
   height: 60px;
-  margin-left: 8px;
+  margin-left: $margin-left;
   display: flex;
   flex-direction: column;
 

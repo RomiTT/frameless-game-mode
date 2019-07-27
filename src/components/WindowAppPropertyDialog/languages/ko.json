@@ -1,9 +1,9 @@
 {
   "title": "속성",
-  "process": "프로세스:",
-  "windowTitle": "제목:",
-  "windowPositionMode": "위치:",
-  "windowSizeMode": "크기:",
+  "process": "프로세스",
+  "windowTitle": "제목",
+  "windowPositionMode": "위치",
+  "windowSizeMode": "크기",
   "buttonOK": "확인",
   "wsizeBasedOnClientArea": "윈도우 클라이언트 영역(윈도우 프레임 영역 제외)",
   "wsizeBasedOnWindowArea": "윈도우 영역 (윈도우 프레임 영역 포함)",

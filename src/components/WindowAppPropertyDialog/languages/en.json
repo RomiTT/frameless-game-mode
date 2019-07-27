@@ -1,9 +1,9 @@
 {
   "title": "Properties",
-  "process": "Process:",
-  "windowTitle": "Title:",
-  "windowPositionMode": "Position:",
-  "windowSizeMode": "Size:",
+  "process": "Process",
+  "windowTitle": "Title",
+  "windowPositionMode": "Position",
+  "windowSizeMode": "Size",
   "buttonOK": "OK",
   "wsizeBasedOnClientArea": "Window-Client area (excluded frame-area)",
   "wsizeBasedOnWindowArea": "Window area (included frame-area)",
