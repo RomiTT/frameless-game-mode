@@ -12,9 +12,9 @@
 
   .container {
     display: flex;
+    margin-bottom: 15px;
 
     .name {
-      margin-bottom: 8px;
       font-size: $dialog-font-size;
     }
 

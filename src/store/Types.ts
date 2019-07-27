@@ -1,5 +1,5 @@
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
-import { Language } from '../languages';
+import { Language } from '../lib/lang';
 
 export interface IWindowBound {
   readonly x: number;

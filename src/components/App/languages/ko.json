@@ -19,5 +19,10 @@
     "edit": "편집...",
     "delete": "삭제",
     "properties": "속성..."
+  },
+
+  "deleteMessageBox": {
+    "title": "요소 삭제",
+    "message": "정말로 삭제 하시겠습니까?"
   }
 }

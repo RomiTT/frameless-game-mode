@@ -4,10 +4,16 @@ import AutoUpdater, { IUpdateProgressInfo } from '../../lib/AutoUpdater';
 import { Dialog, Button, ProgressBar } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core';
 import styles from './AutoUpdateDialog.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
 const isDev = require('electron-is-dev');
 
-interface IProps {}
+interface IProps {
+  langData: any;
+  getRef: any;
+}
 
 interface IState {
   isOpen: boolean;
@@ -23,6 +29,11 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
   };
 
   error: any = null;
+
+  constructor(props: IProps) {
+    super(props);
+    this.props.getRef.current = this;
+  }
 
   open = () => {
     AutoUpdater.onDownloadProgress(this.handleDownloadProgress);
@@ -63,7 +74,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
           className='dialogButtonPadding'
           onClick={this.handleClose}
           autoFocus={true}
-          text='Close'
+          text={this.props.langData.buttonClose}
         />
       );
     }
@@ -72,6 +83,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
   };
 
   private renderBody = () => {
+    const { langData } = this.props;
     if (this.state.errorOccured) {
       if (this.error.statusCode === undefined) {
         return (
@@ -82,7 +94,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
       } else {
         return (
           <>
-            <p className={styles.error}>Error occured.</p>
+            <p className={styles.error}>{langData.errorLabel}</p>
             <p className={styles.error}>
               {this.error.name} - {this.error.statusCode}
             </p>
@@ -93,7 +105,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
 
     return (
       <>
-        <p className={styles.label}>Downloading a new update.</p>
+        <p className={styles.label}>{langData.progressLabel}</p>
         <ProgressBar intent='primary' value={this.state.progressValue} />
       </>
     );
@@ -106,7 +118,7 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
         className={`bp3-dark  ${styles.dialog}`}
         onClose={this.state.errorOccured ? this.handleClose : undefined}
         canOutsideClickClose={false}
-        title='A new update'
+        title={this.props.langData.title}
         icon='info-sign'
         lazy={false}
         {...this.state}
@@ -120,4 +132,14 @@ class AutoUpdateDialog extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default AutoUpdateDialog;
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('AutoUpdateDialog-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(AutoUpdateDialog);

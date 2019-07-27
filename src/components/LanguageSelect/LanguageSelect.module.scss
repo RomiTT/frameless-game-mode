@@ -1,0 +1,12 @@
+@import '~@blueprintjs/core/lib/scss/variables';
+@import '../../lib/scss/variables.scss';
+
+.select {
+  .button {
+    width: 100px;
+  }
+}
+
+.item {
+  font-size: $dialog-font-size;
+}

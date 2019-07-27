@@ -4,8 +4,12 @@ import Tasks from '../../store/Tasks';
 import { Button, Classes } from '@blueprintjs/core';
 import Logger from '../../lib/Logger';
 import styles from './SelectWindowAppPage.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
 interface IProps {
+  langData: any;
   onNext: (item: any) => void;
   onCancel: () => void;
 }
@@ -16,7 +20,7 @@ interface IState {
   selectedItem: any;
 }
 
-export default class SelectWindowAppPage extends React.Component<IProps, IState> {
+class SelectWindowAppPage extends React.Component<IProps, IState> {
   private taskFGM = Tasks.FGM;
   private pendingUpdateList = false;
   private selectWindowAppViewRef: React.RefObject<SelectWindowAppView> = React.createRef();
@@ -65,6 +69,8 @@ export default class SelectWindowAppPage extends React.Component<IProps, IState>
 
   render() {
     Logger.logRenderInfo(this);
+    const { langData } = this.props;
+
     return (
       <>
         <div className={`${Classes.DIALOG_BODY} ${styles.dialogBody}`}>
@@ -82,12 +88,28 @@ export default class SelectWindowAppPage extends React.Component<IProps, IState>
               intent='primary'
               disabled={this.state.selectedItem === null}
               className='dialogButtonPadding'
-              text='Next'
+              text={langData.buttonNext}
             />
-            <Button onClick={this.props.onCancel} className='dialogButtonPadding' text='Cancel' />
+            <Button
+              onClick={this.props.onCancel}
+              className='dialogButtonPadding'
+              text={langData.buttonCancel}
+            />
           </div>
         </div>
       </>
     );
   }
 }
+
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('SelectWindowAppPage-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(SelectWindowAppPage);

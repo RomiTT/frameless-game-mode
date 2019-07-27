@@ -8,6 +8,9 @@ import { MaybeElement } from '@blueprintjs/core/lib/esm/common';
 import produce from 'immer';
 import Logger from '../../lib/Logger';
 import styles from './AddWindowAppDialog.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
 interface DialogPageInfo {
   page: any;
@@ -15,7 +18,10 @@ interface DialogPageInfo {
   icon: IconName | MaybeElement;
 }
 
-interface IProps {}
+interface IProps {
+  langData: any;
+  getRef: any;
+}
 
 interface IState {
   isOpen: boolean;
@@ -41,6 +47,7 @@ class AddWindowAppDialog extends React.Component<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+    this.props.getRef.current = this;
     this.reset();
     this.state = {
       isOpen: false,
@@ -81,35 +88,43 @@ class AddWindowAppDialog extends React.Component<IProps, IState> {
     this.setState({ curPageInfo: this.dialogPages[len - 1] });
   };
 
-  private selectAppPageInfo = (): DialogPageInfo => ({
-    page: <SelectWindowAppPage onNext={this.onNextFromSelectAppPage} onCancel={this.handleClose} />,
-    title: 'Select a app',
-    icon: 'list'
-  });
+  private selectAppPageInfo = (): DialogPageInfo => {
+    return {
+      page: (
+        <SelectWindowAppPage onNext={this.onNextFromSelectAppPage} onCancel={this.handleClose} />
+      ),
+      title: this.props.langData.selectAppPageTitle,
+      icon: 'list'
+    };
+  };
 
-  private setPositionPageInfo = (): DialogPageInfo => ({
-    page: (
-      <SetWindowAppPositionPage
-        onPrev={this.onPrev}
-        onNext={this.onNextFromSetPositionPage}
-        onCancel={this.handleClose}
-      />
-    ),
-    title: 'Set position',
-    icon: 'page-layout'
-  });
+  private setPositionPageInfo = (): DialogPageInfo => {
+    return {
+      page: (
+        <SetWindowAppPositionPage
+          onPrev={this.onPrev}
+          onNext={this.onNextFromSetPositionPage}
+          onCancel={this.handleClose}
+        />
+      ),
+      title: this.props.langData.setPositionPageTitle,
+      icon: 'page-layout'
+    };
+  };
 
-  private setSizePageInfo = (): DialogPageInfo => ({
-    page: (
-      <SetWindowAppSizePage
-        onPrev={this.onPrev}
-        onCancel={this.handleClose}
-        onOK={this.handleFinish}
-      />
-    ),
-    title: 'Set size',
-    icon: 'page-layout'
-  });
+  private setSizePageInfo = (): DialogPageInfo => {
+    return {
+      page: (
+        <SetWindowAppSizePage
+          onPrev={this.onPrev}
+          onCancel={this.handleClose}
+          onOK={this.handleFinish}
+        />
+      ),
+      title: this.props.langData.setSizePageTitle,
+      icon: 'page-layout'
+    };
+  };
 
   private onPrev = () => {
     this.popPage();
@@ -166,4 +181,14 @@ class AddWindowAppDialog extends React.Component<IProps, IState> {
   }
 }
 
-export default AddWindowAppDialog;
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('AddWindowAppDialog-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(AddWindowAppDialog);

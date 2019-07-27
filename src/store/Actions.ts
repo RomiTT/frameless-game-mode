@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IWindowBound } from './Types';
-import { Language } from '../languages';
+import { Language } from '../lib/lang';
 
 const Actions = {
   loadAppState: (val: object) => ({
@@ -16,6 +16,17 @@ const Actions = {
           }
         }
       });
+    }
+  }),
+
+  batchActions: (actions: any[]) => ({
+    type: 'ACTION_BATCH_ACTIONS',
+    reducer: (state: IAppState) => {
+      let result = state;
+      for (let action of actions) {
+        result = action.reducer(result);
+      }
+      return result;
     }
   }),
 

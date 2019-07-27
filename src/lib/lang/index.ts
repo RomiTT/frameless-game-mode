@@ -2,12 +2,12 @@ const app: any = require('electron').remote.app;
 
 export enum Language {
   English,
-  Korea
+  Korean
 }
 
 export enum Locale {
   English = 'en',
-  Korea = 'ko'
+  Korean = 'ko'
 }
 
 export function getLanguageName(lang: Language): string {
@@ -15,7 +15,7 @@ export function getLanguageName(lang: Language): string {
 }
 
 export function getAllLanguages(): Language[] {
-  return Object.values(Language);
+  return [0, 1];
 }
 
 export function getDefaultLanguage(): Language {
@@ -24,7 +24,7 @@ export function getDefaultLanguage(): Language {
 
   switch (locale) {
     case 'ko': {
-      lang = Language.Korea;
+      lang = Language.Korean;
       break;
     }
   }

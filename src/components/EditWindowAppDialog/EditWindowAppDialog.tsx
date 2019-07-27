@@ -6,8 +6,14 @@ import { Button, Classes, Tabs, Tab } from '@blueprintjs/core';
 import SetWindowAppPositionView from '../SetWindowAppPositionView/SetWindowAppPositionView';
 import SetWindowAppSizeView from '../SetWindowAppSizeView/SetWindowAppSizeView';
 import styles from './EditWindowAppDialog.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
-interface IProps {}
+interface IProps {
+  langData: any;
+  getRef: any;
+}
 
 interface IState {
   isOpen: boolean;
@@ -29,6 +35,7 @@ class EditWindowAppDialog extends React.PureComponent<IProps, IState> {
 
   constructor(props: IProps) {
     super(props);
+    this.props.getRef.current = this;
     this.reset();
   }
 
@@ -110,22 +117,24 @@ class EditWindowAppDialog extends React.PureComponent<IProps, IState> {
 
   render() {
     Logger.logRenderInfo(this);
+    const { langData } = this.props;
+
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
         canOutsideClickClose={false}
         onClose={this.handleClose}
-        title='Edit'
+        title={langData.title}
         icon='page-layout'
         lazy={false}
         {...this.state}
       >
         <div className={`${Classes.DIALOG_BODY} ${styles.dialogBody}`}>
           <Tabs>
-            <Tab id='wpos' title='Position' panel={this.editPositionPanel} />
-            <Tab id='wsize' title='Size' panel={this.editSizePanel} />
+            <Tab id='wpos' title={langData.wposTabPanelTitle} panel={this.editPositionPanel} />
+            <Tab id='wsize' title={langData.wsizeTabPanelTitle} panel={this.editSizePanel} />
           </Tabs>
-          <p className={styles.notify}>These changes will be applied from the next launch.</p>
+          <p className={styles.notify}>{langData.infoMessage}</p>
         </div>
         <div className={Classes.DIALOG_FOOTER}>
           <div className={Classes.DIALOG_FOOTER_ACTIONS}>
@@ -133,10 +142,14 @@ class EditWindowAppDialog extends React.PureComponent<IProps, IState> {
               className='dialogButtonPadding'
               onClick={this.handleOK}
               intent='primary'
-              text='OK'
+              text={langData.buttonOK}
               disabled={!this.isChanged()}
             />
-            <Button onClick={this.handleClose} className='dialogButtonPadding' text='Cancel' />
+            <Button
+              onClick={this.handleClose}
+              className='dialogButtonPadding'
+              text={langData.buttonCancel}
+            />
           </div>
         </div>
       </Dialog>
@@ -144,4 +157,14 @@ class EditWindowAppDialog extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default EditWindowAppDialog;
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('EditWindowAppDialog-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(EditWindowAppDialog);

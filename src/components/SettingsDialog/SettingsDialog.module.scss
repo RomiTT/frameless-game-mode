@@ -15,4 +15,14 @@
   .divider {
     margin-bottom: 10px;
   }
+
+  .container {
+    display: flex;
+    flex-direction: column;
+
+    .label {
+      font-size: $dialog-font-size;
+      margin-bottom: 10px;
+    }
+  }
 }

@@ -3,8 +3,14 @@ import { Button, Dialog } from '@blueprintjs/core/lib/esm/components';
 import { Classes } from '@blueprintjs/core/lib/esm/common';
 import Logger from '../../lib/Logger';
 import styles from './YesNoDialog.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
-interface IProps {}
+interface IProps {
+  langData: any;
+  getRef: any;
+}
 
 interface IState {
   isOpen: boolean;
@@ -14,7 +20,12 @@ interface IState {
 
 type DialogCallback = () => void;
 
-export default class YesNoDialog extends React.PureComponent<IProps, IState> {
+class YesNoDialog extends React.PureComponent<IProps, IState> {
+  constructor(props: IProps) {
+    super(props);
+    this.props.getRef.current = this;
+  }
+
   state = {
     isOpen: false,
     title: '',
@@ -41,6 +52,8 @@ export default class YesNoDialog extends React.PureComponent<IProps, IState> {
 
   render() {
     Logger.logRenderInfo(this);
+    const { langData } = this.props;
+
     return (
       <Dialog
         className={`bp3-dark  ${styles.dialog}`}
@@ -60,13 +73,13 @@ export default class YesNoDialog extends React.PureComponent<IProps, IState> {
               className='dialogButtonPadding'
               onClick={this.handleYes}
               intent='primary'
-              text='Yes'
+              text={langData.buttonYes}
             />
             <Button
               className='dialogButtonPadding'
               onClick={this.handleClose}
               autoFocus={true}
-              text='No'
+              text={langData.buttonNo}
             />
           </div>
         </div>
@@ -74,3 +87,15 @@ export default class YesNoDialog extends React.PureComponent<IProps, IState> {
     );
   }
 }
+
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('YesNoDialog-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(YesNoDialog);

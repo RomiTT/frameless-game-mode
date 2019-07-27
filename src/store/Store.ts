@@ -2,7 +2,7 @@ import Actions from './Actions';
 import { createStore, Store, bindActionCreators } from 'redux';
 import { FGM_STATE, FGM_WATCH_MODE } from '../lib/FGM';
 import { IAppState, IReduxAction } from './Types';
-import { getDefaultLanguage } from '../languages';
+import { getDefaultLanguage } from '../lib/lang';
 const isDev = require('electron-is-dev');
 
 const appState: IAppState = {

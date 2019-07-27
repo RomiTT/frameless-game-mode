@@ -19,5 +19,10 @@
     "edit": "Edit...",
     "delete": "Delete",
     "properties": "Properties..."
+  },
+
+  "deleteMessageBox": {
+    "title": "Delete a item",
+    "message": "Are you sure to delete?"
   }
 }

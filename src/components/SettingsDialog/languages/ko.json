@@ -1,0 +1,11 @@
+{
+  "title": "설정",
+  "launchAtLogon": "윈도우 시작시 실행",
+  "closeToTray": "창을 닫을 때 트레이 모드로 전환",
+  "watchMode": "감시 모드",
+  "allWindows": "모든 윈도우 프로그램",
+  "onlyForegroundWindow": "포그라운드 윈도우",
+  "languages": "언어",
+  "buttonOK": "확인",
+  "buttonCancel": "취소"
+}

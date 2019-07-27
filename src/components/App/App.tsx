@@ -33,7 +33,7 @@ import AboutDialog from '../AboutDialog/AboutDialog';
 import { AppToaster } from '../../lib/Toaster';
 import AutoUpdater from '../../lib/AutoUpdater';
 import AutoUpdateDialog from '../AutoUpdateDialog/AutoUpdateDialog';
-import { Language, getLocaleNameFromLanguage } from '../../languages';
+import { Language, getLocaleNameFromLanguage, getLanguageName } from '../../lib/lang';
 import styles from './App.module.scss';
 
 const { remote, ipcRenderer } = require('electron');
@@ -52,13 +52,13 @@ interface IState {
 class App extends React.PureComponent<IProps, IState> {
   private taskFGM = Tasks.FGM;
   private listRef: React.RefObject<WindowAppList> = React.createRef();
-  private addAppDialogRef: React.RefObject<AddWindowAppDialog> = React.createRef();
-  private yesNoDialogRef: React.RefObject<YesNoDialog> = React.createRef();
-  private settingsDialogRef: React.RefObject<SettingsDialog> = React.createRef();
-  private windowAppPropertyDialogRef: React.RefObject<WindowAppPropertyDialog> = React.createRef();
-  private editWindowAppDialogRef: React.RefObject<EditWindowAppDialog> = React.createRef();
-  private aboutDialogRef: React.RefObject<AboutDialog> = React.createRef();
-  private autoUpdateDialogRef: React.RefObject<AutoUpdateDialog> = React.createRef();
+  private addAppDialogRef: React.RefObject<any> = React.createRef();
+  private yesNoDialogRef: React.RefObject<any> = React.createRef();
+  private settingsDialogRef: React.RefObject<any> = React.createRef();
+  private windowAppPropertyDialogRef: React.RefObject<any> = React.createRef();
+  private editWindowAppDialogRef: React.RefObject<any> = React.createRef();
+  private aboutDialogRef: React.RefObject<any> = React.createRef();
+  private autoUpdateDialogRef: React.RefObject<any> = React.createRef();
 
   state = {
     addBtnLeftPos: 0,
@@ -227,10 +227,16 @@ class App extends React.PureComponent<IProps, IState> {
 
   private handleOpenSettings = () => {
     this.settingsDialogRef.current!.open(
-      (launchAtLogon: boolean, watchMode: FGM_WATCH_MODE, closeToTray: boolean) => {
+      (
+        launchAtLogon: boolean,
+        watchMode: FGM_WATCH_MODE,
+        closeToTray: boolean,
+        language: Language
+      ) => {
         this.taskFGM.setLaunchAtLogon(launchAtLogon);
         this.taskFGM.setWatchMode(watchMode);
         this.taskFGM.setCloseToTray(closeToTray);
+        this.taskFGM.setLanguage(language);
         this.taskFGM.save();
       }
     );
@@ -243,7 +249,7 @@ class App extends React.PureComponent<IProps, IState> {
   private handleContextMenu = (e: any, item: any) => {
     e.preventDefault();
 
-    const { contextMenu } = this.props.langData;
+    const { contextMenu, deleteMessageBox } = this.props.langData;
 
     const menu = React.createElement(
       Menu,
@@ -270,12 +276,16 @@ class App extends React.PureComponent<IProps, IState> {
         text: contextMenu.delete,
         icon: 'delete',
         onClick: () => {
-          this.yesNoDialogRef.current!.open('Delete item', 'Are you sure to delete?', () => {
-            // onOk
-            this.taskFGM.removeApp(item.key);
-            this.taskFGM.save();
-            this.listRef.current!.forceUpdate();
-          });
+          this.yesNoDialogRef.current!.open(
+            deleteMessageBox.title,
+            deleteMessageBox.message,
+            () => {
+              // onOk
+              this.taskFGM.removeApp(item.key);
+              this.taskFGM.save();
+              this.listRef.current!.forceUpdate();
+            }
+          );
         }
       }),
       React.createElement(MenuItem, {
@@ -396,13 +406,13 @@ class App extends React.PureComponent<IProps, IState> {
               scale={1.2}
               onClick={this.handleOpenAddAppDialog}
             />
-            <AddWindowAppDialog ref={this.addAppDialogRef} />
-            <SettingsDialog ref={this.settingsDialogRef} />
-            <WindowAppPropertyDialog ref={this.windowAppPropertyDialogRef} />
-            <EditWindowAppDialog ref={this.editWindowAppDialogRef} />
-            <AboutDialog ref={this.aboutDialogRef} />
-            <AutoUpdateDialog ref={this.autoUpdateDialogRef} />
-            <YesNoDialog ref={this.yesNoDialogRef} />
+            <AddWindowAppDialog getRef={this.addAppDialogRef} />
+            <SettingsDialog getRef={this.settingsDialogRef} />
+            <WindowAppPropertyDialog getRef={this.windowAppPropertyDialogRef} />
+            <EditWindowAppDialog getRef={this.editWindowAppDialogRef} />
+            <AboutDialog getRef={this.aboutDialogRef} />
+            <AutoUpdateDialog getRef={this.autoUpdateDialogRef} />
+            <YesNoDialog getRef={this.yesNoDialogRef} />
           </main>
 
           <footer className={`has-text-centered ${styles.footer}`}>
@@ -417,7 +427,7 @@ class App extends React.PureComponent<IProps, IState> {
 }
 
 const mapStateToProps = (state: IAppState, ownProps?: any) => {
-  Logger.log('mapStateToProps, state=', state, ', ownProps=', ownProps);
+  Logger.log('App-mapStateToProps, state=', state, ', ownProps=', ownProps);
 
   const localeName = getLocaleNameFromLanguage(state.currentLanguage);
   const langData: any = require(`./languages/${localeName}.json`);

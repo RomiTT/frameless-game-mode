@@ -1,0 +1,8 @@
+{
+  "title": "Edit",
+  "wposTabPanelTitle": "Position",
+  "wsizeTabPanelTitle": "Size",
+  "buttonOK": "OK",
+  "buttonCancel": "Cancel",
+  "infoMessage": "These changes will be applied from the next launch."
+}

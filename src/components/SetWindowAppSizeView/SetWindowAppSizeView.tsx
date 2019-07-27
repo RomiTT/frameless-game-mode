@@ -3,8 +3,12 @@ import { NumericInput, Radio, RadioGroup } from '@blueprintjs/core/lib/esm/compo
 import { FGM_WINDOW_SIZE } from '../../lib/FGM';
 import Logger from '../../lib/Logger';
 import styles from './SetWindowAppSizeView.module.scss';
+import { IAppState } from '../../store/Types';
+import { getLocaleNameFromLanguage } from '../../lib/lang';
+import { connect } from 'react-redux';
 
 interface IProps {
+  langData: any;
   wsize?: FGM_WINDOW_SIZE;
   width?: number;
   height?: number;
@@ -57,32 +61,34 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
 
   render() {
     Logger.logRenderInfo(this);
+    const { langData } = this.props;
+
     return (
       <div className={styles.rootView}>
         <RadioGroup onChange={this.onWSizeChanged} selectedValue={this.state.wsize}>
           <Radio
             className={styles.radioItem}
-            label='Window-Client size (excluded frame area)'
+            label={langData.wsizeBasedOnClientArea}
             value={FGM_WINDOW_SIZE.BASED_ON_CLIENT_AREA}
           />
           <Radio
             className={styles.radioItem}
-            label='Window size (included frame area)'
+            label={langData.wsizeBasedOnWindowArea}
             value={FGM_WINDOW_SIZE.BASED_ON_WINDOW_AREA}
           />
           <Radio
             className={styles.radioItem}
-            label='Full-Screen size'
+            label={langData.wsizeFullScreen}
             value={FGM_WINDOW_SIZE.FULL_SCREEN_SIZE}
           />
           <Radio
             className={styles.radioItem}
-            label='Custom size'
+            label={langData.wsizeCustom}
             value={FGM_WINDOW_SIZE.CUSTOM_SIZE}
           />
         </RadioGroup>
         <div className={styles.inputContainer}>
-          <p className={styles.label}>Width: </p>
+          <p className={styles.label}>{langData.width}</p>
           <NumericInput
             className={styles.input}
             fill={true}
@@ -92,7 +98,7 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
           />
         </div>
         <div className={styles.inputContainer}>
-          <p className={styles.label}>Height: </p>
+          <p className={styles.label}>{langData.height}</p>
           <NumericInput
             className={styles.input}
             fill={true}
@@ -106,4 +112,14 @@ class SetWindowAppSizeView extends React.PureComponent<IProps, IState> {
   }
 }
 
-export default SetWindowAppSizeView;
+const mapStateToProps = (state: IAppState, ownProps?: any) => {
+  Logger.log('SetWindowAppSizeView-mapStateToProps, state=', state, ', ownProps=', ownProps);
+
+  const localeName = getLocaleNameFromLanguage(state.currentLanguage);
+  const langData: any = require(`./languages/${localeName}.json`);
+  return {
+    langData: langData
+  };
+};
+
+export default connect(mapStateToProps)(SetWindowAppSizeView);
