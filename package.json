@@ -8,7 +8,7 @@
     "build": "node ./.build.addon.js && rescripts build",
     "test": "node ./.build.addon.js && rescripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently --kill-others \"yarn start\" \"wait-on http://localhost:3000 && electron --remote-debugging-port=9222 .\"",
+    "electron-dev": "concurrently --kill-others \"yarn start\" \"wait-on http://localhost:3000 && electron .\"",
     "postinstall": "electron-builder install-app-deps",
     "preelectron-pack": "yarn build",
     "electron-pack": "build -w"

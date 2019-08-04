@@ -10,6 +10,10 @@ let mainWindow = null;
 let webContents = null;
 let tray = null;
 
+if (isDev) {
+  app.commandLine.appendSwitch('remote-debugging-port', '9222');
+}
+
 electron.app.FGM = require('./fgm.node');
 console.log('electron.app.FGM', electron.app.FGM);
 electron.app.FGM.initialize();
